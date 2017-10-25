@@ -1,0 +1,137 @@
+import { IIntersection } from './impl/intersection';
+import { computeNewStoneState } from './computeState';
+import { randomString, arrayEquals } from './utils';
+export function addMove(record, state, intersection, color) {
+    const boardState = record.boardStates[state];
+    if (!boardState) {
+        throw new Error('Board state does not exist.');
+    }
+    if (boardState.stones[intersection.y * record.size + intersection.x] !== 'empty') {
+        throw new Error('There is already a stone on ' + intersection + '.');
+    }
+    const existingMove = Object.keys(boardState.moves)
+        .map((moveId) => boardState.moves[moveId])
+        .find((move) => {
+        return IIntersection.get(intersection) === IIntersection.get(move.intersection);
+    });
+    if (existingMove) {
+        throw new Error('Move already exists.');
+    }
+    const newStonesState = computeNewStoneState(record.size, boardState.stones, intersection, color);
+    const matchingBoardState = Object.keys(record.boardStates)
+        .map((key) => record.boardStates[key])
+        .filter((boardState) => arrayEquals(newStonesState, boardState.stones));
+    if (matchingBoardState.length === 1) {
+        const nextState = matchingBoardState[0];
+        const newMove = {
+            id: randomString(),
+            color,
+            intersection,
+            nextState: nextState.id,
+        };
+        const reverseMove = {
+            moveId: newMove.id,
+            previousState: state,
+        };
+        boardState.moves[newMove.id] = newMove;
+        nextState.reverseMoves[reverseMove.moveId] = reverseMove;
+        return {
+            moveId: newMove.id,
+            newStateId: nextState.id,
+        };
+    }
+    else if (matchingBoardState.length === 0) {
+        const newStateId = randomString();
+        const newMove = {
+            id: randomString(),
+            color,
+            intersection,
+            nextState: newStateId,
+        };
+        const reverseMove = {
+            moveId: newMove.id,
+            previousState: state,
+        };
+        boardState.moves[newMove.id] = newMove;
+        record.boardStates[newStateId] = {
+            id: newStateId,
+            stones: newStonesState,
+            markups: [],
+            text: '',
+            moves: {},
+            reverseMoves: {
+                [reverseMove.moveId]: reverseMove,
+            },
+        };
+        return {
+            moveId: newMove.id,
+            newStateId,
+        };
+    }
+    else {
+        throw new Error('Multiple board states have the same stone states : ' + matchingBoardState);
+    }
+}
+export function removeMove(record, state, moveId) {
+    const boardState = record.boardStates[state];
+    if (!boardState) {
+        throw new Error('Current board state does not exist.');
+    }
+    const move = boardState.moves[moveId];
+    if (!move) {
+        throw new Error('Move does not exist.');
+    }
+    const nextState = record.boardStates[move.nextState];
+    if (!nextState) {
+        throw new Error('Next state does not exist.');
+    }
+    if (!boardState.moves[moveId]) {
+        throw new Error('Move does not exist.');
+    }
+    delete boardState.moves[moveId];
+    delete nextState.reverseMoves[moveId];
+    const reachableStates = findReachableStates(record);
+    const unreachableStates = Object.keys(record.boardStates)
+        .filter((stateId) => !reachableStates.has(stateId));
+    for (const stateId of unreachableStates) {
+        delete record.boardStates[stateId];
+    }
+}
+function findReachableStates(record) {
+    const reachableStates = new Set();
+    const frontier = [record.initialBoardState];
+    while (frontier.length >= 1) {
+        const stateToCheck = record.boardStates[frontier.pop()];
+        reachableStates.add(stateToCheck.id);
+        const children = Object.keys(stateToCheck.moves)
+            .map((key) => stateToCheck.moves[key].nextState)
+            .filter((stateId) => reachableStates.has(stateId));
+        frontier.push(...children);
+    }
+    return reachableStates;
+}
+export function setText(record, state, text) {
+    const boardState = record.boardStates[state];
+    if (!boardState) {
+        throw new Error('Current board state does not exist.');
+    }
+    const newBoardState = Object.assign({}, boardState, { text });
+    record.boardStates[state] = newBoardState;
+}
+export function addMarkup(record, state, markup) {
+    const boardState = record.boardStates[state];
+    if (!boardState) {
+        throw new Error('Current board state does not exist.');
+    }
+    const newBoardState = Object.assign({}, boardState, { markups: [...boardState.markups, markup] });
+    record.boardStates[state] = newBoardState;
+}
+export function removeMarkup(record, state, markup) {
+    const boardState = record.boardStates[state];
+    if (!boardState) {
+        throw new Error('Current board state does not exist.');
+    }
+    const newBoardState = Object.assign({}, boardState, { markups: boardState.markups.filter((existingMarkup) => existingMarkup !== markup) });
+    record.boardStates[state] = newBoardState;
+}
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiYWNjZXNzb3JzLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiLi4vLi4vLi4vc3JjL21vZGVsL2FjY2Vzc29ycy50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFDQSxPQUFPLEVBQUUsYUFBYSxFQUFFLE1BQU0scUJBQXFCLENBQUM7QUFDcEQsT0FBTyxFQUFFLG9CQUFvQixFQUFFLE1BQU0sZ0JBQWdCLENBQUM7QUFDdEQsT0FBTyxFQUFFLFlBQVksRUFBRSxXQUFXLEVBQUUsTUFBTSxTQUFTLENBQUM7QUFPcEQsTUFBTSxrQkFBa0IsTUFBZ0IsRUFBRSxLQUFhLEVBQUUsWUFBMEIsRUFBRSxLQUFZO0lBQy9GLE1BQU0sVUFBVSxHQUFHLE1BQU0sQ0FBQyxXQUFXLENBQUMsS0FBSyxDQUFDLENBQUM7SUFDN0MsRUFBRSxDQUFDLENBQUMsQ0FBQyxVQUFVLENBQUMsQ0FBQyxDQUFDO1FBQ2hCLE1BQU0sSUFBSSxLQUFLLENBQUMsNkJBQTZCLENBQUMsQ0FBQztJQUNqRCxDQUFDO0lBRUQsRUFBRSxDQUFDLENBQUMsVUFBVSxDQUFDLE1BQU0sQ0FBQyxZQUFZLENBQUMsQ0FBQyxHQUFHLE1BQU0sQ0FBQyxJQUFJLEdBQUcsWUFBWSxDQUFDLENBQUMsQ0FBQyxLQUFLLE9BQU8sQ0FBQyxDQUFDLENBQUM7UUFDakYsTUFBTSxJQUFJLEtBQUssQ0FBQyw4QkFBOEIsR0FBRyxZQUFZLEdBQUcsR0FBRyxDQUFDLENBQUM7SUFDdkUsQ0FBQztJQUVELE1BQU0sWUFBWSxHQUFHLE1BQU0sQ0FBQyxJQUFJLENBQUMsVUFBVSxDQUFDLEtBQUssQ0FBQztTQUMvQyxHQUFHLENBQUMsQ0FBQyxNQUFNLEtBQUssVUFBVSxDQUFDLEtBQUssQ0FBQyxNQUFNLENBQUMsQ0FBQztTQUN6QyxJQUFJLENBQUMsQ0FBQyxJQUFJO1FBQ1QsTUFBTSxDQUFDLGFBQWEsQ0FBQyxHQUFHLENBQUMsWUFBWSxDQUFDLEtBQUssYUFBYSxDQUFDLEdBQUcsQ0FBQyxJQUFJLENBQUMs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
