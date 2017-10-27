@@ -5,8 +5,8 @@
   "author": "gillessed",
   "license": "MIT",
   "scripts": {
-    "jest": "./node_modules/jest/bin/jest.js",
-    "start:dev": "./node_modules/webpack-dev-server/bin/webpack-dev-server.js"
+    "jest": "node ./node_modules/jest/bin/jest.js",
+    "start:dev": "node ./node_modules/webpack-dev-server/bin/webpack-dev-server.js"
   },
   "dependencies": {
     "@types/react": "^16.0.18",

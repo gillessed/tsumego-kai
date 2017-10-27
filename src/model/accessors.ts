@@ -2,13 +2,21 @@ import { GoRecord, GoMove, Intersection, Color, GoStonesState, ReverseMove, Mark
 import { IIntersection } from './impl/intersection';
 import { computeNewStoneState } from './computeState';
 import { randomString, arrayEquals } from './utils';
+import { copyRecord } from './copyRecord';
+
+/*
+ * Immutable accessors that will return a new record object with the modifications
+ * executred by the accessor. 
+ */
 
 export interface AddMoveResult {
+  record: GoRecord;
   moveId: string;
   newStateId: string;
 }
 
-export function addMove(record: GoRecord, state: string, intersection: Intersection, color: Color): AddMoveResult {
+export function addMove(_record: GoRecord, state: string, intersection: Intersection, color: Color): AddMoveResult {
+  const record = copyRecord(_record);
   const boardState = record.boardStates[state];
   if (!boardState) {
     throw new Error('Board state does not exist.');
@@ -50,6 +58,7 @@ export function addMove(record: GoRecord, state: string, intersection: Intersect
     nextState.reverseMoves[reverseMove.moveId] = reverseMove;
 
     return {
+      record,
       moveId: newMove.id,
       newStateId: nextState.id,
     };
@@ -80,6 +89,7 @@ export function addMove(record: GoRecord, state: string, intersection: Intersect
     };
 
     return {
+      record,
       moveId: newMove.id,
       newStateId,
     };
@@ -88,7 +98,8 @@ export function addMove(record: GoRecord, state: string, intersection: Intersect
   }
 }
 
-export function removeMove(record: GoRecord, state: string, moveId: string) {
+export function removeMove(_record: GoRecord, state: string, moveId: string): GoRecord {
+  const record = copyRecord(_record);
   const boardState = record.boardStates[state];
   if (!boardState) {
     throw new Error('Current board state does not exist.');
@@ -117,6 +128,7 @@ export function removeMove(record: GoRecord, state: string, moveId: string) {
   for (const stateId of unreachableStates) {
     delete record.boardStates[stateId];
   }
+  return record;
 }
 
 function findReachableStates(record: GoRecord): Set<string> {
@@ -135,7 +147,8 @@ function findReachableStates(record: GoRecord): Set<string> {
   return reachableStates;
 }
 
-export function setText(record: GoRecord, state: string, text: string) {
+export function setText(_record: GoRecord, state: string, text: string): GoRecord {
+  const record = copyRecord(_record);
   const boardState = record.boardStates[state];
   if (!boardState) {
     throw new Error('Current board state does not exist.');
@@ -143,9 +156,11 @@ export function setText(record: GoRecord, state: string, text: string) {
 
   const newBoardState = { ...boardState, text };
   record.boardStates[state] = newBoardState;
+  return record;
 }
 
-export function addMarkup(record: GoRecord, state: string, markup: Markup) {
+export function addMarkup(_record: GoRecord, state: string, markup: Markup): GoRecord {
+  const record = copyRecord(_record);
   const boardState = record.boardStates[state];
   if (!boardState) {
     throw new Error('Current board state does not exist.');
@@ -153,9 +168,11 @@ export function addMarkup(record: GoRecord, state: string, markup: Markup) {
 
   const newBoardState = { ...boardState, markups: [...boardState.markups, markup] };
   record.boardStates[state] = newBoardState;
+  return record;
 }
 
-export function removeMarkup(record: GoRecord, state: string, markup: Markup) {
+export function removeMarkup(_record: GoRecord, state: string, markup: Markup): GoRecord {
+  const record = copyRecord(_record);
   const boardState = record.boardStates[state];
   if (!boardState) {
     throw new Error('Current board state does not exist.');
@@ -163,4 +180,5 @@ export function removeMarkup(record: GoRecord, state: string, markup: Markup) {
 
   const newBoardState = { ...boardState, markups: boardState.markups.filter((existingMarkup) => existingMarkup !== markup) };
   record.boardStates[state] = newBoardState;
+  return record;
 }

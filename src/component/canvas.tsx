@@ -1,6 +1,7 @@
 import React from 'react';
 import { GoRecord, Color } from '../model/goban';
 import { ImageAsset } from './imageAsset';
+import { EditorState } from './editorState';
 
 const defaultRenderingProps: RenderingProps = {
   boardImagePath: '/static/images/Wood.jpg',
@@ -45,7 +46,7 @@ export type DerivedRenderStyle = RenderingProps & {
 
 export interface BoardProps {
   goRecord: GoRecord;
-  mode: 'view' | 'play' | 'edit' | 'problem' | 'solution';
+  editorState: EditorState;
   renderingProps?: Partial<RenderingProps>;
 }
 
@@ -79,20 +80,21 @@ export class BoardCanvas extends React.PureComponent<BoardProps, State> {
 
   public componentWillMount() {
     const style = this.getRenderStyle(this.props);
-    this.boardImage = new ImageAsset(style.boardImagePath, this.renderCanvas);
-    this.whiteStoneImage = new ImageAsset(style.whiteStoneImagePath, this.renderCanvas);
-    this.blackStoneImage = new ImageAsset(style.blackStoneImagePath, this.renderCanvas);
+    this.boardImage = new ImageAsset(style.boardImagePath, () => requestAnimationFrame(this.renderCanvas));
+    this.whiteStoneImage = new ImageAsset(style.whiteStoneImagePath, () => requestAnimationFrame(this.renderCanvas));
+    this.blackStoneImage = new ImageAsset(style.blackStoneImagePath, () => requestAnimationFrame(this.renderCanvas));
 
     this.windowResizeListener = window.addEventListener('resize', () => {
       this.computeCanvasSize();
       this.canvas.width = this.canvasWidth;
       this.canvas.height = this.canvasHeight;
-      this.renderCanvas();
+      requestAnimationFrame(this.renderCanvas);
     });
   }
 
   public componentWillUnmount() {
     window.removeEventListener(this.windowResizeListener);
+    this.canvas.removeEventListener('mouseout');
     this.canvas.removeEventListener('mouseup');
     this.canvas.removeEventListener('mousemove');
   }
@@ -138,7 +140,7 @@ export class BoardCanvas extends React.PureComponent<BoardProps, State> {
       if (this.canvas) {
         this.canvas.width = this.canvasWidth;
         this.canvas.height = this.canvasHeight;
-        this.renderCanvas();
+        requestAnimationFrame(this.renderCanvas);
       }
       return (
         <canvas ref={(element) => {
@@ -146,8 +148,9 @@ export class BoardCanvas extends React.PureComponent<BoardProps, State> {
             this.canvas = element;
             this.canvas.addEventListener('mousemove', this.onMouseOver);
             this.canvas.addEventListener('mouseup', this.onMouseUp);
+            this.canvas.addEventListener('mouseout', this.onMouseOut);
             this.canvas.onmouseover = this.onMouseOver;
-            this.renderCanvas();
+            requestAnimationFrame(this.renderCanvas);
           }
         }} width={this.canvasWidth} height={this.canvasHeight} />
       );
@@ -168,18 +171,19 @@ export class BoardCanvas extends React.PureComponent<BoardProps, State> {
     if (!ctx) {
       return;
     }
+    ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     const style = this.getDerivedRenderStyle(this.props);
     this.renderBoard(ctx, style);
     this.renderLines(ctx, style);
     this.renderStarPoints(ctx, style);
     this.renderCoordinates(ctx, style);
-    this.renderStone(ctx, style, 1, 1, 'white', 1);
-    this.renderStone(ctx, style, 1, 2, 'black', 1);
+    this.renderStones(ctx, style);
     this.renderHover(ctx, style);
   }
 
   private renderBoard(ctx: CanvasRenderingContext2D, _: DerivedRenderStyle) {
     const pattern = ctx.createPattern(this.boardImage.element, 'repeat');
+    ctx.globalAlpha = 1;
     ctx.fillStyle = pattern;
     ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
   }
@@ -192,6 +196,7 @@ export class BoardCanvas extends React.PureComponent<BoardProps, State> {
 
     ctx.globalAlpha = 1;
     ctx.strokeStyle = style.lineColor;
+    ctx.lineWidth = 1;
     ctx.beginPath();
     for (let i = style.finalClipRegion.top; i <= style.finalClipRegion.bottom; i++) {
       const offset = style.fullInset + style.stoneSizePixels * (i - style.finalClipRegion.top + 0.5);
@@ -285,6 +290,18 @@ export class BoardCanvas extends React.PureComponent<BoardProps, State> {
     }
   }
 
+  private renderStones(ctx: CanvasRenderingContext2D, style: DerivedRenderStyle) {
+    for (let x = style.finalClipRegion.left; x <= style.finalClipRegion.right; x++) {
+      for (let y = style.finalClipRegion.top; y <= style.finalClipRegion.bottom; y++) {
+        const coord = this.props.goRecord.size * y + x;
+        const stoneColor = this.props.goRecord.boardStates[this.props.editorState.currentBoardState].stones[coord];
+        if (stoneColor === 'white' || stoneColor === 'black') {
+          this.renderStone(ctx, style, x, y, stoneColor, 1);
+        }
+      }
+    }
+  }
+
   private renderStone(ctx: CanvasRenderingContext2D, style: DerivedRenderStyle, x: number, y: number, color: Color, opacity: number) {
     if (!this.blackStoneImage.loaded || !this.whiteStoneImage.loaded) {
       return;
@@ -299,7 +316,13 @@ export class BoardCanvas extends React.PureComponent<BoardProps, State> {
     } else {
       image = this.blackStoneImage.element;
     }
+    ctx.save();
+    ctx.shadowColor = '#333';
+    ctx.shadowBlur = 3;
+    ctx.shadowOffsetX = 1;
+    ctx.shadowOffsetY = 1;
     ctx.drawImage(image, coordX - radius, coordY - radius, radius * 2, radius * 2);
+    ctx.restore();
   }
 
   private renderHover(ctx: CanvasRenderingContext2D, style: DerivedRenderStyle) {
@@ -307,9 +330,9 @@ export class BoardCanvas extends React.PureComponent<BoardProps, State> {
       return;
     }
     
-    const { mode } = this.props;
+    const { mode } = this.props.editorState;
     if (mode === 'play' || mode === 'view' || mode === 'problem') {
-      this.renderStone(ctx, style, this.mouseCoordinates.x, this.mouseCoordinates.y, 'white', 0.5);
+      this.renderStone(ctx, style, this.mouseCoordinates.x, this.mouseCoordinates.y, this.props.editorState.playertoMove, 0.5);
     }
   }
 
@@ -327,10 +350,15 @@ export class BoardCanvas extends React.PureComponent<BoardProps, State> {
     } else {
       this.mouseCoordinates = undefined;
     }
-    this.renderCanvas();
+      requestAnimationFrame(this.renderCanvas);
   }
 
   private onMouseUp = () => {
+  }
+
+  private onMouseOut = () => {
+      this.mouseCoordinates = undefined;
+      requestAnimationFrame(this.renderCanvas);
   }
 
   //////////////////

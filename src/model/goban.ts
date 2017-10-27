@@ -30,6 +30,7 @@ export interface GoMove {
   intersection: Intersection;
   color: Color;
   nextState: string;
+  correct?: boolean;
 }
 
 export interface ReverseMove {
