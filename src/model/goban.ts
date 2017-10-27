@@ -1,3 +1,4 @@
+import { randomString } from './utils';
 
 export type StoneState = 'empty' | Color;
 
@@ -59,4 +60,28 @@ export interface GoRecord {
   metadata: RecordMetadata;
   initialBoardState: string;
   boardStates: { [key: string]: BoardState };
+}
+
+export function emptyBoard(size: number, type: RecordType): GoRecord {
+  const initialStones: GoStonesState = [];
+  for (let i = 0; i < size * size; i++) {
+    initialStones.push('empty');
+  }
+  const initialBoardState: BoardState = {
+    id: randomString(),
+    stones: initialStones,
+    markups: [],
+    text: '',
+    moves: {},
+    reverseMoves: {},
+  };
+  return {
+    size,
+    type,
+    metadata: {},
+    initialBoardState: initialBoardState.id,
+    boardStates: {
+      [initialBoardState.id]: initialBoardState,
+    },
+  };
 }
