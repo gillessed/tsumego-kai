@@ -36,6 +36,7 @@ export function addMove(_record: GoRecord, state: string, intersection: Intersec
   }
 
   const newStonesState: GoStonesState = computeNewStoneState(record.size, boardState.stones, intersection, color);
+
   const matchingBoardState = Object.keys(record.boardStates)
     .map((key) => record.boardStates[key])
     .filter((boardState) => arrayEquals(newStonesState, boardState.stones));

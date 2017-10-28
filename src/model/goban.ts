@@ -31,6 +31,7 @@ export interface GoMove {
   color: Color;
   nextState: string;
   correct?: boolean;
+  main?: boolean;
 }
 
 export interface ReverseMove {

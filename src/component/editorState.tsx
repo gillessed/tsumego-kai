@@ -1,5 +1,6 @@
 import { Color } from '../model/goban';
-export type EditorMode = 'view' | 'play' | 'edit' | 'problem' | 'solution';
+
+export type EditorMode = 'view' | 'play' | 'review' | 'edit' | 'problem' | 'solution';
 export type Action = 'play' | 'place-white' | 'place-black' | 'delete' | 'triangle' | 'square' | 'circle';
 
 export interface EditorState {
@@ -7,5 +8,5 @@ export interface EditorState {
   action?: Action;
   moveStack: string[];
   currentBoardState: string;
-  playertoMove: Color;
+  playerToMove: Color;
 }

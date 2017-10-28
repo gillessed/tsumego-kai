@@ -8,6 +8,7 @@ export function computeNewStoneState(size: number, stoneState: GoStonesState, _i
   newState[intersection.y * size + intersection.x] = color;
   const seen: Set<IIntersection> = new Set();
   let groups: Group[] = [];
+  let soloGroup: Group | undefined;
 
   for (let x: number = 0; x < size; x++) {
     for (let y: number = 0; y < size; y++) {
@@ -22,21 +23,25 @@ export function computeNewStoneState(size: number, stoneState: GoStonesState, _i
           return group.color === state && group.doesBorder(intersection);
         });
         if (borderingGroups.length > 1) {
-          const newStones: Set<IIntersection> = new Set();
+          const newGroup = new Group(state, size);
           for (const group of borderingGroups) {
             for (const stone of group.stones) {
-              newStones.add(stone);
+              newGroup.stones.add(stone);
             }
           }
-          const newGroup = new Group(state, size);
-          newGroup.stones = newStones;
-          groups = groups.filter((group) => borderingGroups.indexOf(group) >= 0);
+          newGroup.stones.add(intersection);
+          const newGroups = groups.filter((group) => borderingGroups.indexOf(group) < 0);
+          newGroups.push(newGroup);
+          groups = newGroups;
         } else if (borderingGroups.length === 1) {
           borderingGroups[0].stones.add(intersection);
         } else {
           const newGroup = new Group(state, size);
           newGroup.stones.add(intersection);
           groups.push(newGroup);
+          if (x === _intersection.x && y === _intersection.y) {
+            soloGroup = newGroup;
+          }
         }
       }
     }
@@ -44,9 +49,18 @@ export function computeNewStoneState(size: number, stoneState: GoStonesState, _i
 
   for (const group of groups) {
     if (group.computeLiberties(newState) === 0) {
+      if (group === soloGroup) {
+        continue;
+      }
       for (const stone of group.stones) {
         newState[stone.y * size + stone.x] = 'empty';
       }
+    }
+  }
+
+  if (soloGroup && soloGroup.computeLiberties(newState) === 0) {
+    for (const stone of soloGroup.stones) {
+      newState[stone.y * size + stone.x] = 'empty';
     }
   }
 

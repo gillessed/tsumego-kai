@@ -1,4 +1,5 @@
 import uuid from 'uuid';
+import { Color } from './goban';
 
 export function arrayEquals<T>(a1: T[], a2: T[]): boolean {
   if (!a1 || !a2) {
@@ -17,4 +18,12 @@ export function arrayEquals<T>(a1: T[], a2: T[]): boolean {
 
 export function randomString(): string {
   return uuid.v4();
+}
+
+export function swapColor(color: Color): Color {
+  if (color === 'black') {
+    return 'white';
+  } else {
+    return 'black';
+  }
 }

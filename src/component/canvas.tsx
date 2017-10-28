@@ -2,6 +2,7 @@ import React from 'react';
 import { GoRecord, Color } from '../model/goban';
 import { ImageAsset } from './imageAsset';
 import { EditorState } from './editorState';
+import { clickHandler } from './clickHandler';
 
 const defaultRenderingProps: RenderingProps = {
   boardImagePath: '/static/images/Wood.jpg',
@@ -48,6 +49,7 @@ export interface BoardProps {
   goRecord: GoRecord;
   editorState: EditorState;
   renderingProps?: Partial<RenderingProps>;
+  onUpdate?: (newRecord: GoRecord, newEditorState: EditorState) => void;
 }
 
 interface State {
@@ -316,13 +318,7 @@ export class BoardCanvas extends React.PureComponent<BoardProps, State> {
     } else {
       image = this.blackStoneImage.element;
     }
-    ctx.save();
-    ctx.shadowColor = '#333';
-    ctx.shadowBlur = 3;
-    ctx.shadowOffsetX = 1;
-    ctx.shadowOffsetY = 1;
     ctx.drawImage(image, coordX - radius, coordY - radius, radius * 2, radius * 2);
-    ctx.restore();
   }
 
   private renderHover(ctx: CanvasRenderingContext2D, style: DerivedRenderStyle) {
@@ -332,7 +328,7 @@ export class BoardCanvas extends React.PureComponent<BoardProps, State> {
     
     const { mode } = this.props.editorState;
     if (mode === 'play' || mode === 'view' || mode === 'problem') {
-      this.renderStone(ctx, style, this.mouseCoordinates.x, this.mouseCoordinates.y, this.props.editorState.playertoMove, 0.5);
+      this.renderStone(ctx, style, this.mouseCoordinates.x, this.mouseCoordinates.y, this.props.editorState.playerToMove, 0.5);
     }
   }
 
@@ -354,6 +350,12 @@ export class BoardCanvas extends React.PureComponent<BoardProps, State> {
   }
 
   private onMouseUp = () => {
+    if (this.mouseCoordinates && this.props.onUpdate) {
+      const result = clickHandler(this.props.goRecord, this.props.editorState, this.mouseCoordinates.x, this.mouseCoordinates.y);
+      if (result) {
+        this.props.onUpdate(result.record, result.editorState);
+      }
+    }
   }
 
   private onMouseOut = () => {
