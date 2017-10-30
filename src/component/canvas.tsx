@@ -328,7 +328,10 @@ export class BoardCanvas extends React.PureComponent<BoardProps, State> {
     
     const { mode } = this.props.editorState;
     if (mode === 'play' || mode === 'view' || mode === 'problem') {
-      this.renderStone(ctx, style, this.mouseCoordinates.x, this.mouseCoordinates.y, this.props.editorState.playerToMove, 0.5);
+      const state = this.props.goRecord.boardStates[this.props.editorState.currentBoardState].stones[this.mouseCoordinates.y * this.props.goRecord.size + this.mouseCoordinates.x];
+      if (state === 'empty') {
+        this.renderStone(ctx, style, this.mouseCoordinates.x, this.mouseCoordinates.y, this.props.editorState.playerToMove, 0.5);
+      }
     }
   }
 
