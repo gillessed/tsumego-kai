@@ -1,8 +1,9 @@
 import React from 'react';
-import { GoRecord, Color } from '../model/goban';
+import { GoRecord, Color, Letter } from '../model/goban';
 import { ImageAsset } from './imageAsset';
 import { EditorState } from './editorState';
 import { clickHandler } from './clickHandler';
+import { hasMoveAtIntersection } from '../model/accessors';
 
 const defaultRenderingProps: RenderingProps = {
   boardImagePath: '/static/images/Wood.jpg',
@@ -11,7 +12,7 @@ const defaultRenderingProps: RenderingProps = {
   lineColor: '#000000',
   showCoordinates: true,
   coordinateFontSize: 16,
-  coordinateFont: 'Helvetica',
+  font: 'Helvetica',
   coordinateInset: 30,
   inset: 10,
 }
@@ -30,7 +31,7 @@ export interface RenderingProps {
   lineColor: string;
   showCoordinates: boolean;
   coordinateFontSize: number;
-  coordinateFont: string;
+  font: string;
   coordinateInset: number;
   inset: number;
   clipRegion?: ClipRegion;
@@ -181,6 +182,7 @@ export class BoardCanvas extends React.PureComponent<BoardProps, State> {
     this.renderCoordinates(ctx, style);
     this.renderStones(ctx, style);
     this.renderHover(ctx, style);
+    this.renderMarkups(ctx, style);
   }
 
   private renderBoard(ctx: CanvasRenderingContext2D, _: DerivedRenderStyle) {
@@ -267,7 +269,7 @@ export class BoardCanvas extends React.PureComponent<BoardProps, State> {
     const right = style.widthPixels - style.inset - style.coordinateInset / 2;
 
     ctx.fillStyle = '#000000';
-    ctx.font = `bold ${style.coordinateFontSize}px ${style.coordinateFont}`;
+    ctx.font = `bold ${style.coordinateFontSize}px ${style.font}`;
     ctx.globalAlpha = 1;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
@@ -304,6 +306,62 @@ export class BoardCanvas extends React.PureComponent<BoardProps, State> {
     }
   }
 
+  private renderMarkups(ctx: CanvasRenderingContext2D, style: DerivedRenderStyle) {
+    const currentBoardstate = this.props.goRecord.boardStates[this.props.editorState.currentBoardState];
+    for (const markup of currentBoardstate.markups) {
+      const { intersection } = markup;
+      if (hasMoveAtIntersection(currentBoardstate, intersection.x, intersection.y)) {
+        continue;
+      }
+      const state = this.props.goRecord.boardStates[this.props.editorState.currentBoardState].stones[intersection.y * this.props.goRecord.size + intersection.x];
+      let color: Color = state === 'black' ? 'white' : 'black';
+      let letter: string | undefined;
+      if (markup.type === 'letter') {
+        letter = (markup as Letter).letter;
+      }
+      this.renderShapeAnnotation(ctx, style, intersection.x, intersection.y, color, 1, markup.type, letter);
+    }
+  }
+
+  private renderHover(ctx: CanvasRenderingContext2D, style: DerivedRenderStyle) {
+    if (!this.mouseCoordinates) {
+      return;
+    }
+    
+    const { mode, action } = this.props.editorState;
+    if (mode === 'play' || mode === 'problem' || mode === 'solution') {
+      const state = this.props.goRecord.boardStates[this.props.editorState.currentBoardState].stones[this.mouseCoordinates.y * this.props.goRecord.size + this.mouseCoordinates.x];
+      if (state === 'empty') {
+        this.renderStone(ctx, style, this.mouseCoordinates.x, this.mouseCoordinates.y, this.props.editorState.playerToMove, 0.5);
+      }
+    } else if (mode === 'edit' || mode === 'review') {
+      if (action === 'play') {
+        const state = this.props.goRecord.boardStates[this.props.editorState.currentBoardState].stones[this.mouseCoordinates.y * this.props.goRecord.size + this.mouseCoordinates.x];
+        if (state === 'empty') {
+          this.renderStone(ctx, style, this.mouseCoordinates.x, this.mouseCoordinates.y, this.props.editorState.playerToMove, 0.5);
+        }
+      } else if (action === 'delete') {
+        
+      } else if (action === 'triangle') {
+
+      } else if (action === 'square') {
+
+      } else if (action === 'circle') {
+
+      } else if (action === 'letter') {
+
+      } else if (action === 'place-white' || action === 'place-black') {
+        if (mode !== 'edit') {
+          throw new Error('Placing stones can only be done in edit mode.');
+        }
+      }
+    }
+  }
+
+  ////////////////////////////
+  // Intersection Renderers //
+  ////////////////////////////
+  
   private renderStone(ctx: CanvasRenderingContext2D, style: DerivedRenderStyle, x: number, y: number, color: Color, opacity: number) {
     if (!this.blackStoneImage.loaded || !this.whiteStoneImage.loaded) {
       return;
@@ -321,18 +379,66 @@ export class BoardCanvas extends React.PureComponent<BoardProps, State> {
     ctx.drawImage(image, coordX - radius, coordY - radius, radius * 2, radius * 2);
   }
 
-  private renderHover(ctx: CanvasRenderingContext2D, style: DerivedRenderStyle) {
-    if (!this.mouseCoordinates) {
-      return;
+  private renderShapeAnnotation(ctx: CanvasRenderingContext2D, style: DerivedRenderStyle, x: number, y: number, color: Color, opacity: number, type: string, letter?: string) {
+    const coordX = style.fullInset + (x + 0.5 - style.finalClipRegion.left) * style.stoneSizePixels;
+    const coordY = style.fullInset + (y + 0.5 - style.finalClipRegion.top) * style.stoneSizePixels;
+    ctx.globalAlpha = opacity;
+    ctx.lineWidth = 2;
+    if (color === 'white') {
+      ctx.strokeStyle = '#FFFFFF';
+    } else {
+      ctx.strokeStyle = '#000000';
     }
-    
-    const { mode } = this.props.editorState;
-    if (mode === 'play' || mode === 'view' || mode === 'problem') {
-      const state = this.props.goRecord.boardStates[this.props.editorState.currentBoardState].stones[this.mouseCoordinates.y * this.props.goRecord.size + this.mouseCoordinates.x];
-      if (state === 'empty') {
-        this.renderStone(ctx, style, this.mouseCoordinates.x, this.mouseCoordinates.y, this.props.editorState.playerToMove, 0.5);
+    if (type === 'triangle') {
+      this.renderTriangle(ctx, coordX, coordY, style.stoneSizePixels * 0.35);
+    } else if (type === 'circle') {
+      this.renderCircle(ctx, coordX, coordY, style.stoneSizePixels * 0.3);
+    } else if (type === 'square') {
+      this.renderSquare(ctx, coordX, coordY, style.stoneSizePixels * 0.26);
+    } else if (type === 'letter' && letter) {
+      if (color === 'white') {
+        ctx.strokeStyle = '#000000';
+        ctx.fillStyle = '#FFFFFF';
+      } else {
+        ctx.strokeStyle = '#FFFFFF';
+        ctx.fillStyle = '#000000';
       }
+      this.renderLetter(ctx, coordX, coordY, `bold ${24}px ${style.font}`, letter);
     }
+  }
+
+  private renderTriangle(ctx: CanvasRenderingContext2D, x: number, y: number, r: number) {
+    ctx.beginPath();
+    ctx.moveTo(x, y - r);
+    ctx.lineTo(x + r / 1.22, y + r / 1.58);
+    ctx.lineTo(x - r / 1.22, y + r / 1.58);
+    ctx.closePath();
+    ctx.stroke();
+  }
+
+  private renderCircle(ctx: CanvasRenderingContext2D, x: number, y: number, r: number) {
+    ctx.beginPath();
+    ctx.arc(x, y, r, 0, 3.1415 * 2);
+    ctx.stroke();
+  }
+
+  private renderSquare(ctx: CanvasRenderingContext2D, x: number, y: number, r: number) {
+    ctx.beginPath();
+    ctx.moveTo(x - r, y - r);
+    ctx.lineTo(x + r, y - r);
+    ctx.lineTo(x + r, y + r);
+    ctx.lineTo(x - r, y + r);
+    ctx.closePath();
+    ctx.stroke();
+  }
+
+  private renderLetter(ctx: CanvasRenderingContext2D, x: number, y: number, font: string, letter: string) {
+    ctx.lineWidth = 0.8;
+    ctx.font = font;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(letter, x, y);
+    ctx.strokeText(letter, x, y);
   }
 
   /////////////////////

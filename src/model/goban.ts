@@ -11,17 +11,26 @@ export interface Intersection {
 
 export type GoStonesState = StoneState[];
 
-export interface Markup {
-  type: string;
+export type Markup = Triangle | Circle | Square | Letter;
+
+export interface Triangle {
+  type: 'triangle';
   intersection: Intersection;
 }
 
-export interface Triangle extends Markup {
-  type: 'triangle';
+export interface Circle {
+  type: 'circle';
+  intersection: Intersection;
 }
 
-export interface Letter extends Markup {
+export interface Square {
+  type: 'square';
+  intersection: Intersection;
+}
+
+export interface Letter {
   type: 'letter';
+  intersection: Intersection;
   letter: string;
 }
 
@@ -42,7 +51,7 @@ export interface ReverseMove {
 export interface BoardState {
   id: string;
   stones: GoStonesState;
-  markups: Markup[];
+  markups: Array<Markup>;
   text: string;
   moves: { [key: string]: GoMove };
   reverseMoves: { [key: string]: ReverseMove };

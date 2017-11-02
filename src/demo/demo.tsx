@@ -1,14 +1,9 @@
 import ReactDOM from 'react-dom';
 import React from 'react';
 import { BoardCanvas, RenderingProps } from '../component/canvas';
-import { emptyBoard, GoRecord } from '../model/goban';
+import { GoRecord } from '../model/goban';
 import { EditorState } from '../component/editorState';
-
-const size = 19;
-
-function i(x: number, y: number) {
-  return size * y + x;
-}
+import { demoRecord1 } from './records/demoRecord1';
 
 interface State {
   record: GoRecord;
@@ -20,15 +15,7 @@ class Demo extends React.PureComponent<{}, State> {
   constructor(props: {}) {
     super(props);
     
-    const record = emptyBoard(19, 'game');
-    // record.boardStates[record.initialBoardState].stones[i(1, 1)] = 'white';
-    // record.boardStates[record.initialBoardState].stones[i(1, 2)] = 'white';
-    // record.boardStates[record.initialBoardState].stones[i(1, 3)] = 'white';
-    // record.boardStates[record.initialBoardState].stones[i(0, 3)] = 'white';
-    // record.boardStates[record.initialBoardState].stones[i(3, 4)] = 'black';
-    // record.boardStates[record.initialBoardState].stones[i(4, 4)] = 'black';
-    // record.boardStates[record.initialBoardState].stones[i(5, 3)] = 'black';
-    // record.boardStates[record.initialBoardState].stones[i(6, 3)] = 'black';
+    const record = demoRecord1;
     
     this.state = {
       record,

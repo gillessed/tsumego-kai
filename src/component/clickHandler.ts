@@ -1,6 +1,6 @@
 import { GoRecord } from '../model/goban';
 import { EditorState } from './editorState';
-import { addMove } from '../model/accessors';
+import { addMove } from '../model/mutators';
 import { swapColor } from '../model/utils';
 
 export interface ClickResult {
