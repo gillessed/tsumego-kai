@@ -39,12 +39,21 @@ class Demo extends React.PureComponent<{}, State> {
 
   public render() {
     return (
-      <BoardCanvas
-        goRecord={this.state.record}
-        editorState={this.state.editorState}
-        renderingProps={this.state.renderingProps}
-        onUpdate={this.onUpdate}
-      />
+      <div style={{display: 'flex', flexDirection: 'column', height: '100%'}}>
+        <h1>TS Goban Demo</h1>
+        <div style={{display: 'flex', flexDirection: 'row', width: '100%', flexGrow: 1}}>
+          <BoardCanvas
+            goRecord={this.state.record}
+            editorState={this.state.editorState}
+            renderingProps={this.state.renderingProps}
+            onUpdate={this.onUpdate}
+            style={{flexGrow: 1}}
+          />
+          <div style={{display: 'flex', flexDirection: 'row'}}>
+            fooooo2
+          </div>
+        </div>
+      </div>
     );
   }
 
@@ -52,5 +61,9 @@ class Demo extends React.PureComponent<{}, State> {
     this.setState({ record, editorState });
   }
 }
+
+document.getElementsByTagName('body').item(0).style.width = '100%';
+document.getElementsByTagName('body').item(0).style.height = '100%';
+document.getElementsByTagName('body').item(0).style.overflow = 'hidden';
 
 ReactDOM.render(<Demo />, document.getElementById('main'));

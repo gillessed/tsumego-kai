@@ -1,4 +1,4 @@
-import { IIntersection } from '../../src/model/impl/intersection';
+import { IIntersection } from '../../app/goban/model/impl/intersection';
 
 describe('IIntersection Model Tests', () => {
   it('Should return the same value for the same coordinates', () => {

@@ -20,7 +20,7 @@ const babelLoader = {
 module.exports = {
   devtool: 'inline-source-map',
   entry: {
-    demo: './src/demo/demo.tsx',
+    demo: './app/goban/demo/demo.tsx',
   },
   output: {
     path: path.resolve(__dirname, 'dist'),
@@ -41,7 +41,7 @@ module.exports = {
     ]
   },
   plugins: [
-    new HtmlWebpackPlugin({template: './src/demo/index.html'}),
+    new HtmlWebpackPlugin({template: './app/goban/demo/index.html'}),
   ],
   resolve: {
     extensions: ['.ts', '.tsx', '.js'],

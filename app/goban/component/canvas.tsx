@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { CSSProperties } from 'react';
 import { GoRecord, Color, Letter } from '../model/goban';
 import { ImageAsset } from './imageAsset';
 import { EditorState } from './editorState';
@@ -51,6 +51,7 @@ export interface BoardProps {
   editorState: EditorState;
   renderingProps?: Partial<RenderingProps>;
   onUpdate?: (newRecord: GoRecord, newEditorState: EditorState) => void;
+  style?: CSSProperties;
 }
 
 interface State {
@@ -108,8 +109,7 @@ export class BoardCanvas extends React.PureComponent<BoardProps, State> {
 
   public render() {
     const style = this.getRenderStyle(this.props);
-    let divWidth = '100%';
-    let divHeight = '100%';
+    let hardcodedStyle: CSSProperties = { ...this.props.style };
     if (style.fitToStoneSize !== undefined) {
       let clipRegion = {
         top: 0,
@@ -121,8 +121,11 @@ export class BoardCanvas extends React.PureComponent<BoardProps, State> {
         clipRegion = style.clipRegion;
       }
       const inset = style.inset + style.coordinateInset;
-      divWidth = `${(clipRegion.right - clipRegion.left + 1) * style.fitToStoneSize + inset * 2}px`;
-      divHeight = `${(clipRegion.bottom - clipRegion.top + 1) * style.fitToStoneSize + inset * 2}px`;
+      hardcodedStyle = {
+        ...hardcodedStyle,
+        width: `${(clipRegion.right - clipRegion.left + 1) * style.fitToStoneSize + inset * 2}px`,
+        height: `${(clipRegion.bottom - clipRegion.top + 1) * style.fitToStoneSize + inset * 2}px`,
+      };
     }
 
     return (
@@ -131,7 +134,7 @@ export class BoardCanvas extends React.PureComponent<BoardProps, State> {
           this.div = element;
           this.forceUpdate();
         }
-      }} style={{ width: divWidth, height: divHeight }}>
+      }} style={hardcodedStyle}>
         {this.renderCanvasElement()}
       </div>
     );
@@ -499,22 +502,24 @@ export class BoardCanvas extends React.PureComponent<BoardProps, State> {
 
   private computeCanvasSize() {
     const style = this.getRenderStyle(this.props);
+    const divWidth = this.div.clientWidth;
+    const divHeight = this.div.clientHeight;
     if (style.fitToStoneSize === undefined) {
       const finalClipRegion = style.clipRegion || { top: 0, bottom: this.props.goRecord.size - 1, left: 0, right: this.props.goRecord.size - 1 };
       const finalInset = style.inset + (style.showCoordinates ? style.coordinateInset : 0);
-      const stoneSizeForWidth = (this.div.clientWidth - 2 * finalInset) / (finalClipRegion.right - finalClipRegion.left + 1);
+      const stoneSizeForWidth = (divWidth - 2 * finalInset) / (finalClipRegion.right - finalClipRegion.left + 1);
       const heightForSize = 2 * finalInset + stoneSizeForWidth * (finalClipRegion.bottom - finalClipRegion.top + 1);
-      if (heightForSize <= this.div.clientHeight) {
-        this.canvasWidth = this.div.clientWidth;
+      if (heightForSize <= divHeight) {
+        this.canvasWidth = divWidth;
         this.canvasHeight = heightForSize;
       } else {
-        this.canvasHeight = this.div.clientHeight;
-        const stoneSizeForHeight = (this.div.clientHeight - 2 * finalInset) / (finalClipRegion.bottom - finalClipRegion.top + 1);
+        this.canvasHeight = divHeight;
+        const stoneSizeForHeight = (divHeight - 2 * finalInset) / (finalClipRegion.bottom - finalClipRegion.top + 1);
         this.canvasWidth = 2 * finalInset + stoneSizeForHeight * (finalClipRegion.right - finalClipRegion.left + 1);
       }
     } else {
-      this.canvasWidth = this.div.clientWidth;
-      this.canvasHeight = this.div.clientHeight;
+      this.canvasWidth = divWidth;
+      this.canvasHeight = divHeight;
     }
   }
 }

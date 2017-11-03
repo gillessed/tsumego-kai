@@ -1,12 +1,12 @@
 {
-  "name": "ts-goban",
+  "name": "tsumego-kai",
   "version": "1.0.0",
-  "description": "Embeddable javascript go board.",
+  "description": "Go problem website source.",
   "author": "gillessed",
   "license": "MIT",
   "scripts": {
     "jest": "node ./node_modules/jest/bin/jest.js",
-    "start:dev": "node ./node_modules/webpack-dev-server/bin/webpack-dev-server.js"
+    "start:demo": "node ./node_modules/webpack-dev-server/bin/webpack-dev-server.js --config app/goban/demo/webpack.config.js"
   },
   "dependencies": {
     "@types/react": "^16.0.18",
