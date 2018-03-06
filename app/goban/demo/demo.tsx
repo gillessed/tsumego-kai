@@ -29,9 +29,9 @@ class Demo extends React.PureComponent<{}, State> {
         showCoordinates: true,
         clipRegion: {
           top: 0,
-          bottom: 18,
+          bottom: 10,
           left: 0,
-          right: 18,
+          right: 10,
         },
       },
     };
@@ -47,11 +47,8 @@ class Demo extends React.PureComponent<{}, State> {
             editorState={this.state.editorState}
             renderingProps={this.state.renderingProps}
             onUpdate={this.onUpdate}
-            style={{flexGrow: 1}}
+            style={{flexGrow: 1, display: 'flex', justifyContent: 'center', alignItems: 'center'}}
           />
-          <div style={{display: 'flex', flexDirection: 'row'}}>
-            fooooo2
-          </div>
         </div>
       </div>
     );

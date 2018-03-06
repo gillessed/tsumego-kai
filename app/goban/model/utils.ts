@@ -2,28 +2,28 @@ import uuid from 'uuid';
 import { Color } from './goban';
 
 export function arrayEquals<T>(a1: T[], a2: T[]): boolean {
-  if (!a1 || !a2) {
-    return false;
-  }
-  if (a1.length != a2.length) {
-    return false;
-  }
-  for (let i = 0; i < a1.length; i++) {
-    if (a1[i] !== a2[i]) {
-      return false;
+    if (!a1 || !a2) {
+        return false;
     }
-  }
-  return true;
+    if (a1.length != a2.length) {
+        return false;
+    }
+    for (let i = 0; i < a1.length; i++) {
+        if (a1[i] !== a2[i]) {
+            return false;
+        }
+    }
+    return true;
 }
 
 export function randomString(): string {
-  return uuid.v4();
+    return uuid.v4();
 }
 
 export function swapColor(color: Color): Color {
-  if (color === 'black') {
-    return 'white';
-  } else {
-    return 'black';
-  }
+    if (color === 'black') {
+        return 'white';
+    } else {
+        return 'black';
+    }
 }

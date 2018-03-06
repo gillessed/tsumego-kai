@@ -9,16 +9,18 @@
     "start:demo": "node ./node_modules/webpack-dev-server/bin/webpack-dev-server.js --config app/goban/demo/webpack.config.js"
   },
   "dependencies": {
-    "@types/react": "^16.0.18",
-    "@types/react-dom": "^16.0.2",
-    "@types/uuid": "^3.4.3",
     "react": "^16.0.0",
     "react-dom": "^16.0.0",
+    "react-redux": "^5.0.7",
+    "redux": "^3.7.2",
     "reselect": "^3.0.1",
     "uuid": "^3.1.0"
   },
   "devDependencies": {
     "@types/jest": "^21.1.5",
+    "@types/react": "^16.0.18",
+    "@types/react-dom": "^16.0.2",
+    "@types/uuid": "^3.4.3",
     "babel": "^6.23.0",
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.2",

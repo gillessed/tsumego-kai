@@ -5,9 +5,9 @@ export type ReviewAction = 'play' | 'delete' | 'triangle' | 'square' | 'circle' 
 export type EditAction = ReviewAction | 'place-white' | 'place-black';
 
 export interface EditorState {
-  mode: EditorMode;
-  action?: EditAction;
-  moveStack: string[];
-  currentBoardState: string;
-  playerToMove: Color;
+    mode: EditorMode;
+    action?: EditAction;
+    moveStack: string[];
+    currentBoardState: string;
+    playerToMove: Color;
 }
