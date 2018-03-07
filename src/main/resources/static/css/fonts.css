@@ -1,0 +1,20 @@
+@font-face {
+    font-family: Bitwise;
+    src: url(/application/static/fonts/Bitwise.ttf);
+}
+@font-face {
+    font-family: ComputerPeople;
+    src: url(/application/static/fonts/ComputerPeople.ttf);
+}
+@font-face {
+    font-family: DataLatin;
+    src: url(/application/static/fonts/DataLatin.ttf);
+}
+@font-face {
+    font-family: ParkTechCG;
+    src: url(/application/static/fonts/ParkTechCG.ttf);
+}
+@font-face {
+    font-family: ParkTechCGLight;
+    src: url(/application/static/fonts/ParkTechCGLight.ttf);
+}

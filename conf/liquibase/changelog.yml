@@ -1,0 +1,75 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: gillessed
+      changes:
+        - createTable:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: login
+                  type: varchar
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: first_name
+                  type: varchar
+                  constraints:
+                    nullable: false
+              - column:
+                  name: last_name
+                  type: boolean
+                  constraints:
+                    nullable: false
+              - column:
+                  name: rank
+                  type: smallint
+                  constraints:
+                    nullable: false
+        - createTable:
+            tableName: mobile_drones
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: server_id
+                  type: int
+                  constraints:
+                    foreignKeyName: fk_server_id
+                    reference: mobile_server(id)
+                    nullable: false
+              - column:
+                  name: username
+                  type: varchar
+                  constraints:
+                    nullable: false
+              - column:
+                  name: password
+                  type: varchar
+                  constraints:
+                    nullable: false
+              - column:
+                  name: behaviour
+                  type: varchar
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseColumnNames: server_id
+            baseTableName: mobile_drones
+            constraintName: fk_server_id
+            onDelete: CASCADE
+            referencedColumnNames: id
+            referencedTableName: mobile_servers

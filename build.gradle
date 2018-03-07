@@ -1,0 +1,45 @@
+plugins {
+    id 'java'
+    id 'maven'
+    id 'application'
+    id 'distribution'
+    id 'idea'
+    id 'org.inferred.processors' version '1.2.15'
+}
+
+dependencies {
+    compile "io.dropwizard:dropwizard-core:${dropwizardVersion}"
+    compile "io.dropwizard:dropwizard-assets:${dropwizardVersion}"
+    compile "com.liveperson:dropwizard-websockets:${dropwizardWebsocketsVersion}"
+    compile "io.dropwizard:dropwizard-jdbi:${dropwizardVersion}"
+    runtime "postgresql:postgresql:${postgresDriverVersion}"
+    processor "org.immutables:value:${immutablesVersion}"
+}
+
+repositories {
+    mavenCentral()
+}
+
+mainClassName = "com.mainframebreak.application.TsumegoKaiMain"
+
+task(buildTypescript, type: Exec) {
+    workingDir './app'
+    commandLine 'webpack'
+}
+
+task(copyAssets, type: Copy) {
+    from './app/dist'
+    into "${sourceSets.main.output.resourcesDir}/static/"
+    include '**/*'
+    filter { line -> line.replaceAll('bundle.js', '/application/static/bundle.js') }
+}
+
+copyAssets.dependsOn buildTypescript
+distTar.dependsOn copyAssets
+
+distTar {
+    into(project.name) {
+        from '.'
+        include 'conf/*'
+    }
+}

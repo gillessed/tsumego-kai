@@ -1,0 +1,14 @@
+version: "2"
+
+services:
+  # TODO: switch to sls-postgresql...
+  postgresql:
+    container_name: tsumego-kai-postgres
+    image: postgres:9.6
+    ports:
+      - "5444:5432"
+    environment:
+      - POSTGRES_USER=gillessed
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=tsumego_kai
+

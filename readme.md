@@ -1,5 +1,5 @@
 ## Tsumego Kai
 
-Typescript React go board component that can be easily integrated with redux. Can be used to show games, problems and more.
+Go website to do problems, game reviews, and more.
 
 ## More coming soon...

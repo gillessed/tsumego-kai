@@ -1,6 +1,25 @@
-node_modules
-coverage
+# Java Stuff
+generated_src
+out
 build
-dist
 
+# Idea Studd
+*.iml
+*.ipr
+*.iws
+
+# Gradle
+gradle-*
+.gradle
+
+# Node
+app/node_modules
+app/coverage
+app/build
+app/dist
+
+# Logs
+log
+
+# VS Code
 .vscode
