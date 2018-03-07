@@ -1,66 +1,48 @@
-import ReactDOM from 'react-dom';
 import React from 'react';
-import { BoardCanvas, RenderingProps } from '../component/canvas';
 import { GoRecord } from '../model/goban';
 import { EditorState } from '../component/editorState';
-import { demoRecord1 } from './records/demoRecord1';
 
-interface State {
+interface Props {
     record: GoRecord;
     editorState: EditorState;
-    renderingProps: Partial<RenderingProps>;
+    onUpdate: (record: GoRecord, editorState: EditorState) => void;
 }
 
-class ControlPanel extends React.PureComponent<{}, State> {
-    constructor(props: {}) {
-        super(props);
-
-        const record = demoRecord1;
-
-        this.state = {
-            record,
-            editorState: {
-                mode: 'play',
-                moveStack: [],
-                currentBoardState: record.initialBoardState,
-                playerToMove: 'black',
-            },
-            renderingProps: {
-                showCoordinates: true,
-                clipRegion: {
-                    top: 0,
-                    bottom: 10,
-                    left: 0,
-                    right: 10,
-                },
-            },
-        };
-    }
-
+export class ControlPanel extends React.PureComponent<Props, {}> {
     public render() {
         return (
-            <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-                <h1>TS Goban Demo</h1>
-                <div style={{ display: 'flex', flexDirection: 'row', width: '100%', flexGrow: 1 }}>
-                    <BoardCanvas
-                        goRecord={this.state.record}
-                        editorState={this.state.editorState}
-                        renderingProps={this.state.renderingProps}
-                        onUpdate={this.onUpdate}
-                        style={{ flexGrow: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}
-                    />
+            <div style={{ display: 'flex', flexDirection: 'column', paddingRight: 50, maxWidth: 300 }}>
+                <h1>Controls</h1>
+                <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
+                    <span style={{ width: 100, height: 30, }}>Mode:</span>
+                    <span style={{ width: 200 }}>
+                        <select value={this.props.editorState.mode}>
+                            <option value='view'>View</option>
+                            <option value='play'>Play</option>
+                            <option value='review'>Review</option>
+                            <option value='edit'>Edit</option>
+                            <option value='problem'>Problem</option>
+                            <option value='solution'>Solution</option>
+                        </select>
+                    </span>
+
+                    <span style={{ width: 100 }}>Action:</span>
+                    <span style={{ width: 200 }}>
+                        <select value={this.props.editorState.action}>
+                            <option value='play'>Play</option>
+                            <option value='erase'>Erase</option>
+                            <option value='triangle'>Triangle</option>
+                            <option value='square'>Square</option>
+                            <option value='circle'>Circle</option>
+                            <option value='letter'>Letter</option>
+
+                            <option value='place-white'>Place White</option>
+                            <option value='place-black'>Place Black</option>
+                            <option value='delete'>Delete</option>
+                        </select>
+                    </span>
                 </div>
             </div>
         );
     }
-
-    private onUpdate = (record: GoRecord, editorState: EditorState) => {
-        this.setState({ record, editorState });
-    }
 }
-
-document.getElementsByTagName('body').item(0).style.width = '100%';
-document.getElementsByTagName('body').item(0).style.height = '100%';
-document.getElementsByTagName('body').item(0).style.overflow = 'hidden';
-
-ReactDOM.render(<Demo />, document.getElementById('main'));

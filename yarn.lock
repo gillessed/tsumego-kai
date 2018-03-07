@@ -17,6 +17,13 @@
     "@types/node" "*"
     "@types/react" "*"
 
+"@types/react-redux@^5.0.15":
+  version "5.0.15"
+  resolved "https://artifactory.palantir.build:443/artifactory/api/npm/all-npm/@types/react-redux/-/react-redux-5.0.15.tgz#420af2c702ac7aab321cf45bb7d3cb2503dd24d5"
+  dependencies:
+    "@types/react" "*"
+    redux "^3.6.0"
+
 "@types/react@*", "@types/react@^16.0.18":
   version "16.0.40"
   resolved "https://artifactory.palantir.build:443/artifactory/api/npm/all-npm/@types/react/-/react-16.0.40.tgz#caabc2296886f40b67f6fc80f0f3464476461df9"
@@ -4349,7 +4356,13 @@ redent@^1.0.0:
     indent-string "^2.1.0"
     strip-indent "^1.0.1"
 
-redux@^3.7.2:
+redoodle@^2.3.2:
+  version "2.3.2"
+  resolved "https://artifactory.palantir.build:443/artifactory/api/npm/all-npm/redoodle/-/redoodle-2.3.2.tgz#305cdcb496c0049f11120cb996073427a6a904b6"
+  dependencies:
+    tslib "^1.6.1"
+
+redux@^3.6.0, redux@^3.7.2:
   version "3.7.2"
   resolved "https://artifactory.palantir.build:443/artifactory/api/npm/all-npm/redux/-/redux-3.7.2.tgz#06b73123215901d25d065be342eb026bc1c8537b"
   dependencies:
@@ -5160,6 +5173,10 @@ ts-loader@^3.0.5:
     loader-utils "^1.0.2"
     micromatch "^3.1.4"
     semver "^5.0.1"
+
+tslib@^1.6.1:
+  version "1.9.0"
+  resolved "https://artifactory.palantir.build:443/artifactory/api/npm/all-npm/tslib/-/tslib-1.9.0.tgz#e37a86fda8cbbaf23a057f473c9f4dc64e5fc2e8"
 
 tty-browserify@0.0.0:
   version "0.0.0"

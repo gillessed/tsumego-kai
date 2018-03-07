@@ -47,7 +47,7 @@ export type DerivedRenderStyle = RenderingProps & {
 };
 
 export interface BoardProps {
-    goRecord: GoRecord;
+    record: GoRecord;
     editorState: EditorState;
     renderingProps?: Partial<RenderingProps>;
     onUpdate?: (newRecord: GoRecord, newEditorState: EditorState) => void;
@@ -113,9 +113,9 @@ export class BoardCanvas extends React.PureComponent<BoardProps, State> {
         if (style.fitToStoneSize !== undefined) {
             let clipRegion = {
                 top: 0,
-                bottom: this.props.goRecord.size - 1,
+                bottom: this.props.record.size - 1,
                 left: 0,
-                right: this.props.goRecord.size - 1,
+                right: this.props.record.size - 1,
             };
             if (style.clipRegion) {
                 clipRegion = style.clipRegion;
@@ -197,9 +197,9 @@ export class BoardCanvas extends React.PureComponent<BoardProps, State> {
 
     private renderLines(ctx: CanvasRenderingContext2D, style: DerivedRenderStyle) {
         const horizontalLineStart = style.fullInset + (style.finalClipRegion.left === 0 ? style.stoneSizePixels / 2 : 0);
-        const horizontalLineEnd = style.widthPixels - style.fullInset - (style.finalClipRegion.right === this.props.goRecord.size - 1 ? style.stoneSizePixels / 2 : 0);
+        const horizontalLineEnd = style.widthPixels - style.fullInset - (style.finalClipRegion.right === this.props.record.size - 1 ? style.stoneSizePixels / 2 : 0);
         const verticalLineStart = style.fullInset + (style.finalClipRegion.top === 0 ? style.stoneSizePixels / 2 : 0);
-        const verticalLineEnd = style.heightPixels - style.fullInset - (style.finalClipRegion.bottom === this.props.goRecord.size - 1 ? style.stoneSizePixels / 2 : 0);
+        const verticalLineEnd = style.heightPixels - style.fullInset - (style.finalClipRegion.bottom === this.props.record.size - 1 ? style.stoneSizePixels / 2 : 0);
 
         ctx.globalAlpha = 1;
         ctx.strokeStyle = style.lineColor;
@@ -221,7 +221,7 @@ export class BoardCanvas extends React.PureComponent<BoardProps, State> {
     private renderStarPoints(ctx: CanvasRenderingContext2D, style: DerivedRenderStyle) {
         ctx.fillStyle = style.lineColor;
         ctx.globalAlpha = 1;
-        const size = this.props.goRecord.size;
+        const size = this.props.record.size;
         let starPoints: [number, number][] = [];
         if (size % 2 == 1) {
             if (size == 5) {
@@ -300,8 +300,8 @@ export class BoardCanvas extends React.PureComponent<BoardProps, State> {
     private renderStones(ctx: CanvasRenderingContext2D, style: DerivedRenderStyle) {
         for (let x = style.finalClipRegion.left; x <= style.finalClipRegion.right; x++) {
             for (let y = style.finalClipRegion.top; y <= style.finalClipRegion.bottom; y++) {
-                const coord = this.props.goRecord.size * y + x;
-                const stoneColor = this.props.goRecord.boardStates[this.props.editorState.currentBoardState].stones[coord];
+                const coord = this.props.record.size * y + x;
+                const stoneColor = this.props.record.boardStates[this.props.editorState.currentBoardState].stones[coord];
                 if (stoneColor === 'white' || stoneColor === 'black') {
                     this.renderStone(ctx, style, x, y, stoneColor, 1);
                 }
@@ -310,7 +310,7 @@ export class BoardCanvas extends React.PureComponent<BoardProps, State> {
     }
 
     private renderMarkups(ctx: CanvasRenderingContext2D, style: DerivedRenderStyle) {
-        const currentBoardstate = this.props.goRecord.boardStates[this.props.editorState.currentBoardState];
+        const currentBoardstate = this.props.record.boardStates[this.props.editorState.currentBoardState];
         for (const markup of currentBoardstate.markups) {
             const { intersection } = markup;
             if (intersection.x < style.finalClipRegion.left || intersection.x > style.finalClipRegion.right
@@ -320,7 +320,7 @@ export class BoardCanvas extends React.PureComponent<BoardProps, State> {
             if (hasMoveAtIntersection(currentBoardstate, intersection.x, intersection.y)) {
                 continue;
             }
-            const state = this.props.goRecord.boardStates[this.props.editorState.currentBoardState].stones[intersection.y * this.props.goRecord.size + intersection.x];
+            const state = this.props.record.boardStates[this.props.editorState.currentBoardState].stones[intersection.y * this.props.record.size + intersection.x];
             let color: Color = state === 'black' ? 'white' : 'black';
             let letter: string | undefined;
             if (markup.type === 'letter') {
@@ -337,13 +337,13 @@ export class BoardCanvas extends React.PureComponent<BoardProps, State> {
 
         const { mode, action } = this.props.editorState;
         if (mode === 'play' || mode === 'problem' || mode === 'solution') {
-            const state = this.props.goRecord.boardStates[this.props.editorState.currentBoardState].stones[this.mouseCoordinates.y * this.props.goRecord.size + this.mouseCoordinates.x];
+            const state = this.props.record.boardStates[this.props.editorState.currentBoardState].stones[this.mouseCoordinates.y * this.props.record.size + this.mouseCoordinates.x];
             if (state === 'empty') {
                 this.renderStone(ctx, style, this.mouseCoordinates.x, this.mouseCoordinates.y, this.props.editorState.playerToMove, 0.5);
             }
         } else if (mode === 'edit' || mode === 'review') {
             if (action === 'play') {
-                const state = this.props.goRecord.boardStates[this.props.editorState.currentBoardState].stones[this.mouseCoordinates.y * this.props.goRecord.size + this.mouseCoordinates.x];
+                const state = this.props.record.boardStates[this.props.editorState.currentBoardState].stones[this.mouseCoordinates.y * this.props.record.size + this.mouseCoordinates.x];
                 if (state === 'empty') {
                     this.renderStone(ctx, style, this.mouseCoordinates.x, this.mouseCoordinates.y, this.props.editorState.playerToMove, 0.5);
                 }
@@ -467,7 +467,7 @@ export class BoardCanvas extends React.PureComponent<BoardProps, State> {
 
     private onMouseUp = () => {
         if (this.mouseCoordinates && this.props.onUpdate) {
-            const result = clickHandler(this.props.goRecord, this.props.editorState, this.mouseCoordinates.x, this.mouseCoordinates.y);
+            const result = clickHandler(this.props.record, this.props.editorState, this.mouseCoordinates.x, this.mouseCoordinates.y);
             if (result) {
                 this.props.onUpdate(result.record, result.editorState);
             }
@@ -490,7 +490,7 @@ export class BoardCanvas extends React.PureComponent<BoardProps, State> {
     private getDerivedRenderStyle: (props: BoardProps) => DerivedRenderStyle = (props: BoardProps) => {
         const style = this.getRenderStyle(props);
         const fullInset = style.inset + (style.showCoordinates ? style.coordinateInset : 0);
-        const clipRegion = style.clipRegion || { top: 0, bottom: props.goRecord.size - 1, left: 0, right: props.goRecord.size - 1 };
+        const clipRegion = style.clipRegion || { top: 0, bottom: props.record.size - 1, left: 0, right: props.record.size - 1 };
         const widthPixels = this.canvas.width;
         const heightPixels = this.canvas.height;
         const stoneSizePixels = style.fitToStoneSize || (widthPixels - fullInset * 2) / (clipRegion.right - clipRegion.left + 1);
@@ -509,7 +509,7 @@ export class BoardCanvas extends React.PureComponent<BoardProps, State> {
         const divWidth = this.div.clientWidth;
         const divHeight = this.div.clientHeight;
         if (style.fitToStoneSize === undefined) {
-            const finalClipRegion = style.clipRegion || { top: 0, bottom: this.props.goRecord.size - 1, left: 0, right: this.props.goRecord.size - 1 };
+            const finalClipRegion = style.clipRegion || { top: 0, bottom: this.props.record.size - 1, left: 0, right: this.props.record.size - 1 };
             const finalInset = style.inset + (style.showCoordinates ? style.coordinateInset : 0);
             const stoneSizeForWidth = (divWidth - 2 * finalInset) / (finalClipRegion.right - finalClipRegion.left + 1);
             const heightForSize = 2 * finalInset + stoneSizeForWidth * (finalClipRegion.bottom - finalClipRegion.top + 1);
