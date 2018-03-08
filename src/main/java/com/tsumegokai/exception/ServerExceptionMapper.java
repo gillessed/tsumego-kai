@@ -1,6 +1,6 @@
-package com.mainframebreak.exception;
+package com.tsumegokai.exception;
 
-import com.mainframebreak.application.ErrorType;
+import com.tsumegokai.application.ErrorType;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;

@@ -27,7 +27,7 @@ database:
   driverClass: org.postgresql.Driver
   user: gillessed
   password: admin
-  url: jdbc:postgresql://localhost:5444
+  url: jdbc:postgresql://localhost:5444/tsumego_kai
   properties:
     charSet: UTF-8
   maxWaitForConnection: 1s
@@ -37,3 +37,5 @@ database:
   checkConnectionWhileIdle: false
   evictionInterval: 10s
   minIdleTime: 1 minute
+
+liquibase: conf/liquibase/changelog.yml

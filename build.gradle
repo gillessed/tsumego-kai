@@ -10,8 +10,10 @@ plugins {
 dependencies {
     compile "io.dropwizard:dropwizard-core:${dropwizardVersion}"
     compile "io.dropwizard:dropwizard-assets:${dropwizardVersion}"
+    compile "com.hubspot.dropwizard:dropwizard-guice:${dropwizardGuiceVersion}"
     compile "com.liveperson:dropwizard-websockets:${dropwizardWebsocketsVersion}"
     compile "io.dropwizard:dropwizard-jdbi:${dropwizardVersion}"
+    compile "org.liquibase:liquibase-core:${liquibaseVersion}"
     runtime "postgresql:postgresql:${postgresDriverVersion}"
     processor "org.immutables:value:${immutablesVersion}"
 }

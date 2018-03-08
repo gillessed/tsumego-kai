@@ -8,7 +8,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: id
-                  type: int
+                  type: bigint
                   autoIncrement: true
                   constraints:
                     primaryKey: true
@@ -35,41 +35,165 @@ databaseChangeLog:
                   constraints:
                     nullable: false
         - createTable:
-            tableName: mobile_drones
+            tableName: roles
+            columns:
+              - column:
+                  name: user
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_version_record
+                    references: records (id)
+                    deleteCascade: true
+              - column:
+                  name: role
+                  type: shortint
+        - createTable:
+            tableName: tokens
+            columns:
+              - column:
+                  name: user
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_version_record
+                    references: records (id)
+                    deleteCascade: true
+              - column:
+                  name: value
+                  type: varchar
+                  primaryKey: true
+              - column:
+                  name: timestamp
+                  type: timestamp
+        - createTable:
+            tableName: records
             columns:
               - column:
                   name: id
-                  type: int
+                  type: bigint
                   autoIncrement: true
                   constraints:
                     primaryKey: true
                     nullable: false
               - column:
-                  name: server_id
-                  type: int
+                  name: user
+                  type: bigint
                   constraints:
-                    foreignKeyName: fk_server_id
-                    reference: mobile_server(id)
+                    nullable: false
+                    foreignKeyName: fk_record_user
+                    references: users (id)
+              - column:
+                  name: collection
+                  type: bigint
+                  constraints:
+                    foreignKeyName: fk_record_collection
+                    references: collections (id)
+              - column:
+                  name: type
+                  type: shortint
+                  constraints:
                     nullable: false
               - column:
-                  name: username
+                  name: rank
+                  type: smallint
+              - column:
+                  name: player_black
+                  type: varchar
+              - column:
+                  name: player_white
+                  type: varchar
+        - createTable:
+            tableName: versions
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: record
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_version_record
+                    references: records (id)
+                    deleteCascade: true
+              - column:
+                  name: serialized_record
+                  type: varchar
+        - createTable:
+            tableName: collections
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
                   type: varchar
                   constraints:
                     nullable: false
               - column:
-                  name: password
-                  type: varchar
+                  name: public
+                  type: boolean
                   constraints:
+                    nullable: false
+        - createTable:
+            tableName: tags
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
                     nullable: false
               - column:
-                  name: behaviour
+                  name: name
                   type: varchar
                   constraints:
                     nullable: false
-        - addForeignKeyConstraint:
-            baseColumnNames: server_id
-            baseTableName: mobile_drones
-            constraintName: fk_server_id
-            onDelete: CASCADE
-            referencedColumnNames: id
-            referencedTableName: mobile_servers
+        - createTable:
+            tableName: record_tags
+            columns:
+              - column:
+                  name: record
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_tag_record
+                    references: records (id)
+                    deleteCascade: true
+              - column:
+                  name: tag
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_tag_id
+                    references: tags (id)
+                    deleteCascade: true
+        - createTable:
+            tableName: collection_tags
+            columns:
+              - column:
+                  name: collection
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_tag_collection
+                    references: collections (id)
+                    deleteCascade: true
+              - column:
+                  name: tag
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_tag_id
+                    references: tags (id)
+                    deleteCascade: true

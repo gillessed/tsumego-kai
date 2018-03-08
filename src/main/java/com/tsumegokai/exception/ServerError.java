@@ -1,9 +1,9 @@
-package com.mainframebreak.exception;
+package com.tsumegokai.exception;
 
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.mainframebreak.application.ErrorType;
+import com.tsumegokai.application.ErrorType;
 import org.immutables.value.Value;
 
 @Value.Immutable

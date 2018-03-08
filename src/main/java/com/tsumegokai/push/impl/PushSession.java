@@ -1,4 +1,4 @@
-package com.mainframebreak.push.impl;
+package com.tsumegokai.push.impl;
 
 import javax.websocket.Session;
 

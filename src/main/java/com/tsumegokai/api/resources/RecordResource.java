@@ -1,4 +1,6 @@
-package com.mainframebreak.api;
+package com.tsumegokai.api.resources;
+
+import com.tsumegokai.api.Record;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;

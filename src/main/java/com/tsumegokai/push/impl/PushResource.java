@@ -1,11 +1,11 @@
-package com.mainframebreak.push.impl;
+package com.tsumegokai.push.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
-import com.mainframebreak.push.PushService;
-import com.mainframebreak.push.PushUpdate;
+import com.tsumegokai.push.PushService;
+import com.tsumegokai.push.PushUpdate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

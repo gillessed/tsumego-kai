@@ -1,8 +1,8 @@
-package com.mainframebreak.application;
+package com.tsumegokai.application;
 
-import com.mainframebreak.dao.Dao;
-import com.mainframebreak.dao.impl.DaoImpl;
-import com.mainframebreak.push.PushService;
+import com.tsumegokai.dao.Dao;
+import com.tsumegokai.dao.impl.DaoImpl;
+import com.tsumegokai.push.PushService;
 import io.dropwizard.Configuration;
 import io.dropwizard.setup.Environment;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;

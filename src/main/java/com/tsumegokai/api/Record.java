@@ -1,8 +1,8 @@
-package com.mainframebreak.api;
+package com.tsumegokai.api;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.mainframebreak.push.PushUpdate;
+import com.tsumegokai.push.PushUpdate;
 import org.immutables.value.Value;
 
 
@@ -13,6 +13,9 @@ public interface Record extends PushUpdate {
     String getId();
     String getDateSubmitted();
     int getVersion();
+    int getPlayerWhite();
+    int getPlayerBlack();
+
 
     class Builder extends ImmutableRecord.Builder {}
 }

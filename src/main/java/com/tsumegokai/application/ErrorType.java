@@ -1,4 +1,4 @@
-package com.mainframebreak.application;
+package com.tsumegokai.application;
 
 public enum ErrorType {
     SERVER_ERROR;

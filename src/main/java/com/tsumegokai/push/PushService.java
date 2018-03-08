@@ -1,4 +1,4 @@
-package com.mainframebreak.push;
+package com.tsumegokai.push;
 
 import javax.websocket.CloseReason;
 import javax.websocket.Session;

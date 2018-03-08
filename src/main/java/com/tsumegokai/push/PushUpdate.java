@@ -1,4 +1,4 @@
-package com.mainframebreak.push;
+package com.tsumegokai.push;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;

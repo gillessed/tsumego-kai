@@ -1,4 +1,4 @@
-package com.mainframebreak.application;
+package com.tsumegokai.application;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.dropwizard.Configuration;
@@ -15,5 +15,14 @@ public class TsumegoKaiConfiguration extends Configuration {
 
     public DataSourceFactory getDataSourceFactory() {
         return database;
+    }
+
+    @Valid
+    @NotNull
+    @JsonProperty
+    private String liquibase;
+
+    public String getLiquibase() {
+        return liquibase;
     }
 }
