@@ -1,13 +1,12 @@
 package com.tsumegokai.application;
 
-import com.hubspot.dropwizard.guice.GuiceBundle;
-import com.tsumegokai.application.modules.ApplicationModule;
-import com.tsumegokai.application.modules.DBIModule;
+import com.tsumegokai.api.impl.RecordResourceImpl;
 import com.tsumegokai.exception.ServerExceptionMapper;
 import com.tsumegokai.push.PushService;
 import com.tsumegokai.push.impl.PushResource;
 import io.dropwizard.Application;
 import io.dropwizard.assets.AssetsBundle;
+import io.dropwizard.jdbi.DBIFactory;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import io.dropwizard.websockets.WebsocketBundle;
@@ -33,7 +32,6 @@ import java.sql.SQLException;
 
 public class TsumegoKaiMain extends Application<TsumegoKaiConfiguration> {
     private static PushService pushService;
-    private GuiceBundle<TsumegoKaiConfiguration> guiceBundle;
 
     public static void main(String[] args) throws Exception {
         new TsumegoKaiMain().run(args);
@@ -43,23 +41,24 @@ public class TsumegoKaiMain extends Application<TsumegoKaiConfiguration> {
     public void initialize(Bootstrap<TsumegoKaiConfiguration> bootstrap) {
         pushService = new PushResource();
 
-        guiceBundle = GuiceBundle.<TsumegoKaiConfiguration>newBuilder()
-                .addModule(new ApplicationModule())
-                .addModule(new DBIModule())
-                .setConfigClass(TsumegoKaiConfiguration.class)
-                .build();
-
-        bootstrap.addBundle(guiceBundle);
         bootstrap.addBundle(new AssetsBundle("/static", "/static", "index.html"));
         bootstrap.addBundle(new WebsocketBundle(WebsocketService.class));
     }
 
     @Override
     public void run(TsumegoKaiConfiguration configuration, Environment environment) throws Exception {
-        final DBI dbi = guiceBundle.getInjector().getProvider(DBI.class).get();
+        DBI dbi = new DBIFactory().build(environment, configuration.getDataSourceFactory(), "postgresql");
+        ApplicationBinder binder = new ApplicationBinder(
+                configuration,
+                environment,
+                pushService,
+                dbi
+        );
         updateDatabaseSchema(dbi, configuration.getLiquibase());
 
+        environment.jersey().register(binder);
         environment.jersey().register(new ServerExceptionMapper());
+        environment.jersey().register(new RecordResourceImpl());
     }
 
     private void updateDatabaseSchema(DBI dbi, String liquibaseFile) {

@@ -12,6 +12,7 @@ databaseChangeLog:
                   autoIncrement: true
                   constraints:
                     primaryKey: true
+                    unique: true
                     nullable: false
               - column:
                   name: login
@@ -26,7 +27,7 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: last_name
-                  type: boolean
+                  type: varchar
                   constraints:
                     nullable: false
               - column:
@@ -42,12 +43,12 @@ databaseChangeLog:
                   type: bigint
                   constraints:
                     nullable: false
-                    foreignKeyName: fk_version_record
-                    references: records (id)
+                    foreignKeyName: fk_role_user
+                    references: users (id)
                     deleteCascade: true
               - column:
                   name: role
-                  type: shortint
+                  type: smallint
         - createTable:
             tableName: tokens
             columns:
@@ -56,16 +57,47 @@ databaseChangeLog:
                   type: bigint
                   constraints:
                     nullable: false
-                    foreignKeyName: fk_version_record
-                    references: records (id)
+                    foreignKeyName: fk_token_user
+                    references: users (id)
                     deleteCascade: true
               - column:
                   name: value
                   type: varchar
-                  primaryKey: true
+                  constraints:
+                    nullable: false
+                    unique: true
+                    primaryKey: true
               - column:
                   name: timestamp
                   type: timestamp
+        - createTable:
+            tableName: collections
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    unique: true
+                    primaryKey: true
+              - column:
+                  name: name
+                  type: varchar
+                  constraints:
+                    nullable: false
+              - column:
+                  name: public
+                  type: boolean
+                  constraints:
+                    nullable: false
+              - column:
+                  name: user
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_record_user
+                    references: users (id)
         - createTable:
             tableName: records
             columns:
@@ -74,8 +106,9 @@ databaseChangeLog:
                   type: bigint
                   autoIncrement: true
                   constraints:
-                    primaryKey: true
                     nullable: false
+                    unique: true
+                    primaryKey: true
               - column:
                   name: user
                   type: bigint
@@ -91,7 +124,7 @@ databaseChangeLog:
                     references: collections (id)
               - column:
                   name: type
-                  type: shortint
+                  type: smallint
                   constraints:
                     nullable: false
               - column:
@@ -109,9 +142,7 @@ databaseChangeLog:
               - column:
                   name: id
                   type: bigint
-                  autoIncrement: true
                   constraints:
-                    primaryKey: true
                     nullable: false
               - column:
                   name: record
@@ -124,26 +155,10 @@ databaseChangeLog:
               - column:
                   name: serialized_record
                   type: varchar
-        - createTable:
-            tableName: collections
-            columns:
-              - column:
-                  name: id
-                  type: bigint
-                  autoIncrement: true
-                  constraints:
-                    primaryKey: true
-                    nullable: false
-              - column:
-                  name: name
-                  type: varchar
-                  constraints:
-                    nullable: false
-              - column:
-                  name: public
-                  type: boolean
-                  constraints:
-                    nullable: false
+        - addUniqueConstraint:
+            columnNames: id, record
+            constraintName: version_unique
+            tableName: versions
         - createTable:
             tableName: tags
             columns:
@@ -152,8 +167,9 @@ databaseChangeLog:
                   type: bigint
                   autoIncrement: true
                   constraints:
-                    primaryKey: true
                     nullable: false
+                    unique: true
+                    primaryKey: true
               - column:
                   name: name
                   type: varchar
@@ -197,3 +213,24 @@ databaseChangeLog:
                     foreignKeyName: fk_tag_id
                     references: tags (id)
                     deleteCascade: true
+        - createTable:
+            tableName: user_completed
+            columns:
+              - column:
+                  name: record
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_completed_record
+                    references: records (id)
+                    deleteCascade: true
+              - column:
+                  name: version
+                  type: bigint
+              - column:
+                  name: user
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_completed_user
+                    references: users (id)
