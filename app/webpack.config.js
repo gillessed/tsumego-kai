@@ -3,6 +3,7 @@
  * server. Run `yarn start:dev`.
  */
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const path = require('path');
 
 const babelLoader = {
@@ -16,10 +17,15 @@ const babelLoader = {
     },
 };
 
+const extractSass = new ExtractTextPlugin({
+    filename: 'bundle.css',
+    disable: process.env.NODE_ENV === 'development'
+});
+
 module.exports = {
     devtool: 'inline-source-map',
     entry: {
-        demo: './app/goban/demo/demo.tsx',
+        demo: './src/index.tsx',
     },
     output: {
         path: path.resolve(__dirname, 'dist'),
@@ -37,12 +43,35 @@ module.exports = {
                 exclude: /node_modules/,
                 use: [babelLoader]
             },
+            {
+                test: /\.scss$/,
+                use: extractSass.extract({
+                    fallback: 'style-loader',
+                    use: ['css-loader', 'sass-loader']
+                })
+            }
         ]
     },
     plugins: [
-        new HtmlWebpackPlugin({ template: './app/goban/demo/index.html' }),
+        new HtmlWebpackPlugin({ template: './index.html' }),
+        extractSass
     ],
     resolve: {
         extensions: ['.ts', '.tsx', '.js'],
+    },
+    devServer: {
+        compress: true,
+        port: 8032,
+        proxy: {
+            '/application/api': {
+                target: 'http://localhost:8021'
+            },
+            '/application/static': {
+                target: 'http://localhost:8021'
+            },
+            '/application/push': {
+                target: 'http://localhost:8021'
+            }
+        }
     },
 };
