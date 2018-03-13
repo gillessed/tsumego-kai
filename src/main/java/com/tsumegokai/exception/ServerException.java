@@ -1,7 +1,5 @@
 package com.tsumegokai.exception;
 
-import com.tsumegokai.application.ErrorType;
-
 public class ServerException extends RuntimeException {
     private final ErrorType errorType;
 

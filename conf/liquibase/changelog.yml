@@ -8,11 +8,16 @@ databaseChangeLog:
             columns:
               - column:
                   name: id
-                  type: bigint
+                  type: integer
                   autoIncrement: true
                   constraints:
                     primaryKey: true
                     unique: true
+                    nullable: false
+              - column:
+                  name: password
+                  type: varchar
+                  constraints:
                     nullable: false
               - column:
                   name: login
@@ -31,8 +36,13 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
+                  name: email
+                  type: varchar
+                  constraints:
+                    nullable: false
+              - column:
                   name: rank
-                  type: smallint
+                  type: integer
                   constraints:
                     nullable: false
         - createTable:
@@ -40,7 +50,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: user
-                  type: bigint
+                  type: integer
                   constraints:
                     nullable: false
                     foreignKeyName: fk_role_user
@@ -48,13 +58,13 @@ databaseChangeLog:
                     deleteCascade: true
               - column:
                   name: role
-                  type: smallint
+                  type: integer
         - createTable:
             tableName: tokens
             columns:
               - column:
                   name: user
-                  type: bigint
+                  type: integer
                   constraints:
                     nullable: false
                     foreignKeyName: fk_token_user
@@ -70,12 +80,13 @@ databaseChangeLog:
               - column:
                   name: timestamp
                   type: timestamp
+                  defaultValueComputed: now()
         - createTable:
             tableName: collections
             columns:
               - column:
                   name: id
-                  type: bigint
+                  type: integer
                   autoIncrement: true
                   constraints:
                     nullable: false
@@ -93,7 +104,7 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: user
-                  type: bigint
+                  type: integer
                   constraints:
                     nullable: false
                     foreignKeyName: fk_record_user
@@ -103,7 +114,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: id
-                  type: bigint
+                  type: integer
                   autoIncrement: true
                   constraints:
                     nullable: false
@@ -111,25 +122,25 @@ databaseChangeLog:
                     primaryKey: true
               - column:
                   name: user
-                  type: bigint
+                  type: integer
                   constraints:
                     nullable: false
                     foreignKeyName: fk_record_user
                     references: users (id)
               - column:
                   name: collection
-                  type: bigint
+                  type: integer
                   constraints:
                     foreignKeyName: fk_record_collection
                     references: collections (id)
               - column:
                   name: type
-                  type: smallint
+                  type: integer
                   constraints:
                     nullable: false
               - column:
                   name: rank
-                  type: smallint
+                  type: integer
               - column:
                   name: player_black
                   type: varchar
@@ -146,7 +157,7 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: record
-                  type: bigint
+                  type: integer
                   constraints:
                     nullable: false
                     foreignKeyName: fk_version_record
@@ -164,7 +175,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: id
-                  type: bigint
+                  type: integer
                   autoIncrement: true
                   constraints:
                     nullable: false
@@ -180,7 +191,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: record
-                  type: bigint
+                  type: integer
                   constraints:
                     nullable: false
                     foreignKeyName: fk_tag_record
@@ -188,7 +199,7 @@ databaseChangeLog:
                     deleteCascade: true
               - column:
                   name: tag
-                  type: bigint
+                  type: integer
                   constraints:
                     nullable: false
                     foreignKeyName: fk_tag_id
@@ -199,7 +210,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: collection
-                  type: bigint
+                  type: integer
                   constraints:
                     nullable: false
                     foreignKeyName: fk_tag_collection
@@ -207,7 +218,7 @@ databaseChangeLog:
                     deleteCascade: true
               - column:
                   name: tag
-                  type: bigint
+                  type: integer
                   constraints:
                     nullable: false
                     foreignKeyName: fk_tag_id
@@ -218,7 +229,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: record
-                  type: bigint
+                  type: integer
                   constraints:
                     nullable: false
                     foreignKeyName: fk_completed_record
@@ -226,10 +237,10 @@ databaseChangeLog:
                     deleteCascade: true
               - column:
                   name: version
-                  type: bigint
+                  type: integer
               - column:
                   name: user
-                  type: bigint
+                  type: integer
                   constraints:
                     nullable: false
                     foreignKeyName: fk_completed_user

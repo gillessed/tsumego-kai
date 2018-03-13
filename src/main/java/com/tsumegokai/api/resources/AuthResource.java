@@ -1,12 +1,19 @@
 package com.tsumegokai.api.resources;
 
-import javax.annotation.security.PermitAll;
+import com.tsumegokai.api.requests.LoginRequest;
+import com.tsumegokai.api.Token;
+
+import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 
 @Path("auth")
-@PermitAll
 public interface AuthResource {
     @POST
-    void login();
+    @Path("login")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    Token login(LoginRequest loginRequest);
 }

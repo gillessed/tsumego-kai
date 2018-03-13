@@ -10,7 +10,7 @@ import org.immutables.value.Value;
 public interface Token {
     String getValue();
     int getUserId();
-    String timestamp();
+    String getTimestamp();
 
     class Builder extends ImmutableToken.Builder {}
 }

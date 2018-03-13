@@ -1,11 +1,15 @@
 package com.tsumegokai.application;
 
+import com.tsumegokai.api.impl.AuthResourceImpl;
 import com.tsumegokai.api.impl.RecordResourceImpl;
+import com.tsumegokai.application.auth.ApplicationAuthFilter;
+import com.tsumegokai.application.auth.ApplicationAuthenticator;
 import com.tsumegokai.exception.ServerExceptionMapper;
 import com.tsumegokai.push.PushService;
 import com.tsumegokai.push.impl.PushResource;
 import io.dropwizard.Application;
 import io.dropwizard.assets.AssetsBundle;
+import io.dropwizard.auth.AuthDynamicFeature;
 import io.dropwizard.jdbi.DBIFactory;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
@@ -48,7 +52,9 @@ public class TsumegoKaiMain extends Application<TsumegoKaiConfiguration> {
     @Override
     public void run(TsumegoKaiConfiguration configuration, Environment environment) throws Exception {
         DBI dbi = new DBIFactory().build(environment, configuration.getDataSourceFactory(), "postgresql");
+        ApplicationAuthenticator authenticator = new ApplicationAuthenticator();
         ApplicationBinder binder = new ApplicationBinder(
+                authenticator,
                 configuration,
                 environment,
                 pushService,
@@ -58,7 +64,11 @@ public class TsumegoKaiMain extends Application<TsumegoKaiConfiguration> {
 
         environment.jersey().register(binder);
         environment.jersey().register(new ServerExceptionMapper());
+        environment.jersey().register(new AuthResourceImpl());
         environment.jersey().register(new RecordResourceImpl());
+        ApplicationAuthFilter applicationAuthFilter =
+                new ApplicationAuthFilter(authenticator);
+        environment.jersey().register(new AuthDynamicFeature(applicationAuthFilter));
     }
 
     private void updateDatabaseSchema(DBI dbi, String liquibaseFile) {
