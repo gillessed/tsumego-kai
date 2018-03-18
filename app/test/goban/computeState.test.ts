@@ -1,5 +1,5 @@
-import { GoStonesState } from '../../app/goban/model/goban';
-import { computeNewStoneState } from '../../app/goban/model/computeState';
+import { GoStonesState } from '../../src/goban/model/goban';
+import { computeNewStoneState } from '../../src/goban/model/computeState';
 
 describe('Accesors Model Tests', () => {
   it('Captures stones 1', () => {

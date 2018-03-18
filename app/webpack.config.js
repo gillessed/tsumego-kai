@@ -11,8 +11,8 @@ const babelLoader = {
     options: {
         cacheDirectory: true,
         presets: [
+            'babel-preset-env',
             'react',
-            'env',
         ],
     },
 };
@@ -29,7 +29,7 @@ module.exports = {
     },
     output: {
         path: path.resolve(__dirname, 'dist'),
-        filename: 'demo.bundle.js',
+        filename: 'bundle.js',
     },
     module: {
         rules: [
@@ -44,6 +44,13 @@ module.exports = {
                 use: [babelLoader]
             },
             {
+                test: /\.css$/,
+                use: extractSass.extract({
+                    fallback: 'style-loader',
+                    use: ['css-loader']
+                })
+            },
+            {
                 test: /\.scss$/,
                 use: extractSass.extract({
                     fallback: 'style-loader',
@@ -54,7 +61,7 @@ module.exports = {
     },
     plugins: [
         new HtmlWebpackPlugin({ template: './index.html' }),
-        extractSass
+        extractSass,
     ],
     resolve: {
         extensions: ['.ts', '.tsx', '.js'],
@@ -62,16 +69,40 @@ module.exports = {
     devServer: {
         compress: true,
         port: 8032,
-        proxy: {
-            '/application/api': {
-                target: 'http://localhost:8021'
+        proxy: [
+            {
+                context: function(pathname, req) {
+                    return !!/^.*bundle.css$/.test(pathname);
+                },
+                target: 'http://localhost:8032',
+                pathRewrite: { '.*': 'bundle.css' },
             },
-            '/application/static': {
-                target: 'http://localhost:8021'
+            {
+                context: function(pathname, req) {
+                    return !!/^.*bundle.js$/.test(pathname);
+                },
+                target: 'http://localhost:8032',
+                pathRewrite: { '.*': 'bundle.js' },
             },
-            '/application/push': {
-                target: 'http://localhost:8021'
-            }
-        }
+            {
+                context: function(pathname, req) {
+                    return !!/^(?!(.*\.(js|css))$)\/tsumego-kai\/app\/.*/.test(pathname);
+                },
+                target: 'http://localhost:8032',
+                pathRewrite: { '.*': 'index.html' },
+            },
+            {
+                context: '/tsumego-kai/api',
+                target: 'http://localhost:8021',
+            },
+            {
+                context: '/tsumego-kai/static',
+                target: 'http://localhost:8021',
+            },
+            {
+                context: '/tsumego-kai/push',
+                target: 'http://localhost:8021',
+            },
+        ],
     },
 };

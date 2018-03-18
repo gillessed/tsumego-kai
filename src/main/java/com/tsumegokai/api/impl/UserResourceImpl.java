@@ -17,6 +17,11 @@ public class UserResourceImpl implements UserResource {
     private DBI dbi;
 
     @Override
+    public User getSelf(UserPrincipal userPrincipal) {
+        return userPrincipal.getUser();
+    }
+
+    @Override
     public User getUser(int userId) {
         User user;
         try (UserDao dao = dbi.open(UserDao.class)) {

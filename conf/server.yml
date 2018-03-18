@@ -1,5 +1,5 @@
 server:
-  applicationContextPath: /application
+  applicationContextPath: /tsumego-kai
   rootPath: /api/*
   applicationConnectors:
     - type: http

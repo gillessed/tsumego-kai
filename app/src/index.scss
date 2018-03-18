@@ -1,0 +1,12 @@
+@import './variables.scss';
+
+body, html {
+    height: 100%;
+}
+
+body {
+    margin: 0 auto;
+    background-color: $p2c1 !important;
+    overflow-x: hidden;
+    overflow-y: hidden;
+}

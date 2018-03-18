@@ -18,6 +18,10 @@ import javax.ws.rs.core.MediaType;
 @PermitAll
 public interface UserResource {
     @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    User getSelf(@Auth UserPrincipal userPrincipal);
+
+    @GET
     @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
     User getUser(@PathParam("id") int userId);

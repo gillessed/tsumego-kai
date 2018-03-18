@@ -1,6 +1,6 @@
-import { GoStonesState } from '../../app/goban/model/goban';
-import { Group } from '../../app/goban/model/impl/group';
-import { IIntersection } from '../../app/goban/model/impl/intersection';
+import { GoStonesState } from '../../src/goban/model/goban';
+import { Group } from '../../src/goban/model/impl/group';
+import { IIntersection } from '../../src/goban/model/impl/intersection';
 
 const size = 7;
 
