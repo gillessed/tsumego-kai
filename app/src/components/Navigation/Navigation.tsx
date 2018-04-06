@@ -21,41 +21,24 @@ export default class Navigation extends React.Component<{}, State> {
             <div className='navbar-container'>
                 <nav className='main-navbar'>
                     <Dropdown toggle='Actions'>
-                        <div className='menu-item'>
+                        <div className='menu-item unselectable'>
                             Solve
                         </div>
-                        <div className='menu-item'>
+                        <div className='menu-item unselectable'>
                             Create
                         </div>
                     </Dropdown>
-                    {/* <Container>
-                        <Link className='navbar-brand' to={paths.home()}> Tsumego Kai </Link>
-                        <NavbarToggler onClick={this.toggle} />
-                        <Collapse isOpen={this.state.isOpen} navbar>
-                            <Nav className='ml-auto' navbar>
-                                <NavItem>
-                                    <Link className='nav-link' to={paths.create()}>Create</Link>
-                                </NavItem>
-                                <UncontrolledDropdown nav inNavbar>
-                                    <DropdownToggle nav caret>
-                                        gillessed 2D
-                                    </DropdownToggle>
-                                    <DropdownMenu >
-                                        <DropdownItem>
-                                            Profile
-                                        </DropdownItem>
-                                        <DropdownItem divider />
-                                        <DropdownItem>
-                                            My Collections
-                                        </DropdownItem>
-                                        <DropdownItem>
-                                            My Games
-                                        </DropdownItem>
-                                    </DropdownMenu>
-                                </UncontrolledDropdown>
-                            </Nav>
-                        </Collapse>
-                    </Container> */}
+                    <Dropdown toggle='gillessed 2D'>
+                        <div className='menu-item unselectable'>
+                            My Records
+                        </div>
+                        <div className='menu-item unselectable'>
+                            Settings
+                        </div>
+                        <div className='menu-item unselectable'>
+                            Logout
+                        </div>
+                    </Dropdown>
                 </nav>
             </div>
         );

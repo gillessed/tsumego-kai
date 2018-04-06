@@ -10,6 +10,7 @@ import { apiPath, TOKEN_HEADER } from './api/config';
 import { SessionData } from './state/session/SessionStore';
 import { User } from './api/User';
 import { App } from './components/App';
+import { registerGlobaListener } from './dropdownListener';
 require('./index.scss');
 
 export const SESSION_COOKIE = 'TSUMEGO_KAI_TOKEN';
@@ -63,4 +64,5 @@ async function setup() {
     return Promise.resolve();
 }
 
+registerGlobaListener();
 setup();

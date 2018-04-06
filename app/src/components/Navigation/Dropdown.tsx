@@ -1,4 +1,6 @@
 import * as React from 'react';
+import classNames from 'classnames';
+import { dropdownOpened } from '../../dropdownListener';
 require('./Dropdown.scss');
 
 interface State {
@@ -10,27 +12,58 @@ interface Props {
 }
 
 export class Dropdown extends React.Component<Props, State> {
+    public closedFlag: boolean = false;
+    public toggle: HTMLDivElement | undefined;
+
     constructor (props: Props) {
         super(props);
         this.state = {
-            open: true,
+            open: false,
         };
     }
     public render() {
+        const toggleClasses = classNames({
+            ['nav-dropdown-toggle']: true,
+            ['unselectable']: true,
+            ['open']: this.state.open,
+            ['closed']: !this.state.open,
+        });
+        const listClasses = classNames({
+            ['dropdown-list']: true,
+            ['open']: this.state.open,
+            ['closed']: !this.state.open,
+        });
         return (
             <div className='kai-dropdown'>
-                <div className='nav-dropdown-toggle' onPress={this.toggle}>
+                <div ref={this.setRef} className={toggleClasses} onClick={this.open}>
                     {this.props.toggle}
                     <i className='fas fa-caret-down' />
                 </div>
-                <div className='dropdown-list'>
+                <div className={listClasses}>
                     {React.Children.map(this.props.children, (child) => child)}
                 </div>
             </div>
         );
     }
 
-    private toggle = () => {
-        this.setState({ open: !this.state.open });
+    private setRef = (ref: HTMLDivElement | null) => {
+        if (ref) {
+            this.toggle = ref;
+        }
+    }
+
+    public open = () => {
+        if (this.closedFlag) {
+            this.closedFlag = false;
+        } else if (!this.state.open) {
+            dropdownOpened(this);
+            this.setState({ open: true });
+        }
+    }
+
+    public close = () => {
+        if (this.state.open) {
+            this.setState({ open: false });
+        }
     }
 }

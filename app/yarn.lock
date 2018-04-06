@@ -2,6 +2,10 @@
 # yarn lockfile v1
 
 
+"@types/classnames@^2.2.3":
+  version "2.2.3"
+  resolved "https://artifactory.palantir.build:443/artifactory/api/npm/all-npm/@types/classnames/-/classnames-2.2.3.tgz?dl=https://registry.npmjs.org/@types/classnames/-/classnames-2.2.3.tgz#3f0ff6873da793870e20a260cada55982f38a9e5"
+
 "@types/history@*":
   version "4.6.2"
   resolved "https://artifactory.palantir.build:443/artifactory/api/npm/all-npm/@types/history/-/history-4.6.2.tgz#12cfaba693ba20f114ed5765467ff25fdf67ddb0"
@@ -1233,10 +1237,6 @@ boom@5.x.x:
   resolved "https://artifactory.palantir.build:443/artifactory/api/npm/all-npm/boom/-/boom-5.2.0.tgz#5dd9da6ee3a5f302077436290cb717d3f4a54e02"
   dependencies:
     hoek "4.x.x"
-
-bootstrap@4.0.0:
-  version "4.0.0"
-  resolved "https://artifactory.palantir.build:443/artifactory/api/npm/all-npm/bootstrap/-/bootstrap-4.0.0.tgz#ceb03842c145fcc1b9b4e15da2a05656ba68469a"
 
 brace-expansion@^1.1.7:
   version "1.1.11"
