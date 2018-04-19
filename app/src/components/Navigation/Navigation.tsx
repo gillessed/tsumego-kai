@@ -1,15 +1,22 @@
 import * as React from 'react';
-import { observer } from 'mobx-react';
+import { observer, inject } from 'mobx-react';
 import { Dropdown } from './Dropdown';
+import { RootStore } from '../../state/RootStore';
+import { Link } from 'react-router-dom';
 require('./Navigation.scss');
+
+interface Props {
+    rootStore: RootStore;
+}
 
 interface State {
     isOpen: boolean;
 }
 
+@inject('rootStore')
 @observer
-export default class Navigation extends React.Component<{}, State> {
-    constructor(props: {}) {
+export default class Navigation extends React.Component<Props, State> {
+    constructor(props: Props) {
         super(props);
         this.state = {
             isOpen: false
@@ -22,10 +29,10 @@ export default class Navigation extends React.Component<{}, State> {
                 <nav className='main-navbar'>
                     <Dropdown toggle='Actions'>
                         <div className='menu-item unselectable'>
-                            Solve
+                            <Link to='/tsumego-kai/app/solve'> Solve</Link>
                         </div>
                         <div className='menu-item unselectable'>
-                            Create
+                            <Link to='/tsumego-kai/app/create'> Create</Link>
                         </div>
                     </Dropdown>
                     <Dropdown toggle='gillessed 2D'>

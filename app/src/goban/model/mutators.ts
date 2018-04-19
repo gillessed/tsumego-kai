@@ -1,8 +1,9 @@
 import { GoRecord, GoMove, Intersection, Color, GoStonesState, ReverseMove, Markup } from './goban';
 import { IIntersection } from './impl/intersection';
 import { computeNewStoneState } from './computeState';
-import { randomString, arrayEquals } from './utils';
+import { randomString, arrayEquals, swapColor } from './utils';
 import { copyRecord } from './copyRecord';
+import { EditorState } from '../component/editorState';
 
 /*
  * Immutable methods that will return a new record object with the modifications
@@ -26,11 +27,9 @@ export function addMove(_record: GoRecord, state: string, intersection: Intersec
         throw new Error('There is already a stone on ' + intersection + '.');
     }
 
-    const existingMove = Object.keys(boardState.moves)
-        .map((moveId) => boardState.moves[moveId])
-        .find((move) => {
-            return IIntersection.get(intersection) === IIntersection.get(move.intersection);
-        });
+    const existingMove = boardState.moves.find((move) => {
+        return IIntersection.get(intersection) === IIntersection.get(move.intersection);
+    });
     if (existingMove) {
         throw new Error('Move already exists.');
     }
@@ -55,7 +54,7 @@ export function addMove(_record: GoRecord, state: string, intersection: Intersec
             previousState: state,
         };
 
-        boardState.moves[newMove.id] = newMove;
+        boardState.moves.push(newMove);
         nextState.reverseMoves[reverseMove.moveId] = reverseMove;
 
         return {
@@ -76,14 +75,14 @@ export function addMove(_record: GoRecord, state: string, intersection: Intersec
             previousState: state,
         };
 
-        boardState.moves[newMove.id] = newMove;
+        boardState.moves.push(newMove);
 
         record.boardStates[newStateId] = {
             id: newStateId,
             stones: newStonesState,
             markups: [],
             text: '',
-            moves: {},
+            moves: [],
             reverseMoves: {
                 [reverseMove.moveId]: reverseMove,
             },
@@ -106,22 +105,23 @@ export function removeMove(_record: GoRecord, state: string, moveId: string): Go
         throw new Error('Current board state does not exist.');
     }
 
-    const move = boardState.moves[moveId];
+    const move = boardState.moves.find((move) => move.id === moveId);
     if (!move) {
         throw new Error('Move does not exist.');
     }
+    const moveIndex = boardState.moves.indexOf(move);
 
     const nextState = record.boardStates[move.nextState];
     if (!nextState) {
         throw new Error('Next state does not exist.');
     }
 
-    if (!boardState.moves[moveId]) {
+    if (nextState.reverseMoves[moveId]) {
+        delete nextState.reverseMoves[moveId];
         throw new Error('Move does not exist.');
     }
 
-    delete boardState.moves[moveId];
-    delete nextState.reverseMoves[moveId];
+    boardState.moves.slice(moveIndex, 0);
 
     const reachableStates = findReachableStates(record);
     const unreachableStates = Object.keys(record.boardStates)
@@ -139,8 +139,8 @@ function findReachableStates(record: GoRecord): Set<string> {
     while (frontier.length >= 1) {
         const stateToCheck = record.boardStates[frontier.pop()!];
         reachableStates.add(stateToCheck.id);
-        const children: string[] = Object.keys(stateToCheck.moves)
-            .map((key) => stateToCheck.moves[key].nextState)
+        const children: string[] = stateToCheck.moves
+            .map((move) => move.nextState)
             .filter((stateId) => reachableStates.has(stateId));
         frontier.push(...children);
     }
@@ -182,4 +182,41 @@ export function removeMarkup(_record: GoRecord, state: string, markup: Markup): 
     const newBoardState = { ...boardState, markups: boardState.markups.filter((existingMarkup) => existingMarkup !== markup) };
     record.boardStates[state] = newBoardState;
     return record;
+}
+
+/*
+ * Immutable methods that will return a new editorState object with the modifications
+ * executred by the accessor. 
+ */
+
+export function nextMove(record: GoRecord, editorState: EditorState): EditorState {
+    const boardState = record.boardStates[editorState.currentBoardState];
+    if (Object.keys(boardState.moves).length === 0) {
+        throw Error('No moves to step through.');
+    }
+    let nextMove: GoMove;
+    nextMove = boardState.moves[0];
+    return {
+        ...editorState,
+        moveStack: [...editorState.moveStack, nextMove.id],
+        currentBoardState: nextMove.nextState,
+        playerToMove: swapColor(editorState.playerToMove),
+    };
+}
+
+export function previousMove(record: GoRecord, editorState: EditorState): EditorState {
+    const boardState = record.boardStates[editorState.currentBoardState];
+    const newMoveStack = [...editorState.moveStack];
+    const reverseMoveId = newMoveStack.pop();
+    if (!reverseMoveId) {
+        throw Error('No more previous moves.');
+    }
+    const reverseMove = boardState.reverseMoves[reverseMoveId];
+    
+    return {
+        ...editorState,
+        moveStack: newMoveStack,
+        currentBoardState: reverseMove.previousState,
+        playerToMove: swapColor(editorState.playerToMove),
+    };
 }

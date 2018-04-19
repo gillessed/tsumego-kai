@@ -1,0 +1,10 @@
+.create-container {
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+
+    .create-canvas-container {
+        display: flex;
+        justify-content: center;
+    }
+}

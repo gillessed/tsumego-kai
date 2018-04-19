@@ -39,8 +39,6 @@ export interface GoMove {
     intersection: Intersection;
     color: Color;
     nextState: string;
-    correct?: boolean;
-    main?: boolean;
 }
 
 export interface ReverseMove {
@@ -50,10 +48,12 @@ export interface ReverseMove {
 
 export interface BoardState {
     id: string;
+    correct?: boolean;
+    primary?: boolean;
     stones: GoStonesState;
     markups: Array<Markup>;
     text: string;
-    moves: { [key: string]: GoMove };
+    moves: GoMove[];
     reverseMoves: { [key: string]: ReverseMove };
 }
 
@@ -83,7 +83,7 @@ export function emptyBoard(size: number, type: RecordType): GoRecord {
         stones: initialStones,
         markups: [],
         text: '',
-        moves: {},
+        moves: [],
         reverseMoves: {},
     };
     return {

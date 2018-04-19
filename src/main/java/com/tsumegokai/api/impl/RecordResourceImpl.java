@@ -11,7 +11,7 @@ public class RecordResourceImpl implements RecordResource {
     private DBI dbi;
 
     @Override
-    public Record getEditions() {
+    public Record getRecord() {
         return null;
     }
 }

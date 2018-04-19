@@ -4,7 +4,7 @@ import { dropdownOpened } from '../../dropdownListener';
 require('./Dropdown.scss');
 
 interface State {
-    open: boolean;
+    open?: boolean;
 }
 
 interface Props {
@@ -17,21 +17,22 @@ export class Dropdown extends React.Component<Props, State> {
 
     constructor (props: Props) {
         super(props);
-        this.state = {
-            open: false,
-        };
+
+        this.state = {};
     }
     public render() {
         const toggleClasses = classNames({
             ['nav-dropdown-toggle']: true,
             ['unselectable']: true,
             ['open']: this.state.open,
-            ['closed']: !this.state.open,
+            ['closed']: this.state.open === false,
+            ['loaded']: this.state.open === undefined,
         });
         const listClasses = classNames({
             ['dropdown-list']: true,
             ['open']: this.state.open,
-            ['closed']: !this.state.open,
+            ['closed']: this.state.open === false,
+            ['loaded']: this.state.open === undefined,
         });
         return (
             <div className='kai-dropdown'>

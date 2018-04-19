@@ -9,6 +9,7 @@
     "start:dev": "node ./node_modules/webpack-dev-server/bin/webpack-dev-server.js --config webpack.config.js"
   },
   "dependencies": {
+    "@blueprintjs/core": "^2.1.1",
     "@types/classnames": "^2.2.3",
     "@types/react-router": "^4.0.22",
     "@types/react-router-dom": "^4.2.4",
@@ -20,6 +21,7 @@
     "babel-preset-env": "^1.6.1",
     "babel-preset-react": "^6.24.1",
     "classnames": "^2.2.5",
+    "file-loader": "^1.1.11",
     "mobx": "^4.0.1",
     "mobx-react": "^5.0.0",
     "node-sass": "^4.7.2",
@@ -28,6 +30,7 @@
     "react-redux": "^5.0.7",
     "react-router": "^4.2.0",
     "react-router-dom": "^4.2.2",
+    "react-transition-group": "^2.3.1",
     "reactstrap": "^5.0.0-beta.2",
     "redoodle": "^2.3.2",
     "redux": "^3.7.2",

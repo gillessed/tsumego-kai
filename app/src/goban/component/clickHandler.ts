@@ -21,19 +21,36 @@ export function clickHandler(record: GoRecord, editorState: EditorState, x: numb
 }
 
 export function playClickHandler(record: GoRecord, editorState: EditorState, x: number, y: number): ClickResult | undefined {
-    const stone = record.boardStates[editorState.currentBoardState].stones[y * record.size + x];
+    const boardState = record.boardStates[editorState.currentBoardState];
+    const stone = boardState.stones[y * record.size + x];
     if (stone === 'empty') {
-        const result = addMove(record, editorState.currentBoardState, { x, y }, editorState.playerToMove);
-        const newEditorState: EditorState = {
-            ...editorState,
-            moveStack: [...editorState.moveStack, result.moveId],
-            currentBoardState: result.newStateId,
-            playerToMove: swapColor(editorState.playerToMove),
-        };
-        return {
-            record: result.record,
-            editorState: newEditorState,
-        };
+        const existingMoves = boardState.moves.filter((move) => move.intersection.x === x && move.intersection.y === y);
+        if (existingMoves.length === 1) {
+            const move = existingMoves[0];
+            return {
+                record,
+                editorState: {
+                    ...editorState,
+                    moveStack: [...editorState.moveStack, move.id],
+                    currentBoardState: move.nextState,
+                    playerToMove: swapColor(editorState.playerToMove),
+                },
+            };
+        } else if (existingMoves.length === 0) {
+            const result = addMove(record, editorState.currentBoardState, { x, y }, editorState.playerToMove);
+            const newEditorState: EditorState = {
+                ...editorState,
+                moveStack: [...editorState.moveStack, result.moveId],
+                currentBoardState: result.newStateId,
+                playerToMove: swapColor(editorState.playerToMove),
+            };
+            return {
+                record: result.record,
+                editorState: newEditorState,
+            };
+        } else {
+            throw new Error('Multiple moves have the same interestion ' + x + ',' + y);
+        }
     } else {
         return undefined;
     }

@@ -15,7 +15,8 @@ $navHeight: 60;
             color: $white ;
         }
 
-        .nav-link {
+        a {
+            text-decoration: none;
             color: $grey;
 
             &:hover {

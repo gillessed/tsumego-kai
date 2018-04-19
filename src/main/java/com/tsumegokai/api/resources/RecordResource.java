@@ -12,5 +12,5 @@ public interface RecordResource {
     @GET
     @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    Record getEditions();
+    Record getRecord();
 }

@@ -20,7 +20,7 @@ public interface User {
     String getLastName();
     int getRank();
     String getEmail();
-    default String getName() { return getFirstName() + getLastName(); }
+    default String getName() { return getFirstName() + " " + getLastName(); }
 
     class Builder extends ImmutableUser.Builder {}
 }

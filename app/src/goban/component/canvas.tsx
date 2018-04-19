@@ -4,11 +4,18 @@ import { ImageAsset } from './imageAsset';
 import { EditorState } from './editorState';
 import { clickHandler } from './clickHandler';
 import { hasMoveAtIntersection } from '../model/accessors';
+import { staticPath } from '../../api/config';
+
+export interface BoardState {
+    record: GoRecord;
+    editorState: EditorState;
+    renderingProps?: Partial<RenderingProps>;
+}
 
 const defaultRenderingProps: RenderingProps = {
-    boardImagePath: '/static/images/Wood.jpg',
-    blackStoneImagePath: '/static/images/BlackStone.svg',
-    whiteStoneImagePath: '/static/images/WhiteStone.svg',
+    boardImagePath: staticPath('/images/Wood.jpg'),
+    blackStoneImagePath: staticPath('/images/BlackStone.svg'),
+    whiteStoneImagePath: staticPath('/images/WhiteStone.svg'),
     lineColor: '#000000',
     showCoordinates: true,
     coordinateFontSize: 16,
@@ -52,6 +59,7 @@ export interface BoardProps {
     renderingProps?: Partial<RenderingProps>;
     onUpdate?: (newRecord: GoRecord, newEditorState: EditorState) => void;
     style?: CSSProperties;
+    classNames?: string;
 }
 
 interface State {
@@ -129,12 +137,16 @@ export class BoardCanvas extends React.PureComponent<BoardProps, State> {
         }
 
         return (
-            <div ref={(element) => {
-                if (element && !this.div) {
-                    this.div = element;
-                    this.forceUpdate();
-                }
-            }} style={hardcodedStyle}>
+            <div
+                ref={(element) => {
+                    if (element && !this.div) {
+                        this.div = element;
+                        this.forceUpdate();
+                    }
+                }}
+                style={hardcodedStyle}
+                className={this.props.classNames || ''}
+            >
                 {this.renderCanvasElement()}
             </div>
         );

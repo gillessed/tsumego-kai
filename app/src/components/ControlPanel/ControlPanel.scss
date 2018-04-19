@@ -1,0 +1,17 @@
+.control-panel-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+
+    .move-number-button-group {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+
+    .comment-textarea {
+        width: 400px;
+        height: 100% !important;
+        resize: none;
+    }
+}

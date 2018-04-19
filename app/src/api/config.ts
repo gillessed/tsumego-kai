@@ -3,8 +3,11 @@
  * server configurations.
  */
 
-const apiBasePath = '/tsumego-kai/api';
-const applicationBasePath = '/tsumego-kai/app';
+const applicationContextPath = '/tsumego-kai';
+
+const apiBasePath = applicationContextPath + '/api';
+const applicationBasePath = applicationContextPath + '/app';
+const staticBasePath = applicationContextPath + '/static';
 
 export function apiPath(subPath: string) {
     return apiBasePath + subPath;
@@ -12,6 +15,10 @@ export function apiPath(subPath: string) {
 
 export function applicationPath(subPath: string) {
     return applicationBasePath + subPath;
+}
+
+export function staticPath(subPath: string) {
+    return staticBasePath + subPath;
 }
 
 export const TOKEN_HEADER = 'TOKEN';

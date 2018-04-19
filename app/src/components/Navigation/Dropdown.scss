@@ -15,8 +15,8 @@ $animationTime: 200ms;
     position: relative;
 
     .nav-dropdown-toggle {
-        padding-left: 20px;
-        padding-right: 20px;
+        padding-left: 10px;
+        padding-right: 10px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -27,6 +27,10 @@ $animationTime: 200ms;
             background-color: $p3c5;
             animation-name: openToggle;
             animation-duration: $animationTime;
+        }
+
+        &.loaded {
+            background-color: $p1c5;
         }
 
         &.closed {
@@ -61,18 +65,23 @@ $animationTime: 200ms;
         width: 100%;
         transform-origin: top;
 
+        &.loaded {
+            transform: scaleY(0);
+            background-color: $p1c5;
+        }
+
         &.closed {
+            transform: scaleY(0);
             background-color: $p1c5;
             animation-name: closeDropdown;
             animation-duration: $animationTime;
-            transform: scaleY(0);
         }
 
         &.open {
+            transform: scaleY(1);
             background-color: $p3c5;
             animation-name: openDropdown;
             animation-duration: $animationTime;
-            transform: scaleY(1);
         }
 
         .menu-item {
