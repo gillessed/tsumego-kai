@@ -2,9 +2,11 @@
     height: 100%;
     display: flex;
     flex-direction: row;
+    justify-content: center;
 
     .create-canvas-container {
-        display: flex;
-        justify-content: center;
+        margin-top: 20px;
+        margin-bottom: 20px;
+        width: 100%;
     }
 }

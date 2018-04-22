@@ -1,12 +1,20 @@
 import { Color } from '../model/goban';
 
 export type EditorMode = 'view' | 'play' | 'review' | 'edit' | 'problem' | 'solution';
-export type ReviewAction = 'play' | 'triangle' | 'square' | 'circle' | 'letter' | 'erase';
-export type EditAction = ReviewAction | 'place-white' | 'place-black' | 'delete';
+export type ReviewAction = 'play' | 'triangle' | 'square' | 'circle' | 'letter' | 'delete';
+export type EditAction = ReviewAction | 'place-white' | 'place-black' | 'erase';
+
+export function shouldRenderNextMoves (mode: EditorMode) {
+    return [
+        'review',
+        'edit',
+        'solution',
+    ].indexOf(mode) >= 0;
+}
 
 export interface EditorState {
     mode: EditorMode;
-    action?: EditAction;
+    action: EditAction;
     moveStack: string[];
     currentBoardState: string;
     playerToMove: Color;

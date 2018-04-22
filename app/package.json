@@ -21,6 +21,7 @@
     "babel-preset-env": "^1.6.1",
     "babel-preset-react": "^6.24.1",
     "classnames": "^2.2.5",
+    "dot-prop-immutable": "^1.4.0",
     "file-loader": "^1.1.11",
     "mobx": "^4.0.1",
     "mobx-react": "^5.0.0",

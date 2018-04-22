@@ -9,9 +9,37 @@
         margin-bottom: 20px;
     }
 
+    .action-button-group {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+
     .comment-textarea {
         width: 400px;
         height: 100% !important;
         resize: none;
+    }
+
+    .play-button > svg {
+        color: #000000;
+    }
+
+    .black-button > svg {
+        color: #000000;
+    }
+
+    .white-button > svg {
+        color: #FFFFFF;
+        path {
+            stroke: #646464;
+            stroke-width:1px;
+            stroke-linejoin: round;
+        }
+    }
+
+    .correctness-row {
+        display: flex;
+        flex-direction: row;
+        margin-bottom: 10px;
     }
 }

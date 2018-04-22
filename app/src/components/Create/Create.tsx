@@ -1,12 +1,12 @@
 import * as React from 'react';
 import { GoRecord, emptyBoard } from '../../goban/model/goban';
 import { EditorState } from '../../goban/component/editorState';
-import { BoardCanvas, BoardState } from '../../goban/component/canvas';
+import { BoardCanvas, Board } from '../../goban/component/canvas';
 import { ControlPanel } from '../ControlPanel/ControlPanel';
 require('./Create.scss');
 
 interface State {
-    board: BoardState;
+    board: Board;
 }
 
 export class Create extends React.PureComponent<{}, State> {
@@ -20,7 +20,8 @@ export class Create extends React.PureComponent<{}, State> {
             board: {
                 record,
                 editorState: {
-                    mode: 'play',
+                    mode: 'edit',
+                    action: 'play',
                     moveStack: [],
                     currentBoardState: record.initialBoardState,
                     playerToMove: 'black',
@@ -39,7 +40,6 @@ export class Create extends React.PureComponent<{}, State> {
     }
 
     public render() {
-        console.log('render', this.state.board);
         return (
             <div className='create-container'>
                 <BoardCanvas
@@ -48,7 +48,7 @@ export class Create extends React.PureComponent<{}, State> {
                     editorState={this.state.board.editorState}
                     renderingProps={this.state.board.renderingProps}
                     onUpdate={this.onUpdate}
-                    style={{ flexGrow: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+                    style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
                 />
                 <ControlPanel
                     board={this.state.board}
@@ -63,7 +63,7 @@ export class Create extends React.PureComponent<{}, State> {
         this.setState({ board: newBoard });
     }
 
-    private updateBoard = (board: BoardState) => {
+    private updateBoard = (board: Board) => {
         this.setState({ board: { ...this.state.board, ...board} });
     }
 }

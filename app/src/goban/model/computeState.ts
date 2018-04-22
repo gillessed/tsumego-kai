@@ -39,10 +39,15 @@ export function computeNewStoneState(size: number, stoneState: GoStonesState, _i
                     const newGroup = new Group(state, size);
                     newGroup.stones.add(intersection);
                     groups.push(newGroup);
-                    if (x === _intersection.x && y === _intersection.y) {
-                        soloGroup = newGroup;
-                    }
                 }
+            }
+        }
+    }
+
+    for (const group of groups) {
+        for (const stone of group.stones) {
+            if (stone.x === intersection.x && stone.y === intersection.y) {
+                soloGroup = group;
             }
         }
     }

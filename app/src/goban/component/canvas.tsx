@@ -1,12 +1,13 @@
 import React, { CSSProperties } from 'react';
-import { GoRecord, Color, Letter } from '../model/goban';
+import { GoRecord, Color } from '../model/goban';
 import { ImageAsset } from './imageAsset';
-import { EditorState } from './editorState';
+import { EditorState, shouldRenderNextMoves } from './editorState';
 import { clickHandler } from './clickHandler';
 import { hasMoveAtIntersection } from '../model/accessors';
 import { staticPath } from '../../api/config';
+import { findReachableStates } from '../model/mutators';
 
-export interface BoardState {
+export interface Board {
     record: GoRecord;
     editorState: EditorState;
     renderingProps?: Partial<RenderingProps>;
@@ -77,6 +78,7 @@ export class BoardCanvas extends React.PureComponent<BoardProps, State> {
     private whiteStoneImage: ImageAsset;
     private blackStoneImage: ImageAsset;
     private boardImage: ImageAsset;
+    private letterIndex: number;
 
     constructor(props: BoardProps) {
         super(props);
@@ -189,6 +191,7 @@ export class BoardCanvas extends React.PureComponent<BoardProps, State> {
         if (!ctx) {
             return;
         }
+        this.letterIndex = 0;
         ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         const style = this.getDerivedRenderStyle(this.props);
         this.renderBoard(ctx, style);
@@ -196,6 +199,7 @@ export class BoardCanvas extends React.PureComponent<BoardProps, State> {
         this.renderStarPoints(ctx, style);
         this.renderCoordinates(ctx, style);
         this.renderStones(ctx, style);
+        this.renderNextMoves(ctx, style);
         this.renderHover(ctx, style);
         this.renderMarkups(ctx, style);
     }
@@ -332,13 +336,74 @@ export class BoardCanvas extends React.PureComponent<BoardProps, State> {
             if (hasMoveAtIntersection(currentBoardstate, intersection.x, intersection.y)) {
                 continue;
             }
-            const state = this.props.record.boardStates[this.props.editorState.currentBoardState].stones[intersection.y * this.props.record.size + intersection.x];
+            const state = currentBoardstate.stones[intersection.y * this.props.record.size + intersection.x];
             let color: Color = state === 'black' ? 'white' : 'black';
             let letter: string | undefined;
             if (markup.type === 'letter') {
-                letter = (markup as Letter).letter;
+                letter =  String.fromCharCode(this.letterIndex + 97);
+                this.letterIndex++;
             }
             this.renderShapeAnnotation(ctx, style, intersection.x, intersection.y, color, 1, markup.type, letter);
+        }
+    }
+
+    private renderNextMoves(ctx: CanvasRenderingContext2D, style: DerivedRenderStyle) {
+        if (!shouldRenderNextMoves(this.props.editorState.mode)) {
+            return false;
+        }
+        const currentBoardstate = this.props.record.boardStates[this.props.editorState.currentBoardState];
+        const movesToDraw = currentBoardstate.moves.filter((move) => {
+            const { intersection } = move;
+            return !(intersection.x < style.finalClipRegion.left || intersection.x > style.finalClipRegion.right
+                || intersection.y < style.finalClipRegion.top || intersection.y > style.finalClipRegion.bottom);
+        });
+        for (const nextMove of movesToDraw) {
+            const { intersection } = nextMove;
+            if (currentBoardstate.stones[intersection.y * this.props.record.size + intersection.x] !== 'empty') {
+                throw new Error('We gonna have problem. There is a move where there is a stone.');
+            }
+
+            const { x, y } = intersection;
+            const coordX = style.fullInset + (x + 0.5 - style.finalClipRegion.left) * style.stoneSizePixels;
+            const coordY = style.fullInset + (y + 0.5 - style.finalClipRegion.top) * style.stoneSizePixels;
+
+            let gradient = ctx.createRadialGradient(coordX, coordY, 1, coordX, coordY, 20);
+            gradient.addColorStop(0, '#FFFFFFCC');
+            gradient.addColorStop(1, '#FFFFFF00');
+            ctx.fillStyle = gradient;
+            ctx.arc(coordX, coordY, 30, 0, 3.14159 * 2);
+            ctx.fill();
+        }
+        let index = 0;
+        const mode = this.props.editorState.mode;
+        for (const nextMove of movesToDraw) {
+            index++;
+            const { intersection } = nextMove;
+            const { x, y } = intersection;
+
+            const coordX = style.fullInset + (x + 0.5 - style.finalClipRegion.left) * style.stoneSizePixels;
+            const coordY = style.fullInset + (y + 0.5 - style.finalClipRegion.top) * style.stoneSizePixels;
+
+            const letter = `${index}`;
+            ctx.lineWidth = 0.8;
+            ctx.font = `bold ${style.stoneSizePixels}px ${style.font}`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            if (mode === 'edit' || mode === 'solution') {
+                const nextBoardState = this.props.record.boardStates[nextMove.nextState];
+                const reachableStates = Array.from(findReachableStates(this.props.record, nextBoardState.id));
+                const correctState = reachableStates
+                    .map((stateId) => this.props.record.boardStates[stateId])
+                    .find((state) => !!state.correct);
+                if (correctState) {
+                    ctx.fillStyle = '#00CC22';
+                } else {
+                    ctx.fillStyle = '#FF0000';
+                }
+            } else {
+                ctx.fillStyle = '#0066FF';
+            }
+            ctx.fillText(letter, coordX, coordY);
         }
     }
 
@@ -346,33 +411,46 @@ export class BoardCanvas extends React.PureComponent<BoardProps, State> {
         if (!this.mouseCoordinates) {
             return;
         }
+        const coordinates = this.mouseCoordinates;
 
-        const { mode, action } = this.props.editorState;
-        if (mode === 'play' || mode === 'problem' || mode === 'solution') {
-            const state = this.props.record.boardStates[this.props.editorState.currentBoardState].stones[this.mouseCoordinates.y * this.props.record.size + this.mouseCoordinates.x];
+        const { action } = this.props.editorState;
+        const boardState = this.props.record.boardStates[this.props.editorState.currentBoardState];
+        const state = boardState.stones[coordinates.y * this.props.record.size + coordinates.x];
+        if (action === 'play') {
             if (state === 'empty') {
-                this.renderStone(ctx, style, this.mouseCoordinates.x, this.mouseCoordinates.y, this.props.editorState.playerToMove, 0.5);
+                this.renderStone(ctx, style, coordinates.x, coordinates.y, this.props.editorState.playerToMove, 0.5);
             }
-        } else if (mode === 'edit' || mode === 'review') {
-            if (action === 'play') {
-                const state = this.props.record.boardStates[this.props.editorState.currentBoardState].stones[this.mouseCoordinates.y * this.props.record.size + this.mouseCoordinates.x];
-                if (state === 'empty') {
-                    this.renderStone(ctx, style, this.mouseCoordinates.x, this.mouseCoordinates.y, this.props.editorState.playerToMove, 0.5);
-                }
-            } else if (action === 'delete') {
-
-            } else if (action === 'triangle') {
-
-            } else if (action === 'square') {
-
-            } else if (action === 'circle') {
-
-            } else if (action === 'letter') {
-
-            } else if (action === 'place-white' || action === 'place-black') {
-                if (mode !== 'edit') {
-                    throw new Error('Placing stones can only be done in edit mode.');
-                }
+        } else if (action === 'triangle') {
+            const color = state === 'black' ? 'white' : 'black';
+            this.renderShapeAnnotation(ctx, style, coordinates.x, coordinates.y, color, 0.5, 'triangle');
+        } else if (action === 'square') {
+            const color = state === 'black' ? 'white' : 'black';
+            this.renderShapeAnnotation(ctx, style, coordinates.x, coordinates.y, color, 0.5, 'square');
+        } else if (action === 'circle') {
+            const color = state === 'black' ? 'white' : 'black';
+            this.renderShapeAnnotation(ctx, style, coordinates.x, coordinates.y, color, 0.5, 'circle');
+        } else if (action === 'letter') {
+            const color = state === 'black' ? 'white' : 'black';
+            this.renderShapeAnnotation(ctx, style, coordinates.x, coordinates.y, color, 0.5, 'letter', 'A');
+            
+        } else if (action === 'erase') {
+            const existingMarkup = boardState.markups.find((markup) => markup.intersection.x === coordinates.x && markup.intersection.y === coordinates.y);
+            if (existingMarkup) {
+                const color = state === 'black' ? 'white' : 'black';
+                this.renderShapeAnnotation(ctx, style, coordinates.x, coordinates.y, color, 0.5, 'cross');
+            }
+        } else if (action === 'delete') {
+            const existingMove = boardState.moves.find((move) => move.intersection.x === coordinates.x && move.intersection.y === coordinates.y);
+            this.renderShapeAnnotation(ctx, style, coordinates.x, coordinates.y, 'black', existingMove ? 0.7 : 0.25, 'cross');
+        } else if (action === 'place-white') {
+            const existingMove = boardState.moves.find((move) => move.intersection.x === coordinates.x && move.intersection.y === coordinates.y);
+            if (!existingMove) {
+                this.renderStone(ctx, style, coordinates.x, coordinates.y, 'white', 0.5);
+            }
+        } else if (action === 'place-black') {
+            const existingMove = boardState.moves.find((move) => move.intersection.x === coordinates.x && move.intersection.y === coordinates.y);
+            if (!existingMove) {
+                this.renderStone(ctx, style, coordinates.x, coordinates.y, 'black', 0.5);
             }
         }
     }
@@ -395,7 +473,16 @@ export class BoardCanvas extends React.PureComponent<BoardProps, State> {
         } else {
             image = this.blackStoneImage.element;
         }
+        if (opacity === 1) {
+            ctx.shadowBlur = 2;
+            ctx.shadowColor = '#444444';
+            ctx.shadowOffsetX = 1;
+            ctx.shadowOffsetY = 1;
+        }
         ctx.drawImage(image, coordX - radius, coordY - radius, radius * 2, radius * 2);
+        ctx.shadowBlur = 0;
+        ctx.shadowOffsetX = 0;
+        ctx.shadowOffsetY = 0;
     }
 
     private renderShapeAnnotation(ctx: CanvasRenderingContext2D, style: DerivedRenderStyle, x: number, y: number, color: Color, opacity: number, type: string, letter?: string) {
@@ -423,6 +510,8 @@ export class BoardCanvas extends React.PureComponent<BoardProps, State> {
                 ctx.fillStyle = '#000000';
             }
             this.renderLetter(ctx, coordX, coordY, `bold ${24}px ${style.font}`, letter);
+        } else if (type === 'cross') {
+            this.renderCross(ctx, coordX, coordY, style.stoneSizePixels * 0.35);
         }
     }
 
@@ -449,6 +538,23 @@ export class BoardCanvas extends React.PureComponent<BoardProps, State> {
         ctx.lineTo(x - r, y + r);
         ctx.closePath();
         ctx.stroke();
+    }
+
+    private renderCross(ctx: CanvasRenderingContext2D, x: number, y: number, r: number) {
+        const lineWidth = ctx.lineWidth;
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        ctx.lineTo(x + r, y + r);
+        ctx.moveTo(x, y);
+        ctx.lineTo(x + r, y - r);
+        ctx.moveTo(x, y);
+        ctx.lineTo(x - r, y + r);
+        ctx.moveTo(x, y);
+        ctx.lineTo(x - r, y - r);
+        ctx.closePath();
+        ctx.stroke();
+        ctx.lineWidth = lineWidth;
     }
 
     private renderLetter(ctx: CanvasRenderingContext2D, x: number, y: number, font: string, letter: string) {

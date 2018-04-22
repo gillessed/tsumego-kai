@@ -84,7 +84,6 @@ demoRecord1.boardStates[demoRecord1.initialBoardState].stones[i(11, 3)] = 'white
 demoRecord1.boardStates[demoRecord1.initialBoardState].stones[i(12, 3)] = 'black';
 demoRecord1.boardStates[demoRecord1.initialBoardState].markups.push({
     type: 'letter',
-    letter: 'a',
     intersection: {
         x: 11,
         y: 2,
@@ -92,7 +91,6 @@ demoRecord1.boardStates[demoRecord1.initialBoardState].markups.push({
 });
 demoRecord1.boardStates[demoRecord1.initialBoardState].markups.push({
     type: 'letter',
-    letter: 'b',
     intersection: {
         x: 11,
         y: 3,
@@ -100,7 +98,6 @@ demoRecord1.boardStates[demoRecord1.initialBoardState].markups.push({
 });
 demoRecord1.boardStates[demoRecord1.initialBoardState].markups.push({
     type: 'letter',
-    letter: 'c',
     intersection: {
         x: 12,
         y: 3,

@@ -97,10 +97,17 @@ module.exports = {
             },
             {
                 context: function (pathname, req) {
-                    return !!/^(?!(.*\.(js|css))$)\/tsumego-kai\/app\/.*/.test(pathname);
+                    return !!/^(?!(.*\.(js|css|ttf|woff))$)\/tsumego-kai\/app\/.*/.test(pathname);
                 },
                 target: 'http://localhost:8032',
                 pathRewrite: { '.*': 'index.html' },
+            },
+            {
+                context: function (pathname, req) {
+                    return !!/^.*(ttf|woff)$/.test(pathname);
+                },
+                target: 'http://localhost:8032',
+                pathRewrite: { '/.*/': '' },
             },
             {
                 context: '/tsumego-kai/api',

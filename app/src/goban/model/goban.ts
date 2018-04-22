@@ -11,27 +11,11 @@ export interface Intersection {
 
 export type GoStonesState = StoneState[];
 
-export type Markup = Triangle | Circle | Square | Letter;
+export type MarkupType = 'triangle' | 'circle' | 'square' | 'letter';
 
-export interface Triangle {
-    type: 'triangle';
+export interface Markup {
+    type: MarkupType;
     intersection: Intersection;
-}
-
-export interface Circle {
-    type: 'circle';
-    intersection: Intersection;
-}
-
-export interface Square {
-    type: 'square';
-    intersection: Intersection;
-}
-
-export interface Letter {
-    type: 'letter';
-    intersection: Intersection;
-    letter: string;
 }
 
 export interface GoMove {
