@@ -54,11 +54,10 @@ export type DerivedRenderStyle = RenderingProps & {
     finalClipRegion: ClipRegion;
 };
 
-export interface BoardProps {
-    record: GoRecord;
-    editorState: EditorState;
-    renderingProps?: Partial<RenderingProps>;
-    onUpdate?: (newRecord: GoRecord, newEditorState: EditorState) => void;
+export type BoardUpdate = (board: Partial<Board>) => void;
+
+export interface BoardProps extends Board {
+    onUpdate?: BoardUpdate;
     style?: CSSProperties;
     classNames?: string;
 }

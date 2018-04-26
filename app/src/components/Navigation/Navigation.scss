@@ -15,13 +15,33 @@ $navHeight: 60;
             color: $white ;
         }
 
-        a {
-            text-decoration: none;
-            color: $grey;
+        .nav-button, .menu-item {
+            cursor: default;
+            a {
+                text-decoration: none;
+                color: $p2c1;
+            }
 
             &:hover {
-                color: $white;
+                cursor: pointer;
+                a {
+                    color: $white;
+                }
             }
+
+            .menu-item-sub {
+                width: 100%;
+                padding: 10px;
+            }
+        }
+
+        .nav-button {
+            padding-left: 10px;
+            padding-right: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: $navFontSize;
         }
     }
 }

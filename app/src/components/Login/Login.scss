@@ -1,0 +1,34 @@
+.login-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    .login-form {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 200px;
+        height: 100%;
+
+        input {
+            width: 100%;
+        }
+
+        .pt-button {
+            width: 100%;
+        }
+
+        .login-button {
+            margin-top: 10px;
+        }
+    }
+
+    .login-error-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 60px;
+        color: #C23030;
+    }
+}

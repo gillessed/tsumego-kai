@@ -5,5 +5,7 @@ export const paths = {
     login: () => applicationPath('/login'),
     create: () => applicationPath('/create'),
     solve: () => applicationPath('/solve'),
+    signup: () => applicationPath('/signup'),
+    settings: () => applicationPath('/settings'),
     user: (id: number) => applicationPath('/user/' + id),
 };

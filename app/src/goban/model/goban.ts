@@ -55,6 +55,7 @@ export interface GoRecord {
     metadata: RecordMetadata;
     initialBoardState: string;
     boardStates: { [key: string]: BoardState };
+    startingPlayer: Color;
 }
 
 export function emptyBoard(size: number, type: RecordType): GoRecord {
@@ -78,5 +79,6 @@ export function emptyBoard(size: number, type: RecordType): GoRecord {
         boardStates: {
             [initialBoardState.id]: initialBoardState,
         },
+        startingPlayer: 'black',
     };
 }

@@ -1,4 +1,4 @@
-export interface User {
+export interface IUser {
     id: number;
     roles: number[];
     login: string;
@@ -6,4 +6,10 @@ export interface User {
     lastName: string;
     rank: number;
     email: string;
+}
+
+export interface IToken {
+    timestamp: string;
+    userId: number;
+    value: string;
 }

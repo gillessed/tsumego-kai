@@ -2,14 +2,17 @@ package com.tsumegokai.application;
 
 import com.tsumegokai.api.impl.AuthResourceImpl;
 import com.tsumegokai.api.impl.RecordResourceImpl;
+import com.tsumegokai.api.impl.UserResourceImpl;
 import com.tsumegokai.application.auth.ApplicationAuthFilter;
 import com.tsumegokai.application.auth.ApplicationAuthenticator;
+import com.tsumegokai.application.auth.UserPrincipal;
 import com.tsumegokai.exception.ServerExceptionMapper;
 import com.tsumegokai.push.PushService;
 import com.tsumegokai.push.impl.PushResource;
 import io.dropwizard.Application;
 import io.dropwizard.assets.AssetsBundle;
 import io.dropwizard.auth.AuthDynamicFeature;
+import io.dropwizard.auth.AuthValueFactoryProvider;
 import io.dropwizard.jdbi.DBIFactory;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
@@ -52,23 +55,27 @@ public class TsumegoKaiMain extends Application<TsumegoKaiConfiguration> {
     @Override
     public void run(TsumegoKaiConfiguration configuration, Environment environment) throws Exception {
         DBI dbi = new DBIFactory().build(environment, configuration.getDataSourceFactory(), "postgresql");
-        ApplicationAuthenticator authenticator = new ApplicationAuthenticator();
+        ApplicationAuthenticator authenticator = new ApplicationAuthenticator(dbi);
         ApplicationBinder binder = new ApplicationBinder(
-                authenticator,
                 configuration,
                 environment,
                 pushService,
                 dbi
         );
+
         updateDatabaseSchema(dbi, configuration.getLiquibase());
 
         environment.jersey().register(binder);
         environment.jersey().register(new ServerExceptionMapper());
+
         environment.jersey().register(new AuthResourceImpl());
         environment.jersey().register(new RecordResourceImpl());
+        environment.jersey().register(new UserResourceImpl());
+
         ApplicationAuthFilter applicationAuthFilter =
                 new ApplicationAuthFilter(authenticator);
         environment.jersey().register(new AuthDynamicFeature(applicationAuthFilter));
+        environment.jersey().register(new AuthValueFactoryProvider.Binder<>(UserPrincipal.class));
     }
 
     private void updateDatabaseSchema(DBI dbi, String liquibaseFile) {
@@ -77,6 +84,7 @@ public class TsumegoKaiMain extends Application<TsumegoKaiConfiguration> {
             Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(jdbcConnection);
             Liquibase liquibase = new Liquibase(liquibaseFile, new FileSystemResourceAccessor(), database);
             liquibase.update(new Contexts(), new LabelExpression());
+            connection.setAutoCommit(true);
         } catch (SQLException | LiquibaseException e) {
             throw new IllegalStateException(e);
         }

@@ -1,16 +1,19 @@
 import 'babel-polyfill';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { BrowserRouter } from 'react-router-dom';
+import { Router } from 'react-router-dom';
 import { Provider } from 'mobx-react';
 import { RootStore, StoreContext } from './state/RootStore';
 import { Languages } from './language/languages';
-import { getCookie } from './utils/cookies';
-import { apiPath, TOKEN_HEADER } from './api/config';
+import { getCookie, deleteCookie } from './utils/cookies';
+import { TOKEN_HEADER, apiPath } from './api/config';
 import { SessionData } from './state/session/SessionStore';
-import { User } from './api/User';
+import { IUser } from './api/api';
 import { App } from './components/App';
 import { registerGlobaListener } from './dropdownListener';
+import { create } from 'apisauce';
+import { ApisauceWrapper } from './api/network';
+import { browserHistory } from './history';
 require('./index.scss');
 
 export const SESSION_COOKIE = 'TSUMEGO_KAI_TOKEN';
@@ -22,17 +25,16 @@ async function setup() {
     const language = getCookie(LANGUAGE_COOKIE, DEFAULT_LANGUAGE) || DEFAULT_LANGUAGE;
     let sessionData: SessionData | undefined;
 
+    const api = new ApisauceWrapper(create({
+        baseURL: apiPath(''),
+    }));
+
     if (existingToken) {
+        api.setHeader(TOKEN_HEADER, existingToken);
         try {
-            const response = await fetch(apiPath('/user'), {
-                method: 'GET',
-                headers: {
-                    [TOKEN_HEADER]: existingToken,
-                },
-            });
-            const json = await response.json();
-            if (!json.error) {
-                const user: User = json;
+            const response = await api.get('/user');
+            if (response.ok && response.data) {
+                const user = response.data as IUser;
                 sessionData = {
                     token: existingToken,
                     userId: user.id,
@@ -40,14 +42,16 @@ async function setup() {
                     firstName: user.firstName,
                     lastName: user.lastName,
                     rank: user.rank,
+                    roles: user.roles,
                 };
             }
         } catch (error) {
-            console.log('Error verifying server token.', error);
+            deleteCookie(SESSION_COOKIE);
         }
     }
 
     const context: StoreContext = {
+        api,
         sessionData,
         language,
     };
@@ -55,9 +59,9 @@ async function setup() {
 
     ReactDOM.render((
         <Provider rootStore={rootStore}>
-            <BrowserRouter>
+            <Router history={browserHistory}>
                 <App/>
-            </BrowserRouter>
+            </Router>
         </Provider>
     ), document.getElementById('main'));
     
