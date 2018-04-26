@@ -23,7 +23,6 @@ export function clickHandler(record: GoRecord, editorState: EditorState, x: numb
         case 'place-white': return placeWhiteClickHandler(record, editorState, x, y);
         case 'triangle': return triangleClickHandler(record, editorState, x, y);
         case 'square': return squareClickHandler(record, editorState, x, y);
-        case 'circle': return circleClickHandler(record, editorState, x, y);
         case 'letter': return letterClickHandler(record, editorState, x, y);
         case 'erase': return eraseClickHandler(record, editorState, x, y);
         case 'delete': return deleteClickHandler(record, editorState, x, y);
@@ -98,10 +97,6 @@ function triangleClickHandler(_record: GoRecord, editorState: EditorState, x: nu
 
 function squareClickHandler(_record: GoRecord, editorState: EditorState, x: number, y: number): ClickResult | undefined {
     return markupClickHandler(_record, editorState, x, y, 'square');
-}
-
-function circleClickHandler(_record: GoRecord, editorState: EditorState, x: number, y: number): ClickResult | undefined {
-    return markupClickHandler(_record, editorState, x, y, 'circle');
 }
 
 function letterClickHandler(_record: GoRecord, editorState: EditorState, x: number, y: number): ClickResult | undefined {

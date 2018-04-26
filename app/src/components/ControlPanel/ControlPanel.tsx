@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Board, RenderingProps, BoardUpdate } from '../../goban/component/canvas';
+import { RenderingProps, BoardUpdate } from '../../goban/component/canvas';
 import { ButtonGroup, AnchorButton, TextArea, Checkbox } from '@blueprintjs/core';
 import { previousMove, nextMove } from '../../goban/model/mutators';
 import { getCurrentBoardState } from '../../goban/model/selectors';
@@ -13,7 +13,7 @@ interface Props {
     record: GoRecord;
     editorState: EditorState;
     renderingProps?: Partial<RenderingProps>;
-    updateBoard: BoardUpdate;
+    onUpdate: BoardUpdate;
 }
 
 export class ControlPanel extends React.PureComponent<Props, {}> {
@@ -83,58 +83,52 @@ export class ControlPanel extends React.PureComponent<Props, {}> {
                     className='play-button'
                     icon='play'
                     buttonAction='play'
-                    board={this.props}
-                    updateBoard={this.props.updateBoard}
+                    editorState={this.props.editorState}
+                    updateBoard={this.props.onUpdate}
                 />
                 { mode === 'edit' && <ActionButton
                     className='black-button'
                     icon='record'
                     buttonAction='place-black'
-                    board={this.props}
-                    updateBoard={this.props.updateBoard}
+                    editorState={this.props.editorState}
+                    updateBoard={this.props.onUpdate}
                 />}
                 { mode === 'edit' && <ActionButton
                     className='white-button'
                     icon='record'
                     buttonAction='place-white'
-                    board={this.props}
-                    updateBoard={this.props.updateBoard}
+                    editorState={this.props.editorState}
+                    updateBoard={this.props.onUpdate}
                 />}
                 <ActionButton
                     icon='symbol-triangle-up'
                     buttonAction='triangle'
-                    board={this.props}
-                    updateBoard={this.props.updateBoard}
+                    editorState={this.props.editorState}
+                    updateBoard={this.props.onUpdate}
                 />
                 <ActionButton
                     icon='stop'
                     buttonAction='square'
-                    board={this.props}
-                    updateBoard={this.props.updateBoard}
-                />
-                <ActionButton
-                    icon='circle'
-                    buttonAction='circle'
-                    board={this.props}
-                    updateBoard={this.props.updateBoard}
+                    editorState={this.props.editorState}
+                    updateBoard={this.props.onUpdate}
                 />
                 <ActionButton
                     icon='font'
                     buttonAction='letter'
-                    board={this.props}
-                    updateBoard={this.props.updateBoard}
+                    editorState={this.props.editorState}
+                    updateBoard={this.props.onUpdate}
                 />
                 <ActionButton
                     icon='eraser'
                     buttonAction='erase'
-                    board={this.props}
-                    updateBoard={this.props.updateBoard}
+                    editorState={this.props.editorState}
+                    updateBoard={this.props.onUpdate}
                 />
                 <ActionButton
                     icon='trash'
                     buttonAction='delete'
-                    board={this.props}
-                    updateBoard={this.props.updateBoard}
+                    editorState={this.props.editorState}
+                    updateBoard={this.props.onUpdate}
                 />
             </ButtonGroup>
         );
@@ -183,17 +177,17 @@ export class ControlPanel extends React.PureComponent<Props, {}> {
                 && this.props.record.boardStates[newEditorState.currentBoardState].moves.length < 2) {
             newEditorState = previousMove(this.props.record, newEditorState);
         }
-        this.props.updateBoard({ ...this.props, editorState: newEditorState });
+        this.props.onUpdate({ editorState: newEditorState });
     }
 
     private onPreviousMove = () => {
         const newEditorState = previousMove(this.props.record, this.props.editorState);
-        this.props.updateBoard({ ...this.props, editorState: newEditorState });
+        this.props.onUpdate({ editorState: newEditorState });
     }
 
     private onNextMove = () => {
         const newEditorState = nextMove(this.props.record, this.props.editorState);
-        this.props.updateBoard({ ...this.props, editorState: newEditorState });
+        this.props.onUpdate({ editorState: newEditorState });
     }
 
     private onNextVariation = () => {
@@ -201,31 +195,31 @@ export class ControlPanel extends React.PureComponent<Props, {}> {
         while (this.props.record.boardStates[newEditorState.currentBoardState].moves.length === 1) {
             newEditorState = nextMove(this.props.record, newEditorState);
         }
-        this.props.updateBoard({ ...this.props, editorState: newEditorState });
+        this.props.onUpdate({ editorState: newEditorState });
     }
     
     private onChangeText = (e: { target: { value: string }}) => {
         const state = this.props.editorState.currentBoardState;
         const record = DotProp.set(this.props.record, `boardStates.${state}.text`, e.target.value);
-        this.props.updateBoard({ ...this.props, record });
+        this.props.onUpdate({ record });
     }
 
     private onChangeBlackFirst = (e: any) => {
         const player: Color = e.target.checked ? 'black' : 'white';
         const record = DotProp.set(this.props.record, 'startingPlayer', player);
         const editorState = DotProp.set(this.props.editorState, 'playerToMove', player);
-        this.props.updateBoard({ ...this.props, record, editorState });
+        this.props.onUpdate({ record, editorState });
     }
 
     private onChangeCorrect = (e: any) => {
         const state = this.props.editorState.currentBoardState;
         const record = DotProp.set(this.props.record, `boardStates.${state}.correct`, e.target.checked);
-        this.props.updateBoard({ ...this.props, record });
+        this.props.onUpdate({ record });
     }
 
     private onChangePrimary = (e: any) => {
         const state = this.props.editorState.currentBoardState;
         const record = DotProp.set(this.props.record, `boardStates.${state}.primary`, e.target.checked);
-        this.props.updateBoard({ ...this.props, record });
+        this.props.onUpdate({ record });
     }
 }

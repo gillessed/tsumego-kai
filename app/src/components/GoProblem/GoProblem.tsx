@@ -2,7 +2,7 @@ import * as React from 'react';
 import { GoRecord } from '../../goban/model/goban';
 import { EditorState } from '../../goban/component/editorState';
 import { ControlPanel } from '../ControlPanel/ControlPanel';
-import { BoardCanvas, RenderingProps } from '../../goban/component/canvas';
+import { BoardCanvas, RenderingProps, Board } from '../../goban/component/canvas';
 require('./GoProblem.scss');
 
 interface Props {
@@ -48,11 +48,6 @@ export class GoProblem extends React.Component<Props, State> {
     }
 
     public render() {
-        const board = {
-            record: this.props.record,
-            editorState: this.state.editorState,
-            renderingProps: this.state.renderingProps,
-        }
         return (
             <div className='go-problem-container'>
                 <BoardCanvas
@@ -64,16 +59,19 @@ export class GoProblem extends React.Component<Props, State> {
                     style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
                 />
                 <ControlPanel
-                    board={board}
-                    updateBoard={this.updateBoard}
+                    record={this.props.record}
+                    editorState={this.state.editorState}
+                    renderingProps={this.state.renderingProps}
+                    onUpdate={this.onUpdate}
                 />
             </div>
         );
     }
 
-    private onUpdate = (newRecord: GoRecord, newEditorState: EditorState) => {
+    private onUpdate = (board: Partial<Board>) => {
         this.setState({
-            editorState: newEditorState,
-        });
+            editorState: board.editorState,
+            renderingProps: board.renderingProps,
+        } as State);
     }
 }

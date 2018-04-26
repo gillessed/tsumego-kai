@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Board } from '../../goban/component/canvas';
+import { BoardUpdate } from '../../goban/component/canvas';
 import { AnchorButton, IconName } from '@blueprintjs/core';
 import { EditAction, EditorState } from '../../goban/component/editorState';
 
@@ -8,7 +8,7 @@ interface Props {
     icon: IconName;
     editorState: EditorState;
     buttonAction: EditAction;
-    updateBoard: (board: Board) => void;
+    updateBoard: BoardUpdate;
 }
 
 export class ActionButton extends React.PureComponent<Props, {}> {

@@ -1,5 +1,5 @@
 import React, { CSSProperties } from 'react';
-import { GoRecord, Color } from '../model/goban';
+import { GoRecord, Color, Intersection } from '../model/goban';
 import { ImageAsset } from './imageAsset';
 import { EditorState, shouldRenderNextMoves } from './editorState';
 import { clickHandler } from './clickHandler';
@@ -201,6 +201,7 @@ export class BoardCanvas extends React.PureComponent<BoardProps, State> {
         this.renderNextMoves(ctx, style);
         this.renderHover(ctx, style);
         this.renderMarkups(ctx, style);
+        this.renderLastMoveMarkup(ctx, style);
     }
 
     private renderBoard(ctx: CanvasRenderingContext2D, _: DerivedRenderStyle) {
@@ -328,8 +329,7 @@ export class BoardCanvas extends React.PureComponent<BoardProps, State> {
         const currentBoardstate = this.props.record.boardStates[this.props.editorState.currentBoardState];
         for (const markup of currentBoardstate.markups) {
             const { intersection } = markup;
-            if (intersection.x < style.finalClipRegion.left || intersection.x > style.finalClipRegion.right
-                || intersection.y < style.finalClipRegion.top || intersection.y > style.finalClipRegion.bottom) {
+            if (this.clipped(intersection, style)) {
                 continue;
             }
             if (hasMoveAtIntersection(currentBoardstate, intersection.x, intersection.y)) {
@@ -352,9 +352,7 @@ export class BoardCanvas extends React.PureComponent<BoardProps, State> {
         }
         const currentBoardstate = this.props.record.boardStates[this.props.editorState.currentBoardState];
         const movesToDraw = currentBoardstate.moves.filter((move) => {
-            const { intersection } = move;
-            return !(intersection.x < style.finalClipRegion.left || intersection.x > style.finalClipRegion.right
-                || intersection.y < style.finalClipRegion.top || intersection.y > style.finalClipRegion.bottom);
+            return !this.clipped(move.intersection, style);
         });
         for (const nextMove of movesToDraw) {
             const { intersection } = nextMove;
@@ -425,9 +423,6 @@ export class BoardCanvas extends React.PureComponent<BoardProps, State> {
         } else if (action === 'square') {
             const color = state === 'black' ? 'white' : 'black';
             this.renderShapeAnnotation(ctx, style, coordinates.x, coordinates.y, color, 0.5, 'square');
-        } else if (action === 'circle') {
-            const color = state === 'black' ? 'white' : 'black';
-            this.renderShapeAnnotation(ctx, style, coordinates.x, coordinates.y, color, 0.5, 'circle');
         } else if (action === 'letter') {
             const color = state === 'black' ? 'white' : 'black';
             this.renderShapeAnnotation(ctx, style, coordinates.x, coordinates.y, color, 0.5, 'letter', 'A');
@@ -452,6 +447,29 @@ export class BoardCanvas extends React.PureComponent<BoardProps, State> {
                 this.renderStone(ctx, style, coordinates.x, coordinates.y, 'black', 0.5);
             }
         }
+    }
+
+    private renderLastMoveMarkup(ctx: CanvasRenderingContext2D, style: DerivedRenderStyle) {
+        const numberOfMoves = this.props.editorState.moveStack.length;
+        if (this.props.editorState.moveStack.length === 0) {
+            return;
+        }
+        const lastMoveId = this.props.editorState.moveStack[numberOfMoves - 1];
+        const currentBoardstate = this.props.record.boardStates[this.props.editorState.currentBoardState];
+        const previousBoardstate = this.props.record.boardStates[currentBoardstate.reverseMoves[lastMoveId].previousState];
+        const lastMove = previousBoardstate.moves.find((move) => move.id === lastMoveId);
+        if (!lastMove) {
+            return;
+        }
+        const stone = currentBoardstate.stones[lastMove.intersection.y * this.props.record.size + lastMove.intersection.x];
+        if (stone === 'empty') {
+            return;
+        }
+        if (this.clipped(lastMove.intersection, style)) {
+            return;
+        }
+        const color = stone === 'black' ? 'white' : 'black';
+        this.renderShapeAnnotation(ctx, style, lastMove.intersection.x, lastMove.intersection.y, color, 1, 'circle');
     }
 
     ////////////////////////////
@@ -496,10 +514,10 @@ export class BoardCanvas extends React.PureComponent<BoardProps, State> {
         }
         if (type === 'triangle') {
             this.renderTriangle(ctx, coordX, coordY, style.stoneSizePixels * 0.35);
-        } else if (type === 'circle') {
-            this.renderCircle(ctx, coordX, coordY, style.stoneSizePixels * 0.3);
         } else if (type === 'square') {
             this.renderSquare(ctx, coordX, coordY, style.stoneSizePixels * 0.26);
+        } else if (type === 'circle') {
+            this.renderCircle(ctx, coordX, coordY, style.stoneSizePixels * 0.3);
         } else if (type === 'letter' && letter) {
             if (color === 'white') {
                 ctx.strokeStyle = '#000000';
@@ -586,7 +604,7 @@ export class BoardCanvas extends React.PureComponent<BoardProps, State> {
         if (this.mouseCoordinates && this.props.onUpdate) {
             const result = clickHandler(this.props.record, this.props.editorState, this.mouseCoordinates.x, this.mouseCoordinates.y);
             if (result) {
-                this.props.onUpdate(result.record, result.editorState);
+                this.props.onUpdate({ record: result.record, editorState: result.editorState });
             }
         }
     }
@@ -642,5 +660,13 @@ export class BoardCanvas extends React.PureComponent<BoardProps, State> {
             this.canvasWidth = divWidth;
             this.canvasHeight = divHeight;
         }
+    }
+
+    /**
+     * Returns true if the intersection is not within the rendering bounds of the board.
+     */
+    private clipped(intersection: Intersection, style: DerivedRenderStyle) {
+        return intersection.x < style.finalClipRegion.left || intersection.x > style.finalClipRegion.right
+            || intersection.y < style.finalClipRegion.top || intersection.y > style.finalClipRegion.bottom
     }
 }
