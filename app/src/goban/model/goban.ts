@@ -41,24 +41,14 @@ export interface BoardState {
     reverseMoves: { [key: string]: ReverseMove };
 }
 
-export type RecordType = 'game' | 'problem';
-
-export interface RecordMetadata {
-    name?: string;
-    author?: string;
-    winLoss?: string;
-}
-
 export interface GoRecord {
     size: number;
-    type: RecordType;
-    metadata: RecordMetadata;
     initialBoardState: string;
     boardStates: { [key: string]: BoardState };
     startingPlayer: Color;
 }
 
-export function emptyBoard(size: number, type: RecordType): GoRecord {
+export function emptyBoard(size: number): GoRecord {
     const initialStones: GoStonesState = [];
     for (let i = 0; i < size * size; i++) {
         initialStones.push('empty');
@@ -73,8 +63,6 @@ export function emptyBoard(size: number, type: RecordType): GoRecord {
     };
     return {
         size,
-        type,
-        metadata: {},
         initialBoardState: initialBoardState.id,
         boardStates: {
             [initialBoardState.id]: initialBoardState,

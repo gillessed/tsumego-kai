@@ -5,16 +5,16 @@ import { EditorState, shouldRenderNextMoves } from './editorState';
 import { clickHandler } from './clickHandler';
 import { hasMoveAtIntersection } from '../model/accessors';
 import { staticPath } from '../../api/config';
-import { findReachableStates } from '../model/mutators';
+import { findReachableStates } from '../model/selectors';
 
 export interface Board {
     record: GoRecord;
     editorState: EditorState;
-    renderingProps?: Partial<RenderingProps>;
+    renderingProps: Partial<RenderingProps>;
 }
 
 const defaultRenderingProps: RenderingProps = {
-    boardImagePath: staticPath('/images/Wood.jpg'),
+    boardImagePath: staticPath('/images/Wood1.jpg'),
     blackStoneImagePath: staticPath('/images/BlackStone.svg'),
     whiteStoneImagePath: staticPath('/images/WhiteStone.svg'),
     lineColor: '#000000',
@@ -54,7 +54,14 @@ export type DerivedRenderStyle = RenderingProps & {
     finalClipRegion: ClipRegion;
 };
 
-export type BoardUpdate = (board: Partial<Board>) => void;
+export interface Update {
+    record?: GoRecord;
+    editorState?: EditorState;
+    renderingProps?: Partial<RenderingProps>;
+    playedMove?: boolean;
+}
+
+export type BoardUpdate = (update: Update) => void;
 
 export interface BoardProps extends Board {
     onUpdate?: BoardUpdate;
@@ -332,7 +339,8 @@ export class BoardCanvas extends React.PureComponent<BoardProps, State> {
             if (this.clipped(intersection, style)) {
                 continue;
             }
-            if (hasMoveAtIntersection(currentBoardstate, intersection.x, intersection.y)) {
+            if (hasMoveAtIntersection(currentBoardstate, intersection.x, intersection.y)
+                && shouldRenderNextMoves(this.props.editorState.mode)) {
                 continue;
             }
             const state = currentBoardstate.stones[intersection.y * this.props.record.size + intersection.x];
@@ -604,7 +612,11 @@ export class BoardCanvas extends React.PureComponent<BoardProps, State> {
         if (this.mouseCoordinates && this.props.onUpdate) {
             const result = clickHandler(this.props.record, this.props.editorState, this.mouseCoordinates.x, this.mouseCoordinates.y);
             if (result) {
-                this.props.onUpdate({ record: result.record, editorState: result.editorState });
+                this.props.onUpdate({
+                    record: result.record,
+                    editorState: result.editorState,
+                    playedMove: result.playedMove,
+                });
             }
         }
     }

@@ -18,6 +18,9 @@ $navHeight: 60;
         .nav-button, .menu-item {
             cursor: default;
             a {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
                 text-decoration: none;
                 color: $p2c1;
             }

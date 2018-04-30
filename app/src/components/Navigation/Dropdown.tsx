@@ -1,7 +1,7 @@
 import * as React from 'react';
 import classNames from 'classnames';
 import { dropdownOpened } from '../../dropdownListener';
-import { Icon } from '@blueprintjs/core';
+import { Icon, IconName } from '@blueprintjs/core';
 require('./Dropdown.scss');
 
 interface State {
@@ -9,7 +9,7 @@ interface State {
 }
 
 interface Props {
-    toggle: string;
+    icon?: IconName;
 }
 
 export class Dropdown extends React.Component<Props, State> {
@@ -38,8 +38,8 @@ export class Dropdown extends React.Component<Props, State> {
         return (
             <div className='kai-dropdown'>
                 <div ref={this.setRef} className={toggleClasses} onClick={this.open}>
-                    {this.props.toggle}
-                    <Icon icon='caret-down' color='#D3D0C0' iconSize={20}/>
+                    {this.props.icon && <Icon icon={this.props.icon} iconSize={32}/>}
+                    <Icon icon={this.state.open ? 'caret-up' : 'caret-down'} iconSize={20}/>
                 </div>
                 <div className={listClasses}>
                     {React.Children.map(this.props.children, (child) => child)}

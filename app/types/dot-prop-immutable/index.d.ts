@@ -1,9 +1,9 @@
 declare module 'dot-prop-immutable' {
     interface DotPropImmutable {
-        get(object: any, path: string): any;
-        set(object: any, path: string, value: any): any;
-        delete(object: any, path: string): any;
-        merge(object: any, path: string, value: any): any;
+        get<T>(object: T, path: string): T;
+        set<T>(object: T, path: string, value: any): T;
+        delete<T>(object: T, path: string): T;
+        merge<T>(object: T, path: string, value: any): T;
     }
     
     const DotProp: DotPropImmutable;

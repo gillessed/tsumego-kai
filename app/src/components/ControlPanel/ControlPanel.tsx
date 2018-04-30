@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { RenderingProps, BoardUpdate } from '../../goban/component/canvas';
-import { ButtonGroup, AnchorButton, TextArea, Checkbox } from '@blueprintjs/core';
+import { ButtonGroup, AnchorButton, TextArea, Checkbox, RangeSlider, Button, Icon } from '@blueprintjs/core';
 import { previousMove, nextMove } from '../../goban/model/mutators';
 import { getCurrentBoardState } from '../../goban/model/selectors';
 import { ActionButton } from './ActionButton';
-import { EditorMode, EditorState } from '../../goban/component/editorState';
+import { EditorMode, EditorState, readonlyText } from '../../goban/component/editorState';
 import { BoardState, Color, GoRecord } from '../../goban/model/goban';
 import DotProp from 'dot-prop-immutable';
 require('./ControlPanel.scss');
@@ -12,8 +12,9 @@ require('./ControlPanel.scss');
 interface Props {
     record: GoRecord;
     editorState: EditorState;
-    renderingProps?: Partial<RenderingProps>;
+    renderingProps: Partial<RenderingProps>;
     onUpdate: BoardUpdate;
+    correct?: boolean;
 }
 
 export class ControlPanel extends React.PureComponent<Props, {}> {
@@ -27,21 +28,36 @@ export class ControlPanel extends React.PureComponent<Props, {}> {
         const startPlayer = this.props.record.startingPlayer;
         return (
             <div className='control-panel-container'>
-                <h3 className='unselectable'>Move {this.props.editorState.moveStack.length}</h3>
-                {this.renderMoveButtonRow(previousEnabled, nextEnabled)}
+                {this.renderHeader(this.props.editorState.moveStack.length, boardState, mode)}
+                {this.renderMoveButtonRow(previousEnabled, nextEnabled, mode)}
                 {this.renderActionButtonRow(mode)}
                 {this.renderFlagRow(initialState, startPlayer, boardState, mode)}
+                {this.renderClipRow(mode)}
                 <TextArea
                     className='comment-textarea'
                     value={boardState.text}
                     onChange={this.onChangeText}
                     large={true}
+                    readOnly={readonlyText(mode)}
                 />
             </div>
         );
     }
 
-    private renderMoveButtonRow(previousEnabled: boolean, nextEnabled: boolean) {
+    private renderHeader(moveNumber: number, _currentState: BoardState, _mode: EditorMode) {
+        return(
+            <div className='header'>
+                <h3 className='unselectable'>Move {moveNumber}</h3>
+                {this.props.correct === true && <Icon icon='tick' color='#1F7745' iconSize={32}/>}
+                {this.props.correct === false && <Icon icon='cross' color='#A82A2A' iconSize={32}/>}
+            </div>
+        )
+    }
+
+    private renderMoveButtonRow(previousEnabled: boolean, nextEnabled: boolean, mode: string) {
+        if (mode === 'problem') {
+            return;
+        }
         return (
             <ButtonGroup
                 className='move-number-button-group'
@@ -73,6 +89,9 @@ export class ControlPanel extends React.PureComponent<Props, {}> {
     }  
 
     private renderActionButtonRow(mode: string) {
+        if (mode !== 'edit' && mode !== 'review') {
+            return;
+        }
         return (
             <ButtonGroup
                 className='action-button-group'
@@ -140,6 +159,10 @@ export class ControlPanel extends React.PureComponent<Props, {}> {
         boardState: BoardState,
         mode: EditorMode,
     ) {
+        if (mode !== 'edit') {
+            return;
+        }
+
         const hasMoves = initialState.moves.length >= 1;
         const blackFirst = startingPlayer === 'black';
         const isTerminal = boardState.moves.length === 0;
@@ -169,6 +192,53 @@ export class ControlPanel extends React.PureComponent<Props, {}> {
                 </div>
             );
         }
+    }
+
+    private renderClipRow = (mode: string) => {
+        if (mode !== 'edit') {
+            return;
+        }
+        const widthValue: [number, number] = [
+            this.props.renderingProps.clipRegion!.left + 1,
+            this.props.renderingProps.clipRegion!.right + 1,
+        ];
+        const heightValue: [number, number] = [
+            this.props.renderingProps.clipRegion!.top + 1,
+            this.props.renderingProps.clipRegion!.bottom + 1,
+        ];
+        return (
+            <div className='clip-row'>
+                <div className='slider-column'>
+                    <div className='width-row'>
+                        <div className='name-container'> Width </div>
+                        <RangeSlider
+                            min={1}
+                            max={this.props.record.size}
+                            stepSize={1}
+                            labelStepSize={5}
+                            onChange={this.onChangeWidth}
+                            value={widthValue}
+                        />
+                    </div>
+                    <div className='height-row'>
+                        <div className='name-container'> Height </div>
+                        <RangeSlider
+                            min={1}
+                            max={this.props.record.size}
+                            stepSize={1}
+                            labelStepSize={5}
+                            onChange={this.onChangeHeight}
+                            value={heightValue}
+                        />
+                    </div>
+                </div>
+                <div className='auto-clip-container'>
+                    <Button
+                        text='Auto Clip'
+                    />
+                </div>
+            </div>
+        )
     }
 
     private onPreviousVariation = () => {
@@ -221,5 +291,17 @@ export class ControlPanel extends React.PureComponent<Props, {}> {
         const state = this.props.editorState.currentBoardState;
         const record = DotProp.set(this.props.record, `boardStates.${state}.primary`, e.target.checked);
         this.props.onUpdate({ record });
+    }
+
+    private onChangeWidth = (values: [number, number]) => {
+        let renderingProps = DotProp.set(this.props.renderingProps, 'clipRegion.left', values[0] - 1);
+        renderingProps = DotProp.set(renderingProps, 'clipRegion.right', values[1] - 1);
+        this.props.onUpdate({ renderingProps });
+    }
+
+    private onChangeHeight = (values: [number, number]) => {
+        let renderingProps = DotProp.set(this.props.renderingProps, 'clipRegion.top', values[0] - 1);
+        renderingProps = DotProp.set(renderingProps, 'clipRegion.bottom', values[1] - 1);
+        this.props.onUpdate({ renderingProps });
     }
 }

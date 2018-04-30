@@ -1,12 +1,12 @@
 import { observable, computed } from 'mobx';
-import { StoreContext } from '../RootStore';
-import { TOKEN_HEADER } from '../../api/config';
-import { ApisauceWrapper } from '../../api/network';
-import { IToken, IUser } from '../../api/api';
-import { browserHistory } from '../../history';
-import { paths } from '../../components/path';
-import { setCookie } from '../../utils/cookies';
-import { SESSION_COOKIE } from '../../index';
+import { TOKEN_HEADER } from '../api/config';
+import { ApisauceWrapper } from '../api/network';
+import { IToken, IUser } from '../api/api';
+import { browserHistory } from '../history';
+import { paths } from '../components/path';
+import { setCookie } from '../utils/cookies';
+import { SESSION_COOKIE } from '../index';
+import { StoreContext } from './StoreContext';
 
 export interface SessionData {
     token: string;
@@ -69,11 +69,11 @@ export class SessionStore {
         }
     }
 
-    constructor(context: StoreContext) {
+    constructor(context: StoreContext, language: string, sessionData?: SessionData) {
         this.api = context.api;
-        if (context.sessionData) {
-            this.user = context.sessionData;
-            this.language = context.language;
+        this.language = language;
+        if (sessionData) {
+            this.user = sessionData;
         }
     }
 }

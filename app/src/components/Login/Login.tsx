@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { Button, Intent } from '@blueprintjs/core';
 import { inject, observer } from 'mobx-react';
-import { RootStoreProps } from '../../state/RootStore';
 import { paths } from '../path';
 import { browserHistory } from '../../history';
+import { SessionStore } from '../../state/SessionStore';
 require('./Login.scss');
 
 interface State {
@@ -11,11 +11,11 @@ interface State {
     password: string;
 }
 
-@inject('rootStore')
+@inject('sessionStore')
 @observer
 export class Login extends React.Component<{}, State> {
     get injected() {
-        return this.props as RootStoreProps;
+        return this.props as { sessionStore: SessionStore };
     }
 
     constructor(props: {}) {
@@ -27,7 +27,7 @@ export class Login extends React.Component<{}, State> {
     }
 
     public render() {
-        const loginError = this.injected.rootStore.sessionStore.loginError;
+        const loginError = this.injected.sessionStore.loginError;
         const disableLoginButton = this.state.username.length === 0 || this.state.password.length === 0;
         return (
             <div className='login-container'>
@@ -52,13 +52,15 @@ export class Login extends React.Component<{}, State> {
                     />
                     <Button
                         className='login-button pt-large'
+                        icon='log-in'
                         text='Login'
                         intent={Intent.PRIMARY}
                         disabled={disableLoginButton}
                         onClick={this.onClickLogin}
-                        loading={this.injected.rootStore.sessionStore.loggingIn}
+                        loading={this.injected.sessionStore.loggingIn}
                     />
                     <Button
+                        icon='user'
                         className='signup-button pt-large'
                         text='Sign Up'
                         onClick={this.onClickSignup}
@@ -86,7 +88,7 @@ export class Login extends React.Component<{}, State> {
     }
 
     private onClickLogin = () => {
-        this.injected.rootStore.sessionStore.login(this.state.username, this.state.password);
+        this.injected.sessionStore.login(this.state.username, this.state.password);
     }
 
     private onClickSignup = () => {

@@ -1,20 +1,21 @@
 import * as React from 'react';
 import { observer, inject } from 'mobx-react';
 import { Dropdown } from './Dropdown';
-import { RootStore } from '../../state/RootStore';
 import { Link } from 'react-router-dom';
 import { paths } from '../path';
+import { SessionStore } from '../../state/SessionStore';
+import { Icon } from '@blueprintjs/core';
 require('./Navigation.scss');
 
 interface Props {
-    rootStore: RootStore;
+    sessionStore: SessionStore;
 }
 
 interface State {
     isOpen: boolean;
 }
 
-@inject('rootStore')
+@inject('sessionStore')
 @observer
 export default class Navigation extends React.Component<Props, State> {
     constructor(props: Props) {
@@ -25,7 +26,7 @@ export default class Navigation extends React.Component<Props, State> {
     }
 
     public render() {
-        const hasSession = this.props.rootStore.sessionStore.hasSession;
+        const hasSession = this.props.sessionStore.hasSession;
         return (
             <div className='navbar-container'>
                 <nav className='main-navbar'>
@@ -39,15 +40,17 @@ export default class Navigation extends React.Component<Props, State> {
 
     private renderActionsMenu() {
         return (
-            <Dropdown toggle='Actions'>
+            <Dropdown icon='menu'>
                 <div className='menu-item unselectable'>
                     <Link to={paths.solve()}>
+                        <Icon icon='search' />
                         <div className='menu-item-sub'> Solve </div>
                     </Link>
                 </div>
                 <div className='menu-item unselectable'>
                     <Link to={paths.create()}>
-                        <div className='menu-item-sub'> Create </div>
+                        <Icon icon='new-object' />
+                        <div className='menu-item-sub'> Compose </div>
                     </Link>
                 </div>
             </Dropdown>
@@ -65,21 +68,24 @@ export default class Navigation extends React.Component<Props, State> {
     }
 
     private renderUserDropdown() {
-        const { user } = this.props.rootStore.sessionStore;
+        const { user } = this.props.sessionStore;
         return (
-            <Dropdown toggle={user.login}>
+            <Dropdown icon='user'>
                 <div className='menu-item unselectable'>
                     <Link to={paths.user(user.userId)}>
+                        <Icon icon='mugshot' />
                         <div className='menu-item-sub'> Profile </div>
                     </Link>
                 </div>
                 <div className='menu-item unselectable'>
                     <Link to={paths.settings()}>
+                        <Icon icon='cog' />
                         <div className='menu-item-sub'> Settings </div>
                     </Link>
                 </div>
                 <div className='menu-item unselectable'>
                     <a onClick={this.onClickLogout}>
+                        <Icon icon='log-out' />
                         <div className='menu-item-sub'> Logout </div>
                     </a>
                 </div>

@@ -4,6 +4,7 @@ import { computeNewStoneState } from './computeState';
 import { randomString, arrayEquals, swapColor } from './utils';
 import DotProp from 'dot-prop-immutable';
 import { EditorState } from '../component/editorState';
+import { findReachableStates, findStatesThatCanReach } from './selectors';
 
 /*
  * Immutable methods that will return a new record object with the modifications
@@ -89,6 +90,12 @@ export function addMove(_record: GoRecord, state: string, intersection: Intersec
             },
         });
 
+
+        const parentStates = Array.from(findStatesThatCanReach(record, state));
+        for (const stateId of parentStates) {
+            record = DotProp.delete(record, `boardStates.${stateId}.correct`);
+        }
+
         return {
             record,
             moveId: newMove.id,
@@ -128,23 +135,6 @@ export function removeMove(_record: GoRecord, state: string, intersection: Inter
     }
 
     return record;
-}
-
-export function findReachableStates(record: GoRecord, start?: string): Set<string> {
-    const reachableStates: Set<string> = new Set();
-    const startingState = start || record.initialBoardState;
-
-    const frontier: string[] = [startingState];
-    while (frontier.length >= 1) {
-        const stateToCheck = record.boardStates[frontier.pop()!];
-        reachableStates.add(stateToCheck.id);
-        const children: string[] = stateToCheck.moves
-            .map((move) => move.nextState)
-            .filter((stateId) => !reachableStates.has(stateId));
-        frontier.push(...children);
-    }
-
-    return reachableStates;
 }
 
 export function setText(_record: GoRecord, state: string, text: string): GoRecord {
@@ -196,6 +186,61 @@ export function removeMarkup(_record: GoRecord, state: string, intersection: Int
     });
 
     return DotProp.set(record, `boardStates.${state}.markups`, newMarkups);
+}
+
+export interface ProblemResult {
+    editorState?: EditorState;
+    correct?: boolean;
+}
+
+export function playPrimary(record: GoRecord, editorState: EditorState): ProblemResult {
+    const boardState = record.boardStates[editorState.currentBoardState];
+    const firstCorrect = checkState(record, editorState.currentBoardState);
+    if (firstCorrect !== undefined) {
+        return {
+            editorState: {
+                ...editorState,
+                mode: 'solution',
+                action: 'play',
+            },
+            correct: firstCorrect,
+        };
+    }
+
+    const primaryMoves = boardState.moves.filter((move) => {
+        const reachable = Array.from(findReachableStates(record, move.nextState));
+        return reachable.filter((stateId) => record.boardStates[stateId].primary).length >= 0;
+    });
+
+    const movesToPick = primaryMoves.length >= 1 ? primaryMoves : boardState.moves;
+    const random = Math.floor(Math.random() * movesToPick.length);
+    const nextMove = movesToPick[random];
+    const newEditorState = {
+        ...editorState,
+        moveStack: [...editorState.moveStack, nextMove.id],
+        currentBoardState: nextMove.nextState,
+        playerToMove: swapColor(editorState.playerToMove),
+    };
+    const secondCorrect = checkState(record, nextMove.nextState);
+    if (secondCorrect === undefined) {
+        return { editorState: newEditorState };
+    } else {
+        return {
+            editorState: {
+                ...newEditorState,
+                mode: 'solution',
+                action: 'play',
+            },
+            correct: secondCorrect,
+        };
+    }
+}
+
+export function checkState(record: GoRecord, state: string): boolean | undefined {
+    const boardState = record.boardStates[state];
+    if (boardState.moves.length === 0) {
+        return !!boardState.correct;
+    }
 }
 
 /*

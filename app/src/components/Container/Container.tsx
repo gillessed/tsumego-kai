@@ -5,15 +5,15 @@ import { Home } from '../Home/Home';
 import { Create } from '../Create/Create';
 import { Login } from '../Login/Login';
 import { observer, inject } from 'mobx-react';
-import { RootStore } from '../../state/RootStore';
+import { SessionStore } from '../../state/SessionStore';
 import { Signup } from '../Signup/Signup';
 require('./Container.scss');
 
 interface Props {
-    rootStore: RootStore;
+    sessionStore: SessionStore;
 }
 
-@inject('rootStore')
+@inject('sessionStore')
 @observer
 export class AppContainer extends React.Component<Props, {}> {
     public render() {
@@ -28,7 +28,7 @@ export class AppContainer extends React.Component<Props, {}> {
     }
 
     private renderLogin = () => {
-        if (this.props.rootStore.sessionStore.hasSession) {
+        if (this.props.sessionStore.hasSession) {
             return <Redirect to={paths.home()} />;
         } else {
             return <Login />;

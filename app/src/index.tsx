@@ -3,17 +3,17 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { Router } from 'react-router-dom';
 import { Provider } from 'mobx-react';
-import { RootStore, StoreContext } from './state/RootStore';
 import { Languages } from './language/languages';
 import { getCookie, deleteCookie } from './utils/cookies';
 import { TOKEN_HEADER, apiPath } from './api/config';
-import { SessionData } from './state/session/SessionStore';
+import { SessionData, SessionStore } from './state/SessionStore';
 import { IUser } from './api/api';
 import { App } from './components/App';
 import { registerGlobaListener } from './dropdownListener';
 import { create } from 'apisauce';
 import { ApisauceWrapper } from './api/network';
 import { browserHistory } from './history';
+import { StoreContext } from './state/StoreContext';
 require('./index.scss');
 
 export const SESSION_COOKIE = 'TSUMEGO_KAI_TOKEN';
@@ -52,13 +52,11 @@ async function setup() {
 
     const context: StoreContext = {
         api,
-        sessionData,
-        language,
     };
-    const rootStore = new RootStore(context);
+    const sessionStore = new SessionStore(context, language, sessionData);
 
     ReactDOM.render((
-        <Provider rootStore={rootStore}>
+        <Provider sessionStore={sessionStore}>
             <Router history={browserHistory}>
                 <App/>
             </Router>

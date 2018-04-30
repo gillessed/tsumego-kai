@@ -27,3 +27,11 @@ export function swapColor(color: Color): Color {
         return 'black';
     }
 }
+
+export function range(min: number, max: number): number[] {
+    const range: number[] = [];
+    for (let i = min; i < max; i++) {
+        range.push(i);
+    }
+    return range;
+}

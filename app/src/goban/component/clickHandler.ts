@@ -6,6 +6,7 @@ import { swapColor } from '../model/utils';
 export interface ClickResult {
     record: GoRecord;
     editorState: EditorState;
+    playedMove?: boolean;
 }
 
 export function clickHandler(record: GoRecord, editorState: EditorState, x: number, y: number): ClickResult | undefined {
@@ -44,6 +45,7 @@ function playClickHandler(record: GoRecord, editorState: EditorState, x: number,
                     currentBoardState: move.nextState,
                     playerToMove: swapColor(editorState.playerToMove),
                 },
+                playedMove: true,
             };
         } else if (existingMoves.length === 0) {
             const result = addMove(record, editorState.currentBoardState, { x, y }, editorState.playerToMove);
@@ -56,6 +58,7 @@ function playClickHandler(record: GoRecord, editorState: EditorState, x: number,
             return {
                 record: result.record,
                 editorState: newEditorState,
+                playedMove: true,
             };
         } else {
             throw new Error('Multiple moves have the same interestion ' + x + ',' + y);
