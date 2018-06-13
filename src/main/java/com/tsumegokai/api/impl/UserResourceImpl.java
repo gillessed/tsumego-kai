@@ -26,7 +26,6 @@ public class UserResourceImpl implements UserResource {
         User user;
         try (UserDao dao = dbi.open(UserDao.class)) {
             user = dao.getUser(userId);
-
         } catch (Exception e) {
             throw new ServerException(ErrorType.SERVER_ERROR, e.getMessage());
         }

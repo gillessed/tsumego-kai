@@ -44,7 +44,7 @@ export class Create extends React.PureComponent<{}, State> {
 
     public render() {
         return (
-            <div className='create-container'>
+            <div className='create-container effect-fade-in'>
                 <BoardCanvas
                     classNames='create-canvas-container'
                     record={this.state.record}

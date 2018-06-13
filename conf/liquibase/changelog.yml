@@ -98,6 +98,9 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
+                  name: default_collection
+                  type: boolean
+              - column:
                   name: public
                   type: boolean
                   constraints:
@@ -166,6 +169,11 @@ databaseChangeLog:
               - column:
                   name: serialized_record
                   type: varchar
+              - column:
+                  name: version
+                  type: integer
+                  constraints:
+                    nullable: false
         - addUniqueConstraint:
             columnNames: id, record
             constraintName: version_unique

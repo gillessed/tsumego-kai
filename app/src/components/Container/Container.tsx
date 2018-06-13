@@ -7,6 +7,7 @@ import { Login } from '../Login/Login';
 import { observer, inject } from 'mobx-react';
 import { SessionStore } from '../../state/SessionStore';
 import { Signup } from '../Signup/Signup';
+import { Profile } from '../Profile/Profile';
 require('./Container.scss');
 
 interface Props {
@@ -23,6 +24,7 @@ export class AppContainer extends React.Component<Props, {}> {
                 <Route path={paths.create()} component={Create} />
                 <Route path={paths.login()} render={this.renderLogin} />
                 <Route path={paths.signup()} component={Signup} />
+                <Route path={paths.profileRoute()} component={Profile} />
             </div>
         );
     }

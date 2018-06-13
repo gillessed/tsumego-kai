@@ -42,6 +42,12 @@ export default class Navigation extends React.Component<Props, State> {
         return (
             <Dropdown icon='menu'>
                 <div className='menu-item unselectable'>
+                    <Link to={paths.home()}>
+                        <Icon icon='home' />
+                        <div className='menu-item-sub'> Home </div>
+                    </Link>
+                </div>
+                <div className='menu-item unselectable'>
                     <Link to={paths.solve()}>
                         <Icon icon='search' />
                         <div className='menu-item-sub'> Solve </div>
@@ -72,7 +78,7 @@ export default class Navigation extends React.Component<Props, State> {
         return (
             <Dropdown icon='user'>
                 <div className='menu-item unselectable'>
-                    <Link to={paths.user(user.userId)}>
+                    <Link to={paths.profile(user.userId)}>
                         <Icon icon='mugshot' />
                         <div className='menu-item-sub'> Profile </div>
                     </Link>
