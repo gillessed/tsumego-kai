@@ -2,6 +2,7 @@ package com.tsumegokai.api.impl;
 
 import com.tsumegokai.api.Token;
 import com.tsumegokai.api.User;
+import com.tsumegokai.api.requests.CreateUserRequest;
 import com.tsumegokai.api.requests.LoginRequest;
 import com.tsumegokai.api.resources.AuthResource;
 import com.tsumegokai.dao.user.UserDao;
@@ -28,6 +29,22 @@ public class AuthResourceImpl implements AuthResource {
             String token = RandomString.create(SESSION_TOKEN_LENGTH);
             dao.createToken(user.getId(), token);
             return dao.getToken(token);
+        } catch (Exception e) {
+            throw new ServerException(ErrorType.SERVER_ERROR, e.getMessage());
+        }
+    }
+
+    @Override
+    public User createUser(CreateUserRequest request) {
+        try (UserDao dao = dbi.open(UserDao.class)) {
+            int userId = dao.createUser(
+                    request.getLogin(),
+                    request.getPassword(),
+                    request.getFirstName(),
+                    request.getLastName(),
+                    request.getPassword()
+            );
+            return dao.getUser(userId);
         } catch (Exception e) {
             throw new ServerException(ErrorType.SERVER_ERROR, e.getMessage());
         }

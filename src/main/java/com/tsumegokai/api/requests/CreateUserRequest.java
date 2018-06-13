@@ -8,12 +8,12 @@ import org.immutables.value.Value;
 @JsonSerialize(as = ImmutableCreateUserRequest.class)
 @JsonDeserialize(as = ImmutableCreateUserRequest.class)
 public interface CreateUserRequest {
-
     String getLogin();
     String getPassword();
     String getFirstName();
     String getLastName();
     String getEmail();
+    String getVerificationCode();
 
     class Builder extends ImmutableCreateUserRequest.Builder {}
 }

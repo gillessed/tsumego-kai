@@ -12,13 +12,13 @@ import java.util.List;
 @JsonSerialize(as = ImmutableRecord.class)
 @JsonDeserialize(as = ImmutableRecord.class)
 public interface Record {
-    String getId();
+    int getId();
     String getDateSubmitted();
     int getVersion();
+    int getVersionCount();
     String getData();
     List<String> getTags();
-    @Nullable
-    Integer getCollection();
+    int getCollection();
     @Nullable
     String getPlayerWhite();
     @Nullable

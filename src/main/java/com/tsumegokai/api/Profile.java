@@ -14,6 +14,7 @@ public interface Profile {
     List<Integer> getRoles();
     String getLogin();
     int getRank();
+    List<String> getCollections();
 
     class Builder extends ImmutableProfile.Builder {}
 }

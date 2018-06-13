@@ -26,11 +26,6 @@ public interface UserResource {
     @Produces(MediaType.APPLICATION_JSON)
     User getUser(@PathParam("id") int userId);
 
-    @PUT
-    @Path("create")
-    @Produces(MediaType.APPLICATION_JSON)
-    User createUser(CreateUserRequest request);
-
     @POST
     @Path("logout")
     void logout(@Auth UserPrincipal userPrincipal);

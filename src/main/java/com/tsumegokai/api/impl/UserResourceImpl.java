@@ -1,7 +1,6 @@
 package com.tsumegokai.api.impl;
 
 import com.tsumegokai.api.User;
-import com.tsumegokai.api.requests.CreateUserRequest;
 import com.tsumegokai.api.resources.UserResource;
 import com.tsumegokai.application.auth.UserPrincipal;
 import com.tsumegokai.dao.user.UserDao;
@@ -33,22 +32,6 @@ public class UserResourceImpl implements UserResource {
             throw new ServerException(ErrorType.NOT_FOUND_ERROR, "User " + userId + " not found.");
         }
         return user;
-    }
-
-    @Override
-    public User createUser(CreateUserRequest request) {
-        try (UserDao dao = dbi.open(UserDao.class)) {
-            int userId = dao.createUser(
-                    request.getLogin(),
-                    request.getPassword(),
-                    request.getFirstName(),
-                    request.getLastName(),
-                    request.getPassword()
-            );
-            return dao.getUser(userId);
-        } catch (Exception e) {
-            throw new ServerException(ErrorType.SERVER_ERROR, e.getMessage());
-        }
     }
 
     @Override
