@@ -1,79 +1,73 @@
 package com.tsumegokai.database;
 
+import com.tsumegokai.api.Roles;
 import com.tsumegokai.api.Token;
 import com.tsumegokai.api.User;
 import com.tsumegokai.dao.user.UserDao;
+import org.jdbi.v3.core.Handle;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 public class UserDaoTest extends DatabaseTest {
+    private Handle handle;
     private UserDao userDao;
 
     @Before
     public void openDao() {
-        userDao = dbi.open(UserDao.class);
+        handle = dbi.open();
+        userDao = handle.attach(UserDao.class);
     }
 
     @After
     public void closeDao() {
-        userDao.close();
+        handle.close();
     }
 
     @Test
     public void getUser() {
-        String randomUserLogin = Double.toHexString(Math.random());
-        int userId = userDao.createUser(
-                randomUserLogin,
-                "password",
-                "user",
-                "one",
-                "user@test.com");
-        User user = userDao.getUser(userId);
-        if (user == null) {
+        User insertedUser = createRandomUser(userDao);
+        User retrievedUser = userDao.getUser(insertedUser.getId());
+        if (retrievedUser == null) {
             Assert.fail("User was not found");
         }
-        Assert.assertEquals(randomUserLogin, user.getLogin());
-        Assert.assertNull(user.getPassword());
-        Assert.assertEquals("user", user.getFirstName());
-        Assert.assertEquals("one", user.getLastName());
-        Assert.assertEquals(-1, user.getRank());
-        Assert.assertEquals("user@test.com", user.getEmail());
+        Assert.assertEquals(insertedUser.getLogin(), retrievedUser.getLogin());
+        Assert.assertNull(retrievedUser.getPassword());
+        Assert.assertEquals(insertedUser.getFirstName(), retrievedUser.getFirstName());
+        Assert.assertEquals(insertedUser.getLastName(), retrievedUser.getLastName());
+        Assert.assertEquals(-1, retrievedUser.getRank());
+        Assert.assertEquals(insertedUser.getEmail(), retrievedUser.getEmail());
 
-        User user2 = userDao.getUser(randomUserLogin);
-        Assert.assertEquals(user, user2);
+        User retrievedUser2 = userDao.getUser(insertedUser.getId());
+        Assert.assertEquals(retrievedUser, retrievedUser2);
 
-        User user3 = userDao.getFullUser(userId);
-        User user4 = userDao.getFullUser(randomUserLogin);
-        Assert.assertEquals("password", user3.getPassword());
+        User user3 = userDao.getFullUser(insertedUser.getId());
+        User user4 = userDao.getFullUser(retrievedUser2.getLogin());
+        Assert.assertEquals(insertedUser.getPassword(), user3.getPassword());
         Assert.assertEquals(user3, user4);
     }
 
     @Test
     public void updateUser() {
-        int userId = userDao.createUser(
-                "user1",
-                "password",
-                "user",
-                "one",
-                "user@test.com");
+        User insertedUser = createRandomUser(userDao);
+        User update = createRandomUserDetails();
         userDao.updateUser(
-                userId,
-                "password1",
-                "user1",
-                "one1",
-                3,
-                "user1@test.com");
-        User user = userDao.getFullUser(userId);
-        if (user == null) {
+                insertedUser.getId(),
+                update.getPassword(),
+                update.getFirstName(),
+                update.getLastName(),
+                update.getRank(),
+                update.getEmail());
+        User updatedUser = userDao.getFullUser(insertedUser.getId());
+        if (updatedUser == null) {
             Assert.fail("User was not found");
         }
-        Assert.assertEquals("password1", user.getPassword());
-        Assert.assertEquals("user1", user.getFirstName());
-        Assert.assertEquals("one1", user.getLastName());
-        Assert.assertEquals(3, user.getRank());
-        Assert.assertEquals("user1@test.com", user.getEmail());
+        Assert.assertEquals(update.getPassword(), updatedUser.getPassword());
+        Assert.assertEquals(update.getFirstName(), updatedUser.getFirstName());
+        Assert.assertEquals(update.getLastName(), updatedUser.getLastName());
+        Assert.assertEquals(update.getRank(), updatedUser.getRank());
+        Assert.assertEquals(update.getEmail(), updatedUser.getEmail());
     }
 
     @Test
@@ -86,58 +80,42 @@ public class UserDaoTest extends DatabaseTest {
 
     @Test
     public void addUserRole() {
-        int userId = userDao.createUser(
-                "user1",
-                "password",
-                "user",
-                "one",
-                "user@test.com");
-        userDao.addUserRole(userId, 1);
-        User user = userDao.getUser(userId);
-        Assert.assertTrue(user.getRoles().get(0) == 1);
-        Assert.assertTrue(user.getRoles().size() == 1);
+        User user = createRandomUser(userDao);
+        userDao.addUserRole(user.getId(), Roles.ADMIN);
+        userDao.addUserRole(user.getId(), Roles.OWNER);
+        User roledUser = userDao.getUser(user.getId());
+        Assert.assertTrue(roledUser.getRoles().contains(Roles.ADMIN));
+        Assert.assertTrue(roledUser.getRoles().contains(Roles.OWNER));
+        Assert.assertEquals(2, roledUser.getRoles().size());
     }
 
     @Test
     public void removeUserRole() {
-        int userId = userDao.createUser(
-                "user1",
-                "password",
-                "user",
-                "one",
-                "user@test.com");
-        userDao.addUserRole(userId, 1);
-        userDao.addUserRole(userId, 2);
-        userDao.deleteUserRole(userId, 1);
-        User user = userDao.getUser(userId);
-        Assert.assertTrue(user.getRoles().get(0) == 2);
-        Assert.assertTrue(user.getRoles().size() == 1);
+        User user = createRandomUser(userDao);
+        userDao.addUserRole(user.getId(), 1);
+        userDao.addUserRole(user.getId(), 2);
+        userDao.deleteUserRole(user.getId(), 1);
+        User roledUser = userDao.getUser(user.getId());
+        Assert.assertEquals(2, (int) roledUser.getRoles().get(0));
+        Assert.assertEquals(1, roledUser.getRoles().size());
     }
 
     @Test
     public void createToken() {
-        int userId = userDao.createUser(
-                "user1",
-                "password",
-                "user",
-                "one",
-                "user@test.com");
-        userDao.createToken(userId, "token" + userId);
-        Token token = userDao.getToken("token" + userId);
-        Assert.assertEquals(token.getUserId(), userId);
+        User user = createRandomUser(userDao);
+        String tokenString = "token" + user.getName();
+        userDao.createToken(user.getId(), tokenString);
+        Token token = userDao.getToken(tokenString);
+        Assert.assertEquals(token.getUserId(), user.getId());
     }
 
     @Test
     public void deleteToken() {
-        int userId = userDao.createUser(
-                "user1",
-                "password",
-                "user",
-                "one",
-                "user@test.com");
-        userDao.createToken(userId, "token" + userId);
-        userDao.deleteToken(userId, "token" + userId);
-        Token token = userDao.getToken("token" + userId);
+        User user = createRandomUser(userDao);
+        String tokenString = "token" + user.getName();
+        userDao.createToken(user.getId(), tokenString);
+        userDao.deleteToken(user.getId(), tokenString);
+        Token token = userDao.getToken(tokenString);
         Assert.assertNull(token);
     }
 }

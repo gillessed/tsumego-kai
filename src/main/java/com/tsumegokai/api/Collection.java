@@ -11,8 +11,11 @@ import java.util.List;
 @JsonDeserialize(as = ImmutableCollection.class)
 public interface Collection {
     int getId();
-    List<String> getRecords();
-    List<String> getTags();
+    int getUser();
+    String getName();
+    List<Integer> getRecords();
+    List<Integer> getTags();
+    boolean isPublic();
     boolean isDefaultCollection();
 
     class Builder extends ImmutableCollection.Builder {}

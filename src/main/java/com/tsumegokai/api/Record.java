@@ -13,17 +13,18 @@ import java.util.List;
 @JsonDeserialize(as = ImmutableRecord.class)
 public interface Record {
     int getId();
-    String getDateSubmitted();
+    int getAuthor();
+    String getDateUpdated();
     int getVersion();
     int getVersionCount();
     String getData();
-    List<String> getTags();
+    List<Integer> getTags();
     int getCollection();
+    int getType();
     @Nullable
     String getPlayerWhite();
     @Nullable
     String getPlayerBlack();
-    @Nullable
     Integer getRank();
 
     class Builder extends ImmutableRecord.Builder {}

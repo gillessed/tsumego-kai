@@ -16,9 +16,12 @@ public interface User {
     String getLogin();
     @Nullable
     String getPassword();
+    @Nullable
     String getFirstName();
+    @Nullable
     String getLastName();
     int getRank();
+    @Nullable
     String getEmail();
     default String getName() { return getFirstName() + " " + getLastName(); }
 

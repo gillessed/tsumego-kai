@@ -1,19 +1,19 @@
 package com.tsumegokai.dao.user;
 
 import com.tsumegokai.api.Token;
-import org.skife.jdbi.v2.StatementContext;
-import org.skife.jdbi.v2.tweak.ResultSetMapper;
+import org.jdbi.v3.core.mapper.RowMapper;
+import org.jdbi.v3.core.statement.StatementContext;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class TokenResultMapper implements ResultSetMapper<Token> {
+public class TokenResultMapper implements RowMapper<Token> {
     @Override
-    public Token map(int index, ResultSet r, StatementContext ctx) throws SQLException {
+    public Token map(ResultSet rs, StatementContext ctx) throws SQLException {
         return new Token.Builder()
-                .value(r.getString("value"))
-                .userId(r.getInt("user"))
-                .timestamp(r.getTime("timestamp").toString())
+                .value(rs.getString("value"))
+                .userId(rs.getInt("user"))
+                .timestamp(rs.getTime("timestamp").toString())
                 .build();
     }
 }

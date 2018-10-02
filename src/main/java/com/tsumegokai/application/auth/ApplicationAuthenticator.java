@@ -4,7 +4,8 @@ import com.tsumegokai.api.Token;
 import com.tsumegokai.api.User;
 import com.tsumegokai.dao.user.UserDao;
 import io.dropwizard.auth.Authenticator;
-import org.skife.jdbi.v2.DBI;
+import org.jdbi.v3.core.Handle;
+import org.jdbi.v3.core.Jdbi;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,15 +14,16 @@ import java.util.Optional;
 public class ApplicationAuthenticator implements Authenticator<String, UserPrincipal> {
     private static final Logger log = LoggerFactory.getLogger(ApplicationAuthenticator.class);
 
-    private final DBI dbi;
+    private final Jdbi dbi;
 
-    public ApplicationAuthenticator(DBI dbi) {
+    public ApplicationAuthenticator(Jdbi dbi) {
         this.dbi = dbi;
     }
 
     @Override
     public Optional<UserPrincipal> authenticate(String value) {
-        try (UserDao dao = dbi.open(UserDao.class)) {
+        try (Handle handle = dbi.open()) {
+            UserDao dao = handle.attach(UserDao.class);
             Token token = dao.getToken(value);
             if (token == null) {
                 return Optional.empty();

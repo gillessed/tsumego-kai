@@ -2,30 +2,33 @@ package com.tsumegokai.dao.user;
 
 import com.tsumegokai.api.Token;
 import com.tsumegokai.api.User;
-import org.skife.jdbi.v2.sqlobject.Bind;
-import org.skife.jdbi.v2.sqlobject.GetGeneratedKeys;
-import org.skife.jdbi.v2.sqlobject.SqlQuery;
-import org.skife.jdbi.v2.sqlobject.SqlUpdate;
-import org.skife.jdbi.v2.sqlobject.customizers.RegisterMapper;
+import org.jdbi.v3.sqlobject.config.RegisterRowMapper;
+import org.jdbi.v3.sqlobject.customizer.Bind;
+import org.jdbi.v3.sqlobject.statement.GetGeneratedKeys;
+import org.jdbi.v3.sqlobject.statement.SqlQuery;
+import org.jdbi.v3.sqlobject.statement.SqlUpdate;
+import org.jdbi.v3.sqlobject.statement.UseRowReducer;
 
 import java.io.Closeable;
 
-@RegisterMapper({
-        UserResultMapper.class,
-        TokenResultMapper.class,
-})
+@RegisterRowMapper(UserResultMapper.class)
+@RegisterRowMapper(TokenResultMapper.class)
 public interface UserDao extends Closeable {
+    @UseRowReducer(UserRowReducer.class)
     @SqlQuery("SELECT id, login, first_name, last_name, rank, email, role FROM users " +
             "LEFT JOIN roles ON roles.user = users.id WHERE users.id = :id")
     User getUser(@Bind("id") int id);
 
+    @UseRowReducer(UserRowReducer.class)
     @SqlQuery("SELECT id, login, first_name, last_name, rank, email, role FROM users " +
             "LEFT JOIN roles ON roles.user = users.id WHERE users.login = :login")
     User getUser(@Bind("login") String login);
 
+    @UseRowReducer(UserRowReducer.class)
     @SqlQuery("SELECT * FROM users LEFT JOIN roles ON roles.user = users.id WHERE users.id = :id")
     User getFullUser(@Bind("id") int id);
 
+    @UseRowReducer(UserRowReducer.class)
     @SqlQuery("SELECT * FROM users LEFT JOIN roles ON roles.user = users.id WHERE users.login = :login")
     User getFullUser(@Bind("login") String login);
 
@@ -78,6 +81,5 @@ public interface UserDao extends Closeable {
             @Bind("value") String value
     );
 
-    @Override
-    void close();
+    default void close() {}
 }

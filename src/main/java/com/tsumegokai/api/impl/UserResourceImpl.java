@@ -6,14 +6,15 @@ import com.tsumegokai.application.auth.UserPrincipal;
 import com.tsumegokai.dao.user.UserDao;
 import com.tsumegokai.exception.ErrorType;
 import com.tsumegokai.exception.ServerException;
-import org.skife.jdbi.v2.DBI;
+import org.jdbi.v3.core.Handle;
+import org.jdbi.v3.core.Jdbi;
 
 import javax.inject.Inject;
 
 public class UserResourceImpl implements UserResource {
 
     @Inject
-    private DBI dbi;
+    private Jdbi dbi;
 
     @Override
     public User getSelf(UserPrincipal userPrincipal) {
@@ -21,9 +22,10 @@ public class UserResourceImpl implements UserResource {
     }
 
     @Override
-    public User getUser(int userId) {
+    public User getUser(UserPrincipal userPrincipal, int userId) {
         User user;
-        try (UserDao dao = dbi.open(UserDao.class)) {
+        try (Handle handle = dbi.open()) {
+            UserDao dao = handle.attach(UserDao.class);
             user = dao.getUser(userId);
         } catch (Exception e) {
             throw new ServerException(ErrorType.SERVER_ERROR, e.getMessage());
@@ -31,12 +33,18 @@ public class UserResourceImpl implements UserResource {
         if (user == null) {
             throw new ServerException(ErrorType.NOT_FOUND_ERROR, "User " + userId + " not found.");
         }
-        return user;
+        return new User.Builder()
+                .from(user)
+                .firstName(null)
+                .lastName(null)
+                .email(null)
+                .build();
     }
 
     @Override
     public void logout(UserPrincipal userPrincipal) {
-        try (UserDao dao = dbi.open(UserDao.class)) {
+        try (Handle handle = dbi.open()) {
+            UserDao dao = handle.attach(UserDao.class);
             dao.deleteToken(userPrincipal.getUser().getId(), userPrincipal.getToken());
         } catch (Exception e) {
             throw new ServerException(ErrorType.SERVER_ERROR, e.getMessage());

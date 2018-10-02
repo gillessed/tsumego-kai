@@ -12,7 +12,7 @@ dependencies {
     compile "io.dropwizard:dropwizard-assets:${dropwizardVersion}"
     compile "io.dropwizard:dropwizard-auth:${dropwizardVersion}"
     compile "com.liveperson:dropwizard-websockets:${dropwizardWebsocketsVersion}"
-    compile "io.dropwizard:dropwizard-jdbi:${dropwizardVersion}"
+    compile "io.dropwizard:dropwizard-jdbi3:${dropwizardVersion}"
     compile "org.liquibase:liquibase-core:${liquibaseVersion}"
     testCompile "io.dropwizard:dropwizard-testing:${dropwizardVersion}"
     runtime "postgresql:postgresql:${postgresDriverVersion}"

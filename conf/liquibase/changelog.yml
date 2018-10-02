@@ -90,15 +90,17 @@ databaseChangeLog:
             tableName: verification_codes
             columns:
               - column:
-                  name: record
-                  type: integer
+                  name: email
+                  type: varchar
                   constraints:
                     nullable: false
                     unique: true
                     primaryKey: true
               - column:
-                  name: version
-                  type: integer
+                  name: code
+                  type: varchar
+                  constraints:
+                    nullable: false
               - column:
                   name: timestamp
                   type: timestamp
@@ -120,9 +122,10 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
-                  nullable: false
                   name: default_collection
                   type: boolean
+                  constraints:
+                    nullable: false
               - column:
                   name: public
                   type: boolean
@@ -176,6 +179,11 @@ databaseChangeLog:
               - column:
                   name: player_white
                   type: varchar
+              - column:
+                  name: latest_version
+                  type: integer
+                  constraints:
+                    nullable: false
         - createTable:
             tableName: versions
             columns:
@@ -195,9 +203,12 @@ databaseChangeLog:
                   type: integer
                   constraints:
                     nullable: false
+              - column:
+                  name: date_updated
+                  type: timestamp
+                  defaultValueComputed: now()
             columnNames: version, record
             constraintName: version_unique
-            tableName: versions
         - createTable:
             tableName: tags
             columns:

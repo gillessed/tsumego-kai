@@ -2,33 +2,25 @@ package com.tsumegokai.dao.user;
 
 import com.tsumegokai.api.User;
 import com.tsumegokai.utils.SqlUtils;
-import org.skife.jdbi.v2.StatementContext;
-import org.skife.jdbi.v2.tweak.ResultSetMapper;
+import org.jdbi.v3.core.mapper.RowMapper;
+import org.jdbi.v3.core.statement.StatementContext;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 
-public class UserResultMapper implements ResultSetMapper<User> {
+public class UserResultMapper implements RowMapper<User> {
     @Override
-    public User map(int index, ResultSet r, StatementContext ctx) throws SQLException {
+    public User map(ResultSet rs, StatementContext ctx) throws SQLException {
         User.Builder builder = new User.Builder()
-                .id(r.getInt("id"))
-                .login(r.getString("login"))
-                .firstName(r.getString("first_name"))
-                .lastName(r.getString("last_name"))
-                .rank(r.getInt("rank"))
-                .email(r.getString("email"));
-        if (SqlUtils.resultSetHas(r, "password")) {
-            builder.password(r.getString("password"));
+                .id(rs.getInt("id"))
+                .login(rs.getString("login"))
+                .firstName(rs.getString("first_name"))
+                .lastName(rs.getString("last_name"))
+                .rank(rs.getInt("rank"))
+                .email(rs.getString("email"));
+        if (SqlUtils.resultSetHas(rs, "password")) {
+            builder.password(rs.getString("password"));
         }
-        List<Integer> roles = new ArrayList<>();
-        do {
-            roles.add(r.getInt("role"));
-        } while(r.next());
-        return builder
-                .addAllRoles(roles)
-                .build();
+        return builder.build();
     }
 }

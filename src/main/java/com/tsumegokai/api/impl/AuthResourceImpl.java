@@ -4,12 +4,14 @@ import com.tsumegokai.api.Token;
 import com.tsumegokai.api.User;
 import com.tsumegokai.api.requests.CreateUserRequest;
 import com.tsumegokai.api.requests.LoginRequest;
+import com.tsumegokai.api.requests.VerifyRequest;
 import com.tsumegokai.api.resources.AuthResource;
 import com.tsumegokai.dao.user.UserDao;
 import com.tsumegokai.exception.ErrorType;
 import com.tsumegokai.exception.ServerException;
 import com.tsumegokai.utils.RandomString;
-import org.skife.jdbi.v2.DBI;
+import org.jdbi.v3.core.Handle;
+import org.jdbi.v3.core.Jdbi;
 
 import javax.inject.Inject;
 
@@ -17,12 +19,14 @@ public class AuthResourceImpl implements AuthResource {
     private static final int SESSION_TOKEN_LENGTH = 48;
 
     @Inject
-    private DBI dbi;
+    private Jdbi dbi;
 
     @Override
     public Token login(LoginRequest loginRequest) {
-        try (UserDao dao = dbi.open(UserDao.class)) {
+        try (Handle handle = dbi.open()) {
+            UserDao dao = handle.attach(UserDao.class);
             User user = dao.getFullUser(loginRequest.getUsername());
+            // TODO: Hash passwords
             if (user == null || !loginRequest.getPassword().equals(user.getPassword())) {
                 throw new ServerException(ErrorType.LOGIN_ERROR, "Invalid username or password");
             }
@@ -36,7 +40,8 @@ public class AuthResourceImpl implements AuthResource {
 
     @Override
     public User createUser(CreateUserRequest request) {
-        try (UserDao dao = dbi.open(UserDao.class)) {
+        try (Handle handle = dbi.open()) {
+            UserDao dao = handle.attach(UserDao.class);
             int userId = dao.createUser(
                     request.getLogin(),
                     request.getPassword(),
@@ -44,9 +49,15 @@ public class AuthResourceImpl implements AuthResource {
                     request.getLastName(),
                     request.getPassword()
             );
+            // TODO: create default collection for user
             return dao.getUser(userId);
         } catch (Exception e) {
             throw new ServerException(ErrorType.SERVER_ERROR, e.getMessage());
         }
+    }
+
+    @Override
+    public void createVerificationCode(VerifyRequest request) {
+        // TODO: implement verification
     }
 }

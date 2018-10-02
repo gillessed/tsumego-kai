@@ -13,7 +13,7 @@ import io.dropwizard.Application;
 import io.dropwizard.assets.AssetsBundle;
 import io.dropwizard.auth.AuthDynamicFeature;
 import io.dropwizard.auth.AuthValueFactoryProvider;
-import io.dropwizard.jdbi.DBIFactory;
+import io.dropwizard.jdbi3.JdbiFactory;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import io.dropwizard.websockets.WebsocketBundle;
@@ -25,7 +25,8 @@ import liquibase.database.DatabaseFactory;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.LiquibaseException;
 import liquibase.resource.FileSystemResourceAccessor;
-import org.skife.jdbi.v2.DBI;
+import org.jdbi.v3.core.Jdbi;
+import org.jdbi.v3.sqlobject.SqlObjectPlugin;
 
 import javax.websocket.CloseReason;
 import javax.websocket.OnClose;
@@ -54,16 +55,17 @@ public class TsumegoKaiMain extends Application<TsumegoKaiConfiguration> {
 
     @Override
     public void run(TsumegoKaiConfiguration configuration, Environment environment) throws Exception {
-        DBI dbi = new DBIFactory().build(environment, configuration.getDataSourceFactory(), "postgresql");
-        ApplicationAuthenticator authenticator = new ApplicationAuthenticator(dbi);
+        Jdbi jdbi = new JdbiFactory().build(environment, configuration.getDataSourceFactory(), "postgresql");
+        jdbi.installPlugin(new SqlObjectPlugin());
+        ApplicationAuthenticator authenticator = new ApplicationAuthenticator(jdbi);
         ApplicationBinder binder = new ApplicationBinder(
                 configuration,
                 environment,
                 pushService,
-                dbi
+                jdbi
         );
 
-        updateDatabaseSchema(dbi, configuration.getLiquibase());
+        updateDatabaseSchema(jdbi, configuration.getLiquibase());
 
         environment.jersey().register(binder);
         environment.jersey().register(new ServerExceptionMapper());
@@ -78,7 +80,7 @@ public class TsumegoKaiMain extends Application<TsumegoKaiConfiguration> {
         environment.jersey().register(new AuthValueFactoryProvider.Binder<>(UserPrincipal.class));
     }
 
-    private void updateDatabaseSchema(DBI dbi, String liquibaseFile) {
+    private void updateDatabaseSchema(Jdbi dbi, String liquibaseFile) {
         try (Connection connection = dbi.open().getConnection()) {
             JdbcConnection jdbcConnection = new JdbcConnection(connection);
             Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(jdbcConnection);
