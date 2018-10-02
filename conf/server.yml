@@ -39,3 +39,10 @@ database:
   minIdleTime: 1 minute
 
 liquibase: conf/liquibase/changelog.yml
+
+userSeed:
+  - username: gcoleadmin
+    password: kleinbottlekai
+    firstName: Greg
+    lastName: Cole
+    email: owner@tsumegokai.com

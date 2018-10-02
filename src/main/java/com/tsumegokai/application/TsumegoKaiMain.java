@@ -6,6 +6,9 @@ import com.tsumegokai.api.impl.UserResourceImpl;
 import com.tsumegokai.application.auth.ApplicationAuthFilter;
 import com.tsumegokai.application.auth.ApplicationAuthenticator;
 import com.tsumegokai.application.auth.UserPrincipal;
+import com.tsumegokai.application.startup.StartupTask;
+import com.tsumegokai.application.startup.UpdateDatabaseSchemaTask;
+import com.tsumegokai.application.startup.UserSeedTask;
 import com.tsumegokai.exception.ServerExceptionMapper;
 import com.tsumegokai.push.PushService;
 import com.tsumegokai.push.impl.PushResource;
@@ -27,6 +30,12 @@ import liquibase.exception.LiquibaseException;
 import liquibase.resource.FileSystemResourceAccessor;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.sqlobject.SqlObjectPlugin;
+import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
+import org.jdbi.v3.core.Jdbi;
+import org.jdbi.v3.sqlobject.SqlObjectPlugin;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.websocket.CloseReason;
 import javax.websocket.OnClose;
@@ -37,9 +46,14 @@ import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TsumegoKaiMain extends Application<TsumegoKaiConfiguration> {
+    private static final Logger log = LoggerFactory.getLogger(TsumegoKaiMain.class);
+
     private static PushService pushService;
+    private final List<StartupTask> startupTasks = new ArrayList<>();
 
     public static void main(String[] args) throws Exception {
         new TsumegoKaiMain().run(args);
@@ -51,6 +65,9 @@ public class TsumegoKaiMain extends Application<TsumegoKaiConfiguration> {
 
         bootstrap.addBundle(new AssetsBundle("/static", "/static", "index.html"));
         bootstrap.addBundle(new WebsocketBundle(WebsocketService.class));
+
+        startupTasks.add(new UpdateDatabaseSchemaTask());
+        startupTasks.add(new UserSeedTask());
     }
 
     @Override
@@ -64,10 +81,14 @@ public class TsumegoKaiMain extends Application<TsumegoKaiConfiguration> {
                 pushService,
                 jdbi
         );
-
-        updateDatabaseSchema(jdbi, configuration.getLiquibase());
-
+        ServiceLocator serviceLocator = ServiceLocatorUtilities.bind(binder);
         environment.jersey().register(binder);
+
+        for (StartupTask task : startupTasks) {
+            log.info("Running startup task: " + task.getName());
+            task.run(configuration, serviceLocator);
+        }
+
         environment.jersey().register(new ServerExceptionMapper());
 
         environment.jersey().register(new AuthResourceImpl());
@@ -78,18 +99,6 @@ public class TsumegoKaiMain extends Application<TsumegoKaiConfiguration> {
                 new ApplicationAuthFilter(authenticator);
         environment.jersey().register(new AuthDynamicFeature(applicationAuthFilter));
         environment.jersey().register(new AuthValueFactoryProvider.Binder<>(UserPrincipal.class));
-    }
-
-    private void updateDatabaseSchema(Jdbi dbi, String liquibaseFile) {
-        try (Connection connection = dbi.open().getConnection()) {
-            JdbcConnection jdbcConnection = new JdbcConnection(connection);
-            Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(jdbcConnection);
-            Liquibase liquibase = new Liquibase(liquibaseFile, new FileSystemResourceAccessor(), database);
-            liquibase.update(new Contexts(), new LabelExpression());
-            connection.setAutoCommit(true);
-        } catch (SQLException | LiquibaseException e) {
-            throw new IllegalStateException(e);
-        }
     }
 
     @ServerEndpoint("/push")

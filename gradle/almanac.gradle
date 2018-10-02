@@ -1,0 +1,55 @@
+buildscript {
+    repositories {
+        maven { url 'https://artifactory.palantir.build/artifactory/all-jar' }
+    }
+    dependencies {
+        classpath "com.palantir.almanac:almanac-gradle:4.1.0"
+    }
+}
+
+apply plugin: 'pt-almanac'
+
+def getTag() {
+    def matcher = (project.version =~ /[0-9]+(\.[0-9]+)+((-(beta|rc)[0-9]{1,2})(\.[0-9])?)?/)
+    return matcher[0][0]
+}
+
+def isRelease() {
+    return getTag() == project.version
+}
+
+def getCommitCount() {
+    def matcher = (project.version =~ /-([0-9]+)-/)
+    if (matcher) {
+        return matcher[0][1].toInteger()
+    }
+    return 0
+}
+
+task almanacPublish(type: com.palantir.almanac.tasks.AlmanacPublish) {
+    unit {
+        product = project.name
+        branch = isRelease() ? getTag() : getTag() + '-dev'
+        revision = getCommitCount()
+        tags = ['slsv2', 'skylab']
+    }
+    def urlComponents = [
+        'https://artifactory.palantir.build/artifactory',
+        isRelease() ? 'internal-dist-release' : 'internal-dist-snapshot',
+        project.group.replace('.', '/'),
+        project.name,
+        project.version,
+        project.name + '-' + project.version + '.sls.tgz'
+    ]
+    publication = urlComponents.join('/')
+    metadata 'version', version
+}
+
+task almanacRelease(type: com.palantir.almanac.tasks.AlmanacRelease) {
+    unit {
+        product = project.name
+        branch = getTag()
+        revision = 0
+    }
+    releaseTypes = ['GA']
+}

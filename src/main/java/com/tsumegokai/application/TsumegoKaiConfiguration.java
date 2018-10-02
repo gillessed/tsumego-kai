@@ -6,6 +6,7 @@ import io.dropwizard.db.DataSourceFactory;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 public class TsumegoKaiConfiguration extends Configuration {
     @Valid
@@ -24,5 +25,14 @@ public class TsumegoKaiConfiguration extends Configuration {
 
     public String getLiquibase() {
         return liquibase;
+    }
+
+    @Valid
+    @NotNull
+    @JsonProperty
+    private List<UserSeedConfiguration> userSeed;
+
+    public List<UserSeedConfiguration> getUserSeeds() {
+        return userSeed;
     }
 }

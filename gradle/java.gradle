@@ -1,0 +1,15 @@
+apply plugin: 'java'
+apply plugin: 'com.palantir.baseline-checkstyle'
+apply plugin: 'com.palantir.baseline-eclipse'
+apply plugin: 'com.palantir.baseline-idea'
+apply plugin: 'com.palantir.configuration-resolver'
+apply plugin: 'com.palantir.jacoco-coverage'
+apply plugin: 'com.palantir.launch-config'
+
+// TODO (blaub) - reenable findbugs at some point
+// apply plugin: 'findbugs'
+// findbugs {
+//   excludeFilter = file("$rootProject.projectDir/.baseline/findbugs/excludeFilter.xml")
+// }
+
+sourceCompatibility = '1.8'

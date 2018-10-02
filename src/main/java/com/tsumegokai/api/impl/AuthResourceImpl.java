@@ -9,6 +9,7 @@ import com.tsumegokai.api.resources.AuthResource;
 import com.tsumegokai.dao.user.UserDao;
 import com.tsumegokai.exception.ErrorType;
 import com.tsumegokai.exception.ServerException;
+import com.tsumegokai.hash.HashService;
 import com.tsumegokai.utils.RandomString;
 import org.jdbi.v3.core.Handle;
 import org.jdbi.v3.core.Jdbi;
@@ -21,13 +22,16 @@ public class AuthResourceImpl implements AuthResource {
     @Inject
     private Jdbi dbi;
 
+    @Inject
+    private HashService hashService;
+
     @Override
     public Token login(LoginRequest loginRequest) {
         try (Handle handle = dbi.open()) {
             UserDao dao = handle.attach(UserDao.class);
             User user = dao.getFullUser(loginRequest.getUsername());
-            // TODO: Hash passwords
-            if (user == null || !loginRequest.getPassword().equals(user.getPassword())) {
+            String hashedPassword = hashService.hash(loginRequest.getPassword());
+            if (user == null || !hashedPassword.equals(user.getPassword())) {
                 throw new ServerException(ErrorType.LOGIN_ERROR, "Invalid username or password");
             }
             String token = RandomString.create(SESSION_TOKEN_LENGTH);
@@ -44,7 +48,7 @@ public class AuthResourceImpl implements AuthResource {
             UserDao dao = handle.attach(UserDao.class);
             int userId = dao.createUser(
                     request.getLogin(),
-                    request.getPassword(),
+                    hashService.hash(request.getPassword()),
                     request.getFirstName(),
                     request.getLastName(),
                     request.getPassword()
