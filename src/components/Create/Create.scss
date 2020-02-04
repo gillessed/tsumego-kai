@@ -1,0 +1,34 @@
+.create-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    position: relative;
+    flex-grow: 1;
+
+    .create-canvas-container {
+        margin-top: 20px;
+        margin-bottom: 20px;
+        width: 100%;
+    }
+
+    .create-right {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .button-panel {
+        margin-left: 20px;
+        margin-right: 20px;
+        margin-bottom: 20px;
+        align-self: stretch;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+
+        a {
+            flex: 1;
+        }
+    }
+}
