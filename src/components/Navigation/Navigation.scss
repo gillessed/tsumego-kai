@@ -1,50 +1,51 @@
-@import '../../variables.scss';
+@import "../../variables.scss";
 
 $navHeight: 60;
 
 .navbar-container {
-    .main-navbar {
-        height: $navHeight + px;
-        position: relative;
-        z-index: 100;
-        background-color: $p1c5;
+  .main-navbar {
+    height: $navHeight + px;
+    position: relative;
+    z-index: 100;
+    background-color: $p1c5;
+    display: flex;
+    flex-direction: row;
+
+    .navbar-brand {
+      color: $white;
+    }
+
+    .nav-button,
+    .menu-item {
+      cursor: default;
+      a {
         display: flex;
         flex-direction: row;
+        align-items: center;
+        text-decoration: none;
+        color: $p2c1;
+      }
 
-        .navbar-brand {
-            color: $white ;
+      &:hover {
+        cursor: pointer;
+        a {
+          color: $white;
         }
+      }
 
-        .nav-button, .menu-item {
-            cursor: default;
-            a {
-                display: flex;
-                flex-direction: row;
-                align-items: center;
-                text-decoration: none;
-                color: $p2c1;
-            }
-
-            &:hover {
-                cursor: pointer;
-                a {
-                    color: $white;
-                }
-            }
-
-            .menu-item-sub {
-                width: 100%;
-                padding: 10px;
-            }
-        }
-
-        .nav-button {
-            padding-left: 10px;
-            padding-right: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: $navFontSize;
-        }
+      .menu-item-sub {
+        width: 100%;
+        padding: 10px;
+      }
     }
+
+    .nav-button {
+      padding-left: 10px;
+      padding-right: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: $navFontSize;
+    }
+  }
 }
