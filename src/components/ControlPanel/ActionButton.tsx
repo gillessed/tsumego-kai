@@ -1,35 +1,38 @@
 import * as React from 'react';
-import { BoardUpdate } from '../../goban/component/canvas';
 import { AnchorButton, IconName } from '@blueprintjs/core';
-import { EditAction, EditorState } from '../../goban/component/editorState';
+import { EditAction, EditorState } from '../../goban/component/EditorState';
+import { useCallback } from 'react';
 
 interface Props {
-    className?: string;
-    icon: IconName;
-    editorState: EditorState;
-    buttonAction: EditAction;
-    updateBoard: BoardUpdate;
+  className?: string;
+  icon: IconName;
+  editorState: EditorState;
+  buttonAction: EditAction;
+  setEditorState: (editorState: EditorState) => void;
 }
 
-export class ActionButton extends React.PureComponent<Props, {}> {
-    public render() {
-        return (
-            <AnchorButton
-                className={this.props.className}
-                icon={this.props.icon}
-                active={this.props.editorState.action === this.props.buttonAction}
-                onClick={this.onClick}
-            />
-        );
-    }
+export const ActionButton = React.memo(({
+  className,
+  icon,
+  editorState,
+  buttonAction,
+  setEditorState,
+}: Props) => {
 
-    private onClick = () => {
-        const newEditorState = {
-            ...this.props.editorState,
-            action: this.props.buttonAction,
-        };
-        this.props.updateBoard({
-            editorState: newEditorState,
-        });
-    }
-}
+  const onClick = useCallback(() => {
+    const newEditorState = {
+      ...editorState,
+      action: buttonAction,
+    };
+    setEditorState(newEditorState);
+  }, [editorState, buttonAction, setEditorState]);
+
+  return (
+    <AnchorButton
+      className={className}
+      icon={icon}
+      active={editorState.action === buttonAction}
+      onClick={onClick}
+    />
+  );
+});

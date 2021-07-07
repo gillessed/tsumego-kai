@@ -1,0 +1,30 @@
+.correctness-row {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 20px;
+  align-items: center;
+
+  .bp3-control {
+    margin-bottom: 0px;
+  }
+}
+
+.to-play-container {
+  display: flex;
+  align-items: center;
+
+  &.clickable {
+    cursor: pointer;
+  }
+
+  span {
+    pointer-events: none;
+  }
+
+  .stone-image {
+    width: 20px;
+    height: 20px;
+    margin-right: 5px;
+    pointer-events: none;
+  }
+}

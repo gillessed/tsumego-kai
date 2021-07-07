@@ -1,0 +1,19 @@
+.full-goban-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  position: relative;
+  width: 100%;
+  height: calc(100vh - 60px);
+
+  .full-goban-right {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 400px;
+    min-width: 400px;
+    flex-basis: 400px;
+    flex-shrink: 0;
+  }
+}

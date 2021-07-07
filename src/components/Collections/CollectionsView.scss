@@ -1,0 +1,23 @@
+@import "../../variables.scss";
+
+.collections-view {
+  .collections-title {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+
+  .collections-card-container {
+    position: relative;
+    margin-top: 20px;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+
+    & > * {
+      margin-right: 20px;
+    }
+  }
+}

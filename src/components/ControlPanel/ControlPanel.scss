@@ -1,94 +1,27 @@
 .control-panel-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  width: 400px;
+  flex: 1;
+
+  .header {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    justify-content: center;
     align-items: center;
-    padding: 20px;
-    width: 400px;
+
+    h3 {
+      margin-bottom: 10px;
+      margin-top: 10px;
+      margin-right: 5px;
+    }
+  }
+
+  .comment-textarea {
+    width: 100%;
     flex: 1;
-
-    .header {
-        display: flex;
-        flex-direction: row;
-        justify-content: center;
-        align-items: center;
-
-        h3 {
-            margin-bottom: 10px;
-            margin-top: 10px;
-            margin-right: 5px;
-        }
-    }
-
-    .move-number-button-group {
-        width: 100%;
-        margin-bottom: 20px;
-    }
-
-    .action-button-group {
-        width: 100%;
-        margin-bottom: 20px;
-    }
-    
-    .comment-textarea {
-        width: 100%;
-        flex: 1;
-        resize: none;
-    }
-
-    .play-button > svg {
-        color: #000000;
-    }
-
-    .black-button > svg {
-        color: #000000;
-    }
-
-    .white-button > svg {
-        color: #FFFFFF;
-        path {
-            stroke: #646464;
-            stroke-width:1px;
-            stroke-linejoin: round;
-        }
-    }
-
-    .correctness-row {
-        display: flex;
-        flex-direction: row;
-        margin-bottom: 10px;
-    }
-
-    .clip-row {
-        display: flex;
-        flex-direction: row;
-        margin-bottom: 10px;
-
-        .slider-column {
-            display: flex;
-            flex-direction: column;
-        }
-        .name-container {
-            width: 100px;
-        }
-
-        .width-row {
-            display: flex;
-            flex-direction: row;
-            margin-bottom: 10px;
-        }
-
-        .height-row {
-            display: flex;
-            flex-direction: row;
-        }
-
-        .auto-clip-container {
-            margin-left: 10px;
-            align-self: stretch;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-    }
-
+    resize: none;
+  }
 }

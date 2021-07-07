@@ -1,12 +1,30 @@
-$black: #000000;
-$p1c1: #F7F6EF;
-$p2c1: rgb(223, 230, 213);
-$p3c1: #D3D0C0;
-$p1c2: #C7D3C0;
-$p1c3: #9DC6BF;
-$p1c4: #578E7F;
-$p1c5: #1F7745;
-$p3c5: #185d36;
 $white: #FFFFFF;
+$black: #000000;
+
+$c1-dark: #01523d;
+$c1-mid: #03664d;
+$c1-light: #A3CFC4;
+$c1-lightest: #EEF6F4;
+$c2-mid: #f5dca8;
+$c2-light: #faeac9;
+$c3-dark: #23033d;
+$c3-mid: #400570;
+$c3-light: #e2ccf3;
 
 $navFontSize: 20px;
+$navHeight: 60px;
+
+$background: $c1-lightest;
+
+$menu-open-color: $c3-mid;
+$menu-closed-color: $c3-dark;
+$menu-text-color: $c3-light;
+$menu-text-hover-color: $c1-lightest;
+
+$header-text-color: $c1-mid;
+$app-text-color: $c1-dark;
+
+$card-title: $c1-dark;
+$subtitle-gray: #7b8d8a;
+$card-border: $c1-dark;
+$card-hover: #e3f1ee;

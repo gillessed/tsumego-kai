@@ -1,56 +1,55 @@
-import 'babel-polyfill';
+import firebase from "firebase/app";
 import React from 'react';
-import * as ReactDOM from 'react-dom';
+import ReactDOM from 'react-dom';
+import { Provider } from "react-redux";
 import { Router } from 'react-router-dom';
-import { App } from './components/App';
-import { registerGlobaListener } from './dropdownListener';
+import { createStore, Store } from "redoodle";
+import { AppContainer } from './components/AppContainer';
+import { registerDropdownListener } from './dropdownListener';
 import { browserHistory } from './history';
 import './index.scss';
 import { Languages } from './language/languages';
-import { SessionData } from './state/SessionStore';
-import { getCookie } from './utils/cookies';
-import { Provider } from 'react-redux';
+import { ReduxState } from "./state/ReduxState";
+import { InitialReduxState, rootReducer } from "./state/RootReducer";
+import { SessionActions } from "./state/session/SessionState";
 
 export const SESSION_COOKIE = 'TSUMEGO_KAI_TOKEN';
 export const LANGUAGE_COOKIE = 'TSUMEGO_KAI_LANGUAGE';
 export const DEFAULT_LANGUAGE = Languages.English;
 
-async function setup() {
-    const existingToken = getCookie(SESSION_COOKIE);
-    const language = getCookie(LANGUAGE_COOKIE, DEFAULT_LANGUAGE) || DEFAULT_LANGUAGE;
-    let sessionData: SessionData | undefined;
+const registerFirebase = async (store: Store<ReduxState>) => {
+  const firebaseConfig = {
+    apiKey: "AIzaSyBllcg6JZQ3SzD0dGxcXkpMGwyM0kyE5QY",
+    authDomain: "tsumego-kai.firebaseapp.com",
+    databaseURL: "https://tsumego-kai.firebaseio.com",
+    projectId: "tsumego-kai",
+    storageBucket: "tsumego-kai.appspot.com",
+    messagingSenderId: "436741291897",
+    appId: "1:436741291897:web:451c1694867de342e2f9a8",
+    measurementId: "G-3JFBMH90N7"
+  };
 
-    // if (existingToken) {
-    //     api.setHeader(TOKEN_HEADER, existingToken);
-    //     try {
-    //         const response = await api.get('/user');
-    //         if (response.ok && response.data) {
-    //             const user = response.data as IUser;
-    //             sessionData = {
-    //                 token: existingToken,
-    //                 userId: user.id,
-    //                 login: user.login,
-    //                 firstName: user.firstName,
-    //                 lastName: user.lastName,
-    //                 rank: user.rank,
-    //                 roles: user.roles,
-    //             };
-    //         }
-    //     } catch (error) {
-    //         deleteCookie(SESSION_COOKIE);
-    //     }
-    // }
-
-    ReactDOM.render((
-        <Provider store={null as any}>
-            <Router history={browserHistory}>
-                <App/>
-            </Router>
-        </Provider>
-    ), document.getElementById('main'));
-    
-    return Promise.resolve();
+  firebase.initializeApp(firebaseConfig);
+  firebase.auth().onAuthStateChanged((user) => {
+    store.dispatch(SessionActions.setUser(user ?? null));
+  });
 }
 
-registerGlobaListener();
+const setup = async () => {
+
+  const store = createStore(rootReducer, InitialReduxState);
+  await registerFirebase(store);
+
+  ReactDOM.render((
+    <Provider store={store}>
+      <Router history={browserHistory}>
+        <AppContainer />
+      </Router>
+    </Provider>
+  ), document.getElementById('root'));
+
+  return Promise.resolve();
+}
+
+registerDropdownListener();
 setup();

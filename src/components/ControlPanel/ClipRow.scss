@@ -1,0 +1,25 @@
+.clip-row {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 10px;
+
+  .slider-column {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .name-container {
+    width: 100px;
+  }
+
+  .width-row {
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 10px;
+  }
+
+  .height-row {
+    display: flex;
+    flex-direction: row;
+  }
+}

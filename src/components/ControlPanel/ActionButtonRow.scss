@@ -1,0 +1,21 @@
+.action-button-group {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.play-button svg {
+  color: #000000;
+}
+
+.black-button svg {
+  color: #000000;
+}
+
+.white-button svg {
+  color: #ffffff;
+  path {
+    stroke: #646464;
+    stroke-width: 1px;
+    stroke-linejoin: round;
+  }
+}

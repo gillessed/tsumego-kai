@@ -1,0 +1,19 @@
+
+.card {
+  position: relative;
+  border: 1px solid $card-border;
+  box-shadow: 5px 5px $c1-mid;
+  padding-left: 10px;
+  padding-right: 10px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: $card-hover;
+  }
+
+  &:hover:active {
+    top: 2px;
+    left: 2px;
+    box-shadow: 3px 3px $c1-dark;
+  }
+}

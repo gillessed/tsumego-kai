@@ -1,24 +1,18 @@
-import { Dropdown } from './components/Navigation/Dropdown';
+type CloseDropdownCallback = (source: HTMLDivElement) => void;
+const mountedDropdowns = new Set<CloseDropdownCallback>();
 
-const activeDropdowns: Dropdown[] = [];
-
-export function registerGlobaListener() {
-    document.onclick = (e: Event) => {
-        activeDropdowns.forEach((dropdown) => {
-            dropdown.close();
-            if (dropdown.toggle && e.target === dropdown.toggle) {
-                dropdown.closedFlag = true;
-            }
-        });
-        while (activeDropdowns.length > 0) {
-            activeDropdowns.pop();
-        }
-    };
+export function registerDropdownListener() {
+  document.onclick = (e: Event) => {
+    for (const callback of mountedDropdowns) {
+      callback(e.target as HTMLDivElement);
+    }
+  };
 }
 
-export function dropdownOpened(dropdown: Dropdown) {
-    const index = activeDropdowns.indexOf(dropdown);
-    if (index < 0) {
-        activeDropdowns.push(dropdown);
-    }
+export function dropdownMounted(callback: CloseDropdownCallback) {
+  mountedDropdowns.add(callback);
+}
+
+export function dropdownUnmounted(callback: CloseDropdownCallback) {
+  mountedDropdowns.delete(callback);
 }

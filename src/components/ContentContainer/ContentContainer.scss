@@ -1,0 +1,17 @@
+@import "../../variables.scss";
+
+.app-container {
+  height: calc(100vh - #{$navHeight});
+  background-color: $background;
+  overflow-x: hidden;
+  overflow-y: scroll;
+
+  p, textarea {
+    color: $app-text-color;
+  }
+
+  .content-view {
+    margin-left: 100px;
+    margin-right: 100px;
+  }
+}
