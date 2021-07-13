@@ -1,12 +1,9 @@
 import { Button, Intent, Spinner } from '@blueprintjs/core';
 import { IconNames } from '@blueprintjs/icons';
-import React, { useCallback, useEffect, useState } from 'react';
-import { browserHistory } from '../../history';
-import { Async, asyncEmpty, isAsyncLoaded, isAsyncLoading, loadAsyncEffect } from '../../state/Async';
-import { Collections } from '../../state/collections/CollectionsHandlers';
-import { Collection, emptyCollection } from '../../state/collections/CollectionsTypes';
+import React from 'react';
+import { isAsyncLoaded, isAsyncLoading } from '../../state/Async';
+import { useAsyncAddCollection, useAsyncCollections } from '../../state/collections/CollectionsHooks';
 import { User } from '../../state/session/User';
-import { AppRoutes } from '../AppRoutes';
 import { LoadingView } from '../Loading/LoadingView';
 import { CollectionCard } from './CollectionCard';
 import './CollectionsView.scss';
@@ -19,18 +16,8 @@ export const CollectionsView = React.memo(({
   user,
 }: Props) => {
 
-  const [collections, setCollections] = useState<Async<Collection[]>>(asyncEmpty);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(loadAsyncEffect(setCollections, () => Collections.getCollectionsForUser(user.uid), true), [user.uid]);
-
-  const [addingNew, setAddingNew] = useState<Async<void>>(asyncEmpty);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const handleNewCollection = useCallback(loadAsyncEffect(setAddingNew, async () => {
-    const collectionId = await Collections.addNewCollection(emptyCollection(user.uid));
-    if (collectionId != null) {
-      browserHistory.push(AppRoutes.collection(collectionId));
-    }
-  }), [user]);
+  const collections = useAsyncCollections(user.uid);
+  const [handleNewCollection, addingNew] = useAsyncAddCollection(user.uid);
 
   if (isAsyncLoading(addingNew)) {
     return <LoadingView type='content' />;

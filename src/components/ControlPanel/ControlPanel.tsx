@@ -31,7 +31,7 @@ export const ControlPanel = React.memo(({
   const nextEnabled = boardState.moves.length > 0;
   const { mode } = editorState;
   const isTerminal = boardState.moves.length === 0;
-  const correct = !isTerminal ? undefined : !!boardState.correct;
+  const correct = !isTerminal ? undefined : boardState.correct;
   return (
     <div className='control-panel-container'>
       <div className='header'>

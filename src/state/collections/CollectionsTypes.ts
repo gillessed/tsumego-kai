@@ -6,6 +6,7 @@ export interface Problem {
   record: GoRecord;
   tags: string[];
   authorId: string;
+  rank: number;
 }
 export type NewProblem = Omit<Problem, 'id'>;
 export const emptyProblem = (userId: string, collectionId: string): NewProblem => ({
@@ -13,6 +14,7 @@ export const emptyProblem = (userId: string, collectionId: string): NewProblem =
   record: emptyBoard(19),
   tags: [],
   authorId: userId,
+  rank: 0,
 });
 
 export interface Collection {

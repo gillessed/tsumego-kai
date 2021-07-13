@@ -1,7 +1,6 @@
 import { RangeSlider } from "@blueprintjs/core";
 import DotProp from 'dot-prop-immutable';
 import React from "react";
-import { RenderingProps } from "../../goban/component/RenderingProps";
 import { GoRecord } from "../../goban/model/goban";
 import './ClipRow.scss';
 

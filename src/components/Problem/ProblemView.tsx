@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import { Async, asyncEmpty, isAsyncLoaded, loadAsyncEffect } from '../../state/Async';
-import { Collections } from '../../state/collections/CollectionsHandlers';
-import { Problem } from '../../state/collections/CollectionsTypes';
+import React from 'react';
+import { isAsyncLoaded } from '../../state/Async';
+import { useAsyncProblem } from '../../state/collections/CollectionsHooks';
 import { LoadingView } from '../Loading/LoadingView';
 import { LoadedProblemView } from './LoadedProblemView';
 import './ProblemView.scss';
@@ -13,9 +12,7 @@ interface Props {
 export const ProblemView = React.memo(({
   problemId,
 }: Props) => {
-  const [problem, setProblem] = useState<Async<Problem>>(asyncEmpty);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(loadAsyncEffect(setProblem, () => Collections.getProblemById(problemId), true), [problemId]);
+  const problem = useAsyncProblem(problemId);
 
   if (!isAsyncLoaded(problem)) {
     return <LoadingView type='content' />;

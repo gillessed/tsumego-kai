@@ -1,3 +1,4 @@
+
 export type AsyncEmpty = { type: '__empty__' };
 export type AsyncLoading = { type: '__loading__' };
 export type AsyncLoaded<T> = { type: '__loaded__', value: T };
@@ -19,17 +20,17 @@ export const isAsyncError = <T>(async: Async<T>): async is AsyncError => async.t
 export const isAsyncLoaded = <T>(async: Async<T>): async is AsyncLoaded<T> => async.type === '__loaded__';
 
 export const loadAsyncEffect = <T>(setState: (state: Async<T>) => void, load: () => Promise<T>, updateStateOnCompletion?: boolean) => {
-  return () => {
-    const asyncHandler = async () => {
-      try {
-        setState(asyncLoading);
-        const collection = await load();
-        setState(asyncLoaded(collection));
-      } catch (error) {
-        console.error(error);
-        setState(asyncError(error.message));
+  const asyncHandler = async () => {
+    try {
+      setState(asyncLoading);
+      const result = await load();
+      if (updateStateOnCompletion) {
+        setState(asyncLoaded(result));
       }
-    };
-    asyncHandler();
-  }
+    } catch (error) {
+      console.error(error);
+      setState(asyncError(error.message));
+    }
+  };
+  asyncHandler();
 };

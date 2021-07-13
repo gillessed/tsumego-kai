@@ -1,17 +1,20 @@
 import { Classes } from "@blueprintjs/core";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import classNames from 'classnames';
+import React, { useCallback, useMemo } from "react";
+import { useDispatch } from "react-redux";
+import { EditorState } from "../../goban/component/EditorState";
+import { GobanCanvas } from '../../goban/component/GobanCanvas';
+import { RenderingProps } from "../../goban/component/RenderingProps";
 import { browserHistory } from "../../history";
-import { Async, asyncEmpty, isAsyncLoaded, loadAsyncEffect } from "../../state/Async";
-import { Collections } from "../../state/collections/CollectionsHandlers";
-import { Problem } from "../../state/collections/CollectionsTypes";
+import { isAsyncLoaded } from "../../state/Async";
+import { useAsyncProblem } from "../../state/collections/CollectionsHooks";
+import { Collection } from "../../state/collections/CollectionsTypes";
+import { SolveActions } from "../../state/solve/SolveActions";
 import { AppRoutes } from "../AppRoutes";
 import "./ProblemCard.scss";
-import { GobanCanvas } from '../../goban/component/GobanCanvas';
-import classNames from 'classnames';
-import { EditorState } from "../../goban/component/EditorState";
-import { RenderingProps } from "../../goban/component/RenderingProps";
 
 interface Props {
+  collection: Collection;
   problemId: string;
 }
 
@@ -21,15 +24,20 @@ const CardRenderingProps: Partial<RenderingProps> = {
 
 export const ProblemCard = React.memo(({
   problemId,
+  collection,
 }: Props) => {
+  const dispatch = useDispatch();
 
   const handleClick = useCallback(() => {
+    const problemIndex = collection.problemIds.indexOf(problemId);
+    dispatch(SolveActions.setProblemSet({
+      problemIds: collection.problemIds,
+      currentProblemIndex: problemIndex,
+    }));
     browserHistory.push(AppRoutes.problem(problemId));
-  }, [problemId]);
+  }, [problemId, dispatch]);
   
-  const [problem, setProblem] = useState<Async<Problem>>(asyncEmpty);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(loadAsyncEffect(setProblem, () => Collections.getProblemById(problemId), true), [problemId]);
+  const problem = useAsyncProblem(problemId); 
 
   const editorState: EditorState = useMemo(() => {
     return {

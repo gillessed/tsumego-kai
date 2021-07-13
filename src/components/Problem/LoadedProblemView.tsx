@@ -3,6 +3,7 @@ import { EditorState } from '../../goban/component/EditorState';
 import { RenderingProps } from '../../goban/component/RenderingProps';
 import { Problem } from '../../state/collections/CollectionsTypes';
 import { FullGoban } from '../FullGoban/FullGoban';
+import './LoadedProblemView.scss';
 
 interface Props {
   problem: Problem;
@@ -21,13 +22,19 @@ export const LoadedProblemView = React.memo(({
   const [renderingProps, setRenderingProps] = useState<Partial<RenderingProps>>({});
 
   return (
-    <FullGoban
-      record={record}
-      editorState={editorState}
-      renderingProps={renderingProps}
-      setRecord={setRecord}
-      setEditorState={setEditorState}
-      setRenderingProps={setRenderingProps}
-    />
+    <div className='loaded-problem-container'>
+      <div className='title-row'>
+        <div>Igo Hatsuyoron</div>
+        <div>#543</div>
+      </div>
+      <FullGoban
+        record={record}
+        editorState={editorState}
+        renderingProps={renderingProps}
+        setRecord={setRecord}
+        setEditorState={setEditorState}
+        setRenderingProps={setRenderingProps}
+      />
+    </div>
   );
 });
