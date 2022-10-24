@@ -1,6 +1,6 @@
 import { defineAction, TypedReducer } from 'redoodle';
-import { actionName } from '../ActionName';
-import { Async, asyncEmpty, asyncLoaded } from '../Async';
+import { actionName } from '../utils/ActionName';
+import { Async, asyncEmpty, asyncLoaded } from '../utils/Async';
 import { ReduxState } from '../ReduxState';
 import { MaybeUser } from './User';
 
@@ -26,8 +26,8 @@ export const sessionReducer = TypedReducer.builder<SessionState>()
   .withDefinitionHandler(setUser, setUserReducer)
   .build();
 
-const get = (state: ReduxState) => state.session;
+const state = (state: ReduxState) => state.session;
 
 export const SessionSelectors = {
-  get
+  state
 }

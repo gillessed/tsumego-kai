@@ -27,7 +27,7 @@ export const loadAsyncEffect = <T>(setState: (state: Async<T>) => void, load: ()
       if (updateStateOnCompletion) {
         setState(asyncLoaded(result));
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       setState(asyncError(error.message));
     }

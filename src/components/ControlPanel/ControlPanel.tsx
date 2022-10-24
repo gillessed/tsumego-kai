@@ -39,26 +39,25 @@ export const ControlPanel = React.memo(({
         {correct === true && <Icon icon='tick' color='#1F7745' iconSize={32} />}
         {correct === false && <Icon icon='cross' color='#A82A2A' iconSize={32} />}
       </div>
-      {mode !== 'problem' && <MoveButtonRow
+      {mode !== 'problem' && mode !== 'play' && <MoveButtonRow
         record={record}
         editorState={editorState}
         setEditorState={setEditorState}
         nextEnabled={nextEnabled}
         previousEnabled={previousEnabled}
       />}
-      <ActionButtonRow
+      {(mode === 'edit' || mode === 'review') && <ActionButtonRow
         editorState={editorState}
         setEditorState={setEditorState}
-        mode={mode}
-      />
-      {mode === 'edit' && <FlagRow
+      />}
+      {(mode === 'edit' || mode === 'review') && <FlagRow
         record={record}
         editorState={editorState}
         renderingProps={renderingProps}
         setRecord={setRecord}
         boardState={boardState}
       />}
-      {mode === 'edit' && <ClipRow
+      {(mode === 'edit' || mode === 'review') && <ClipRow
         record={record}
         setRecord={setRecord}
       />}

@@ -1,7 +1,7 @@
 import { Button, Intent, Spinner } from '@blueprintjs/core';
 import { IconNames } from '@blueprintjs/icons';
 import React from 'react';
-import { isAsyncLoaded, isAsyncLoading } from '../../state/Async';
+import { isAsyncLoaded, isAsyncLoading } from '../../state/utils/Async';
 import { useAsyncAddCollection, useAsyncCollections } from '../../state/collections/CollectionsHooks';
 import { User } from '../../state/session/User';
 import { LoadingView } from '../Loading/LoadingView';

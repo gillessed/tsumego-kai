@@ -6,7 +6,7 @@ import { EditorState } from "../../goban/component/EditorState";
 import { GobanCanvas } from '../../goban/component/GobanCanvas';
 import { RenderingProps } from "../../goban/component/RenderingProps";
 import { browserHistory } from "../../history";
-import { isAsyncLoaded } from "../../state/Async";
+import { isAsyncLoaded } from "../../state/utils/Async";
 import { useAsyncProblem } from "../../state/collections/CollectionsHooks";
 import { Collection } from "../../state/collections/CollectionsTypes";
 import { SolveActions } from "../../state/solve/SolveActions";
@@ -35,7 +35,7 @@ export const ProblemCard = React.memo(({
       currentProblemIndex: problemIndex,
     }));
     browserHistory.push(AppRoutes.problem(problemId));
-  }, [problemId, dispatch]);
+  }, [problemId, dispatch, collection.problemIds]);
   
   const problem = useAsyncProblem(problemId); 
 

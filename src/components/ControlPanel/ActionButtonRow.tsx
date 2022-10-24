@@ -1,20 +1,18 @@
 import { ButtonGroup } from '@blueprintjs/core';
 import { IconNames } from '@blueprintjs/icons';
 import React from 'react';
-import { EditorMode, EditorState } from '../../goban/component/EditorState';
+import { EditorState } from '../../goban/component/EditorState';
 import { ActionButton } from './ActionButton';
 import './ActionButtonRow.scss';
 
 interface Props {
   editorState: EditorState;
   setEditorState: (editorState: EditorState) => void;
-  mode: EditorMode;
 }
 
 export const ActionButtonRow = React.memo(({
   editorState,
-  setEditorState,
-  mode
+  setEditorState
 }: Props) => {
 
   return (
@@ -30,20 +28,20 @@ export const ActionButtonRow = React.memo(({
         editorState={editorState}
         setEditorState={setEditorState}
       />
-      {mode === 'edit' && <ActionButton
+      <ActionButton
         className='black-button'
         icon={IconNames.RECORD}
         buttonAction='place-black'
         editorState={editorState}
         setEditorState={setEditorState}
-      />}
-      {mode === 'edit' && <ActionButton
+      />
+      <ActionButton
         className='white-button'
         icon={IconNames.RECORD}
         buttonAction='place-white'
         editorState={editorState}
         setEditorState={setEditorState}
-      />}
+      />
       <ActionButton
         icon={IconNames.SYMBOL_TRIANGLE_UP}
         buttonAction='triangle'

@@ -11,7 +11,7 @@ import './index.scss';
 import { Languages } from './language/languages';
 import { ReduxState } from "./state/ReduxState";
 import { InitialReduxState, rootReducer } from "./state/RootReducer";
-import { SessionActions } from "./state/session/SessionState";
+import { SessionActions } from "./state/session/SessionReducer";
 
 export const SESSION_COOKIE = 'TSUMEGO_KAI_TOKEN';
 export const LANGUAGE_COOKIE = 'TSUMEGO_KAI_LANGUAGE';

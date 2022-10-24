@@ -1,17 +1,30 @@
 import firebase from 'firebase';
 import { Collection, NewCollection, NewProblem, Problem } from "./CollectionsTypes";
+import { createRefs } from "../utils/Firebase";
 
-const CollectionsRef = 'collections';
-const CollectionRefById = (id: string) => `${CollectionsRef}/${id}`;
-const CollectionProblemIdRef = (id: string) => `${CollectionsRef}/${id}/problemIds`;
-const ProblemsRef = 'problems';
-const ProblemRefById = (id: string) => `${ProblemsRef}/${id}`;
+const CollectionsRef = createRefs<Collection>("collections", {
+  authorId: "",
+  id: "",
+  dateCreated: "",
+  description: "",
+  lastUpdated: "",
+  name: "",
+  problemIds: "",
+});
+const ProblemsRef = createRefs<Problem>("problems", {
+  id: "",
+  authorId: "",
+  collectionId: "",
+  rank: "",
+  record: "",
+  tags: "",
+});
 
 const addNewCollection = async (newCollection: NewCollection): Promise<string> => {
-  const collectionId = await firebase.database().ref(CollectionsRef).push().key;
+  const collectionId = await firebase.database().ref(CollectionsRef.root).push().key;
   if (collectionId) {
     const collection: Collection = { ...newCollection, id: collectionId };
-    await firebase.database().ref(CollectionRefById(collectionId)).set(collection);
+    await firebase.database().ref(CollectionsRef.byId(collectionId).value).set(collection);
     return collectionId;
   } else {
     throw Error('Could not create new collection id');
@@ -19,11 +32,11 @@ const addNewCollection = async (newCollection: NewCollection): Promise<string> =
 }
 
 const addNewProblem = async (newProblem: NewProblem): Promise<string> => {
-  const problemId = await firebase.database().ref(ProblemsRef).push().key;
+  const problemId = await firebase.database().ref(ProblemsRef.root).push().key;
   if (problemId) {
     const problem: Problem = { ...newProblem, id: problemId };
-    await firebase.database().ref(ProblemRefById(problemId)).set(problem);
-    const collectionProblemIds = firebase.database().ref(CollectionProblemIdRef(newProblem.collectionId));
+    await firebase.database().ref(ProblemsRef.byId(problemId).value).set(problem);
+    const collectionProblemIds = firebase.database().ref(CollectionsRef.byId(newProblem.collectionId).fields.problemIds);
     const snapshot = await collectionProblemIds.once('value');
     const currentProblemIds: string[] = snapshot.val() ?? [];
     currentProblemIds.push(problemId);
@@ -35,7 +48,7 @@ const addNewProblem = async (newProblem: NewProblem): Promise<string> => {
 }
 
 const getCollectionsForUser = async (userId: string): Promise<Collection[]> => {
-  const snapshot = await firebase.database().ref(CollectionsRef).orderByChild('authorId').equalTo(userId).once('value');
+  const snapshot = await firebase.database().ref(CollectionsRef.root).orderByChild('authorId').equalTo(userId).once('value');
   const collections: Collection[] = [];
   snapshot.forEach((childSnapshot) => {
     const collection: Collection = childSnapshot.val();
@@ -48,7 +61,7 @@ const getCollectionsForUser = async (userId: string): Promise<Collection[]> => {
 }
 
 const getCollectionById = async (collectionId: string): Promise<Collection> => {
-  const collection: Collection = await firebase.database().ref(CollectionRefById(collectionId)).once('value').then((snapshot) => snapshot.val());
+  const collection: Collection = await firebase.database().ref(CollectionsRef.byId(collectionId).value).once('value').then((snapshot) => snapshot.val());
   if (collection.problemIds == null) {
     collection.problemIds = [];
   }
@@ -56,7 +69,7 @@ const getCollectionById = async (collectionId: string): Promise<Collection> => {
 }
 
 const getProblemById = async (problemId: string): Promise<Problem> => {
-  const problem: Problem = await firebase.database().ref(ProblemRefById(problemId)).once('value').then((snapshot) => snapshot.val());
+  const problem: Problem = await firebase.database().ref(ProblemsRef.byId(problemId).value).once('value').then((snapshot) => snapshot.val());
   if (problem.tags == null) {
     problem.tags = [];
   }
@@ -75,10 +88,21 @@ const getProblemById = async (problemId: string): Promise<Problem> => {
   return problem;
 }
 
+export const setName = async (collectionId: string, name: string) => {
+  await firebase.database().ref(CollectionsRef.byId(collectionId).fields.name).set(name);
+  await firebase.database().ref(CollectionsRef.byId(collectionId).fields.lastUpdated).set(Date.now().toString());
+}
+
+export const saveProblem = async (problem: Problem): Promise<void> => {
+  await firebase.database().ref(ProblemsRef.byId(problem.id).value).set(problem);
+}
+
 export const Collections = {
   addNewCollection,
   addNewProblem,
   getCollectionsForUser,
   getCollectionById,
   getProblemById,
+  setName,
+  saveProblem,
 };

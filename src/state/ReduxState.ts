@@ -1,4 +1,4 @@
-import { SessionState } from "./session/SessionState";
+import { SessionState } from "./session/SessionReducer";
 import { SolveState } from "./solve/SolveTypes";
 
 export interface ReduxState {

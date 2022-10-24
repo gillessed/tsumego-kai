@@ -19,7 +19,6 @@
     "dot-prop-immutable": "^2.1.0",
     "firebase": "^8.6.8",
     "firebaseui": "^4.8.0",
-    "node-sass": "5",
     "postcss-loader": "^6.1.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
@@ -28,7 +27,7 @@
     "react-scripts": "^4.0.3",
     "redoodle": "^2.6.1",
     "redux": "^4.1.0",
-    "typescript": "^4.3.4",
+    "typescript": "^4.6.4",
     "uuid": "^8.3.2",
     "web-vitals": "^1.0.1"
   },
@@ -59,5 +58,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "sass": "^1.51.0"
   }
 }

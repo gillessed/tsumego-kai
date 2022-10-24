@@ -320,7 +320,6 @@ const renderLastMoveMarkup = (ctx: GobanComponentContext) => {
   if (editorState.moveStack.length === 0) {
     return;
   }
-  console.log(record, editorState);
   const lastMoveId = editorState.moveStack[numberOfMoves - 1];
   const currentBoardstate = record.boardStates[editorState.currentBoardState];
   const previousBoardstate = record.boardStates[currentBoardstate.reverseMoves[lastMoveId].previousState];

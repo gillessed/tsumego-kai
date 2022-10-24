@@ -1,5 +1,5 @@
 import { defineAction } from "redoodle"
-import { actionName } from "../ActionName"
+import { actionName } from "../utils/ActionName"
 import { ProblemSet } from "./SolveTypes";
 
 const name = actionName('solve');
