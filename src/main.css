@@ -1,0 +1,36 @@
+@import "./fonts.css";
+@import "./variables.css";
+@import "./effects.css";
+@import "@blueprintjs/core/lib/css/blueprint.css";
+@import "@blueprintjs/icons/lib/css/blueprint-icons.css";
+
+body,
+html,
+#main,
+.app-root-container {
+  height: 100vh;
+}
+
+.app-root-container {
+  display: flex;
+  flex-direction: column;
+}
+
+body {
+  margin: 0 auto;
+  overflow-x: hidden;
+  overflow-y: hidden;
+}
+
+.unselectable {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: var(--header-text-color);
+}

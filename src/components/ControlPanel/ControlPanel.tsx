@@ -7,7 +7,7 @@ import { readonlyText } from '../../goban/component/EditorState';
 import { getCurrentBoardState } from '../../goban/model/selectors';
 import { ActionButtonRow } from './ActionButtonRow';
 import { ClipRow } from './ClipRow';
-import './ControlPanel.scss';
+import './ControlPanel.css';
 import { FlagRow } from './FlagRow';
 import { MoveButtonRow } from './MoveButtonRow';
 
@@ -17,7 +17,6 @@ export const ControlPanel = React.memo(({
   renderingProps,
   setRecord,
   setEditorState,
-  setRenderingProps,
 }: EditorProps) => {
 
   const onChangeText = useCallback((e: { target: { value: string } }) => {

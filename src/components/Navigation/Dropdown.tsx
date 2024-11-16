@@ -2,7 +2,7 @@ import React, { useCallback } from 'react';
 import classNames from 'classnames';
 import { dropdownMounted, dropdownUnmounted } from '../../dropdownListener';
 import { Icon, IconName } from '@blueprintjs/core';
-import './Dropdown.scss';
+import './Dropdown.css';
 import { useState } from 'react';
 import { useRef } from 'react';
 import { useEffect } from 'react';
@@ -40,7 +40,7 @@ export const Dropdown = React.memo(({
     }
   }, [open, dropdownElement, setOpen]);
 
-  const handleClickToggle = useCallback((e: React.MouseEvent) => {
+  const handleClickToggle = useCallback(() => {
     setOpen(!open);
   }, [open, setOpen]);
 

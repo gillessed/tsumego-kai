@@ -136,7 +136,7 @@ export function removeMove(_record: GoRecord, state: string, intersection: Inter
 }
 
 export function setText(_record: GoRecord, state: string, text: string): GoRecord {
-  let record = _record
+  const record = _record
   const boardState = record.boardStates[state];
   if (!boardState) {
     throw new Error('Current board state does not exist.');
@@ -146,7 +146,7 @@ export function setText(_record: GoRecord, state: string, text: string): GoRecor
 }
 
 export function addMarkup(_record: GoRecord, state: string, markup: Markup): GoRecord {
-  let record = _record;
+  const record = _record;
   const boardState = record.boardStates[state];
   if (!boardState) {
     throw new Error('Current board state does not exist.');
@@ -173,7 +173,7 @@ export function addMarkup(_record: GoRecord, state: string, markup: Markup): GoR
 }
 
 export function removeMarkup(_record: GoRecord, state: string, intersection: Intersection): GoRecord {
-  let record = _record;
+  const record = _record;
   const boardState = record.boardStates[state];
   if (!boardState) {
     throw new Error('Current board state does not exist.');
@@ -248,8 +248,7 @@ export function nextMove(record: GoRecord, editorState: EditorState): EditorStat
   if (Object.keys(boardState.moves).length === 0) {
     throw Error('No moves to step through.');
   }
-  let nextMove: GoMove;
-  nextMove = boardState.moves[0];
+  const nextMove = boardState.moves[0];
   return {
     ...editorState,
     moveStack: [...editorState.moveStack, nextMove.id],

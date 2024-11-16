@@ -1,16 +1,11 @@
 import React from 'react';
-import { MatchProps } from '../Navigation/MatchProps';
-import './Profile.scss';
+import './Profile.css';
+import { AuthProps } from '../RequiredAuth/AuthProps';
 
-interface Props extends MatchProps {
-}
-
-export class Profile extends React.Component<Props, {}> {
-  public render() {
-    return (
-      <div className='profile-container'>
-        {JSON.stringify(this.props.match.params, null, 2)}
-      </div>
-    );
-  }
-}
+export const Profile = React.memo(({ user }: AuthProps) => {
+  return (
+    <div className='profile-container'>
+      {user.displayName}
+    </div>
+  );
+});

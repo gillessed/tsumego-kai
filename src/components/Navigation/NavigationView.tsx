@@ -1,26 +1,23 @@
-import React from 'react';
-import { Dropdown } from './Dropdown';
-import { Link } from 'react-router-dom';
-import { AppRoutes } from '../AppRoutes';
 import { Icon } from '@blueprintjs/core';
-import './NavigationView.scss';
-import { MaybeUser, User } from '../../state/session/User';
-import firebase from 'firebase';
-import { browserHistory } from '../../history';
 import { IconNames } from '@blueprintjs/icons';
+import { getAuth } from 'firebase/auth';
+import React from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAppContext } from '../../context/AppContext';
+import { useUser } from '../../hooks/useUser';
+import { AppRoutes } from '../AppRoutes';
+import { Dropdown } from './Dropdown';
+import './NavigationView.css';
 
-interface Props {
-  user: MaybeUser;
-}
-
-export const NavigationView = React.memo(({
-  user,
-}: Props) => {
+export const NavigationView = React.memo(() => {
+  const { app } = useAppContext();
+  const navigate = useNavigate();
+  const user = useUser();
 
   const handleLogout = React.useCallback(() => {
-    firebase.auth().signOut();
-    browserHistory.push(AppRoutes.home());
-  }, []);
+    getAuth(app).signOut();
+    navigate(AppRoutes.home());
+  }, [app, navigate]);
 
   const renderActionsMenu = () => (
     <Dropdown icon='menu'>
@@ -53,11 +50,10 @@ export const NavigationView = React.memo(({
     </div>
   );
 
-  const renderUserDropdown = (user: User) => (
-    //TODO: fixme
+  const renderUserDropdown = () => (
     <Dropdown icon='user'>
       <div className='menu-item unselectable'>
-        <Link to={AppRoutes.profile(user.uid)}>
+        <Link to={AppRoutes.profile}>
           <Icon icon='mugshot' />
           <div className='menu-item-sub'> Profile </div>
         </Link>
@@ -81,8 +77,8 @@ export const NavigationView = React.memo(({
     <div className='navbar-container'>
       <nav className='main-navbar'>
         {renderActionsMenu()}
-        {user == null && renderLoginButton()}
-        {user != null && renderUserDropdown(user)}
+        {user.isFetched && user.data == null && renderLoginButton()}
+        {user.isFetched && user.data != null && renderUserDropdown()}
       </nav>
     </div>
   );

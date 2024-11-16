@@ -5,7 +5,7 @@ import { EditorState } from "../../goban/component/EditorState";
 import { DefaultRenderingProps, RenderingProps } from "../../goban/component/RenderingProps";
 import { BoardState, GoRecord } from "../../goban/model/goban";
 import { getCurrentBoardState } from "../../goban/model/selectors";
-import './FlagRow.scss';
+import './FlagRow.css';
 import classNames from 'classnames';
 import { swapColor } from "../../goban/model/utils";
 

@@ -3,7 +3,7 @@ import React, { useCallback } from 'react';
 import { EditorState } from '../../goban/component/EditorState';
 import { GoRecord } from '../../goban/model/goban';
 import { nextMove, previousMove } from '../../goban/model/mutators';
-import './MoveButtonRow.scss';
+import './MoveButtonRow.css';
 
 interface Props {
   record: GoRecord;

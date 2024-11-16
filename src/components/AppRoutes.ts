@@ -13,6 +13,5 @@ export const AppRoutes = {
   solve: () => applicationPath('solve'),
   signup: () => applicationPath('signup'),
   settings: () => applicationPath('settings'),
-  profileRoute: () => applicationPath('user/:id'),
-  profile: (id: string) => applicationPath(`user/${id}`),
+  profile: () => applicationPath(`profile`),
 };

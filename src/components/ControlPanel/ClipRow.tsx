@@ -2,7 +2,7 @@ import { RangeSlider } from "@blueprintjs/core";
 import DotProp from 'dot-prop-immutable';
 import React from "react";
 import { GoRecord } from "../../goban/model/goban";
-import './ClipRow.scss';
+import './ClipRow.css';
 
 interface Props {
   record: GoRecord;

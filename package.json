@@ -1,65 +1,40 @@
 {
   "name": "tsumego-kai",
-  "version": "0.1.0",
   "private": true,
-  "dependencies": {
-    "@blueprintjs/core": "^3.46.0",
-    "@testing-library/jest-dom": "^5.11.4",
-    "@testing-library/react": "^11.1.0",
-    "@testing-library/user-event": "^12.1.10",
-    "@types/dot-prop-immutable": "^1.5.1",
-    "@types/firebase": "^3.2.1",
-    "@types/jest": "^26.0.23",
-    "@types/node": "^15.12.4",
-    "@types/react": "^17.0.11",
-    "@types/react-dom": "^17.0.8",
-    "@types/react-router-dom": "^5.1.7",
-    "@types/uuid": "^8.3.0",
-    "css-loader": "^5.2.6",
-    "dot-prop-immutable": "^2.1.0",
-    "firebase": "^8.6.8",
-    "firebaseui": "^4.8.0",
-    "postcss-loader": "^6.1.0",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
-    "react-redux": "^7.2.4",
-    "react-router-dom": "^5.2.0",
-    "react-scripts": "^4.0.3",
-    "redoodle": "^2.6.1",
-    "redux": "^4.1.0",
-    "typescript": "^4.6.4",
-    "uuid": "^8.3.2",
-    "web-vitals": "^1.0.1"
-  },
+  "version": "0.0.0",
+  "type": "module",
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "eslint .",
+    "preview": "vite preview"
   },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ],
-    "rules": {
-      "jsx-a11y/anchor-is-valid": "off",
-      "eqeqeq": "off"
-    }
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+  "dependencies": {
+    "@blueprintjs/core": "^5.14.1",
+    "@blueprintjs/icons": "^5.14.0",
+    "dot-prop-immutable": "^2.1.1",
+    "firebase": "^11.0.1",
+    "firebaseui": "^6.1.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-query": "^3.39.3",
+    "react-router-dom": "^6.28.0",
+    "uuid": "^11.0.3"
   },
   "devDependencies": {
-    "sass": "^1.51.0"
+    "@eslint/js": "^9.13.0",
+    "@types/dot-prop-immutable": "^1.5.4",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@types/uuid": "^10.0.0",
+    "@vitejs/plugin-react-swc": "^3.5.0",
+    "eslint": "^9.13.0",
+    "eslint-plugin-react-hooks": "^5.0.0",
+    "eslint-plugin-react-refresh": "^0.4.14",
+    "globals": "^15.11.0",
+    "sass": "^1.80.7",
+    "typescript": "~5.6.2",
+    "typescript-eslint": "^8.11.0",
+    "vite": "^5.4.10"
   }
 }

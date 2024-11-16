@@ -1,10 +1,10 @@
-import { IResizeEntry, ResizeSensor } from '@blueprintjs/core';
+import { ResizeEntry, ResizeSensor } from '@blueprintjs/core';
 import React from 'react';
 import { EditorProps } from '../../goban/component/BoardProps';
 import { GobanCanvas } from '../../goban/component/GobanCanvas';
 import { Dimension } from '../../goban/model/utils';
 import { ControlPanel } from '../ControlPanel/ControlPanel';
-import './FullGoban.scss';
+import './FullGoban.css';
 
 const DefaultRightPanelWidth = 400;
 const DefaultBoardPanelMargin = 20;
@@ -26,11 +26,18 @@ export const FullGoban = ({
 }: Props) => {
   const [gobanSize, setGobanSize] = React.useState<Dimension>({ width: 0, height: 0 });
 
-  const handleResize = React.useCallback((entries: IResizeEntry[]) => {
+  const handleResize = React.useCallback((entries: ResizeEntry[]) => {
     if (entries.length === 0) {
       return;
     }
     const { width, height } = entries[0].contentRect;
+
+    console.log(entries[0].contentRect);
+
+    if (height - 2 * boardPanelMargin === 892) {
+      return;
+    }
+
     setGobanSize({
       width: width - rightPanelWidth - 2 * boardPanelMargin,
       height: height - 2 * boardPanelMargin,

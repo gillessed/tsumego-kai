@@ -1,0 +1,1 @@
+export const ProblemQueryKey = (id: string) => ["problem", id];

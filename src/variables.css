@@ -1,0 +1,32 @@
+:root {
+  --white: #FFFFFF;
+  --black: #000000;
+
+  --c1-dark: #01523d;
+  --c1-mid: #03664d;
+  --c1-light: #A3CFC4;
+  --c1-lightest: #EEF6F4;
+  --c2-mid: #f5dca8;
+  --c2-light: #faeac9;
+  --c3-dark: #23033d;
+  --c3-mid: #400570;
+  --c3-light: #e2ccf3;
+
+  --nav-font-size: 20px;
+  --nav-height: 60px;
+
+  --background: var(--c1-lightest);
+
+  --menu-open-color: var(--c3-mid);
+  --menu-closed-color: var(--c3-dark);
+  --menu-text-color: var(--c3-light);
+  --menu-text-hover-color: var(--c1-lightest);
+
+  --header-text-color: var(--c1-mid);
+  --app-text-color: var(--c1-dark);
+
+  --card-title: var(--c1-dark);
+  --subtitle-gray: #7b8d8a;
+  --card-border: var(--c1-dark);
+  --card-hover: #e3f1ee;
+}

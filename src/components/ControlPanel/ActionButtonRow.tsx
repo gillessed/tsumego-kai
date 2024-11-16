@@ -3,7 +3,7 @@ import { IconNames } from '@blueprintjs/icons';
 import React from 'react';
 import { EditorState } from '../../goban/component/EditorState';
 import { ActionButton } from './ActionButton';
-import './ActionButtonRow.scss';
+import './ActionButtonRow.css';
 
 interface Props {
   editorState: EditorState;

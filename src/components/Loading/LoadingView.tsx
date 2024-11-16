@@ -1,12 +1,12 @@
-import React from 'react';
 import { Intent, Spinner } from '@blueprintjs/core';
-import './LoadingView.scss';
+import React from 'react';
+import './LoadingView.css';
 
 interface Props {
   type: 'app' | 'content';
 }
 
-export const LoadingView = ({
+export const LoadingView = React.memo(({
   type,
 }: Props) => {
   return (
@@ -14,4 +14,4 @@ export const LoadingView = ({
       <Spinner size={120} intent={Intent.SUCCESS} />
     </div>
   )
-}
+});

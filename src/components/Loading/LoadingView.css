@@ -1,0 +1,17 @@
+@import '../../variables.css';
+
+.loading-view {
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--background);
+
+  &.app {
+    height: 100vh;
+  }
+
+  &.content {
+    height: calc(100vh - var(--nav-height))
+  }
+}

@@ -1,0 +1,21 @@
+@import "../../variables.css";
+@import "./Card.css";
+
+.collection-card {
+  width: 200px;
+  height: 300px;
+
+  .collection-card-title {
+    color: var(--card-title);
+    margin-bottom: 3px;
+  }
+
+  .collection-card-count {
+    margin-top: 0px;
+    color: var(--subtitle-gray);
+  }
+
+  .collection-card-description {
+    font-family: Raleway;
+  }
+}

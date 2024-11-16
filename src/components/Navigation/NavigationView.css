@@ -1,0 +1,48 @@
+@import "../../variables.css";
+
+.main-navbar {
+  height: var(--nav-height);
+  position: relative;
+  z-index: 100;
+  background-color: var(--c3-dark);
+  display: flex;
+  flex-direction: row;
+}
+
+.navbar-brand {
+  color: var(--white);
+}
+
+.nav-button,
+.menu-item {
+  cursor: default;
+  a {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    text-decoration: none;
+    color: var(--menu-text-color);
+  }
+
+  &:hover {
+    cursor: pointer;
+    a {
+      color: var(--menu-text-hover-color);
+    }
+  }
+
+  .menu-item-sub {
+    width: 100%;
+    padding: 10px;
+    font-family: Montserrat;
+  }
+}
+
+.nav-button {
+  padding-left: 10px;
+  padding-right: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--nav-font-size);
+}

@@ -1,9 +1,9 @@
 import React from "react";
 import { useCallback } from "react";
-import { browserHistory } from "../../history";
 import { Collection } from "../../state/collections/CollectionsTypes";
 import { AppRoutes } from "../AppRoutes";
-import "./CollectionCard.scss";
+import "./CollectionCard.css";
+import { useNavigate } from "react-router-dom";
 
 interface Props {
   collection: Collection;
@@ -13,9 +13,11 @@ export const CollectionCard = React.memo(({
   collection
 }: Props) => {
 
+  const navigate = useNavigate();
+
   const handleClick = useCallback(() => {
-    browserHistory.push(AppRoutes.collection(collection.id));
-  }, [collection.id]);
+    navigate(AppRoutes.collection(collection.id));
+  }, [navigate, collection.id]);
 
   const problemCount = collection.problemIds.length;
   const problemString = problemCount === 1 ? 'problem' : 'problems';
