@@ -1,6 +1,6 @@
 import { AnchorButton, ButtonGroup } from '@blueprintjs/core';
 import React, { useCallback } from 'react';
-import { EditorState } from '../../goban/component/EditorState';
+import { EditorState } from '../../goban/component/types/EditorState';
 import { GoRecord } from '../../goban/model/goban';
 import { nextMove, previousMove } from '../../goban/model/mutators';
 import './MoveButtonRow.css';

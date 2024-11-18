@@ -2,9 +2,9 @@ import React, { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Collection } from "../../database/Collections";
 import { Problem } from "../../database/Problems";
-import { EditorState } from "../../goban/component/EditorState";
+import { EditorState } from "../../goban/component/types/EditorState";
 import { GobanCanvas } from "../../goban/component/GobanCanvas";
-import { RenderingProps } from "../../goban/component/RenderingProps";
+import { RenderingProps } from "../../goban/component/types/RenderingProps";
 import { AppRoutes } from "../AppRoutes";
 import "./ProblemCard.css";
 

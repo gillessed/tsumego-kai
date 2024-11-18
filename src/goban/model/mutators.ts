@@ -1,14 +1,23 @@
-import { GoRecord, GoMove, Intersection, Color, GoStonesState, ReverseMove, Markup, BoardState } from './goban';
-import { IIntersection } from './impl/intersection';
-import { computeNewStoneState } from './computeState';
-import { randomString, arrayEquals, swapColor } from './utils';
-import DotProp from 'dot-prop-immutable';
-import { EditorState } from '../component/EditorState';
-import { findReachableStates, findStatesThatCanReach } from './selectors';
+import {
+  GoRecord,
+  GoMove,
+  Intersection,
+  Color,
+  GoStonesState,
+  ReverseMove,
+  Markup,
+  BoardState,
+} from "./goban";
+import { IIntersection } from "./impl/intersection";
+import { computeNewStoneState } from "./computeState";
+import { randomString, arrayEquals, swapColor } from "./utils";
+import DotProp from "dot-prop-immutable";
+import { EditorState } from "../component/types/EditorState";
+import { findReachableStates, findStatesThatCanReach } from "./selectors";
 
 /*
  * Immutable methods that will return a new record object with the modifications
- * executed by the accessor. 
+ * executed by the accessor.
  */
 
 export interface AddMoveResult {
@@ -17,25 +26,39 @@ export interface AddMoveResult {
   newStateId: string;
 }
 
-export function addMove(_record: GoRecord, state: string, intersection: Intersection, color: Color): AddMoveResult {
+export function addMove(
+  _record: GoRecord,
+  state: string,
+  intersection: Intersection,
+  color: Color
+): AddMoveResult {
   let record = _record;
   const boardState = record.boardStates[state];
   if (!boardState) {
-    throw new Error('Board state does not exist.');
+    throw new Error("Board state does not exist.");
   }
 
-  if (boardState.stones[intersection.y * record.size + intersection.x] !== 'empty') {
-    throw new Error('There is already a stone on ' + intersection + '.');
+  if (
+    boardState.stones[intersection.y * record.size + intersection.x] !== "empty"
+  ) {
+    throw new Error("There is already a stone on " + intersection + ".");
   }
 
   const existingMove = boardState.moves.find((move) => {
-    return IIntersection.get(intersection) === IIntersection.get(move.intersection);
+    return (
+      IIntersection.get(intersection) === IIntersection.get(move.intersection)
+    );
   });
   if (existingMove) {
-    throw new Error('Move already exists.');
+    throw new Error("Move already exists.");
   }
 
-  const newStonesState: GoStonesState = computeNewStoneState(record.size, boardState.stones, intersection, color);
+  const newStonesState: GoStonesState = computeNewStoneState(
+    record.size,
+    boardState.stones,
+    intersection,
+    color
+  );
 
   const matchingBoardState = Object.keys(record.boardStates)
     .map((key) => record.boardStates[key])
@@ -55,7 +78,11 @@ export function addMove(_record: GoRecord, state: string, intersection: Intersec
     };
 
     record = DotProp.merge(record, `boardStates.${state}.moves`, newMove);
-    record = DotProp.merge(record, `boardStates.${matchingBoardState.id}.reverseMoves.${reverseMove.moveId}`, reverseMove);
+    record = DotProp.merge(
+      record,
+      `boardStates.${matchingBoardState.id}.reverseMoves.${reverseMove.moveId}`,
+      reverseMove
+    );
 
     return {
       record,
@@ -78,7 +105,7 @@ export function addMove(_record: GoRecord, state: string, intersection: Intersec
       id: newStateId,
       stones: newStonesState,
       markups: [],
-      text: '',
+      text: "",
       moves: [],
       reverseMoves: {
         [reverseMove.moveId]: reverseMove,
@@ -93,7 +120,10 @@ export function addMove(_record: GoRecord, state: string, intersection: Intersec
 
     const parentStates = Array.from(findStatesThatCanReach(record, state));
     for (const stateId of parentStates) {
-      record = DotProp.delete(record, `boardStates.${stateId}.correct`) as GoRecord;
+      record = DotProp.delete(
+        record,
+        `boardStates.${stateId}.correct`
+      ) as GoRecord;
     }
 
     return {
@@ -104,30 +134,42 @@ export function addMove(_record: GoRecord, state: string, intersection: Intersec
   }
 }
 
-export function removeMove(_record: GoRecord, state: string, intersection: Intersection): GoRecord {
+export function removeMove(
+  _record: GoRecord,
+  state: string,
+  intersection: Intersection
+): GoRecord {
   let record = _record;
   const boardState = record.boardStates[state];
   if (!boardState) {
-    throw new Error('Current board state does not exist.');
+    throw new Error("Current board state does not exist.");
   }
 
-  const move = boardState.moves.find((move) => move.intersection.x === intersection.x && move.intersection.y === intersection.y);
+  const move = boardState.moves.find(
+    (move) =>
+      move.intersection.x === intersection.x &&
+      move.intersection.y === intersection.y
+  );
   if (!move) {
-    throw new Error('Move does not exist.');
+    throw new Error("Move does not exist.");
   }
   const moveIndex = boardState.moves.indexOf(move);
 
   const nextState = record.boardStates[move.nextState];
   if (!nextState) {
-    throw new Error('Next state does not exist.');
+    throw new Error("Next state does not exist.");
   }
 
   record = DotProp.delete(record, `boardStates.${nextState.id}`) as GoRecord;
-  record = DotProp.delete(record, `boardStates.${state}.moves.${moveIndex}`) as GoRecord;
+  record = DotProp.delete(
+    record,
+    `boardStates.${state}.moves.${moveIndex}`
+  ) as GoRecord;
 
   const reachableStates = findReachableStates(record);
-  const unreachableStates = Object.keys(record.boardStates)
-    .filter((stateId) => !reachableStates.has(stateId));
+  const unreachableStates = Object.keys(record.boardStates).filter(
+    (stateId) => !reachableStates.has(stateId)
+  );
   for (const stateId of unreachableStates) {
     record = DotProp.delete(record, `boardStates.${stateId}`) as GoRecord;
   }
@@ -135,26 +177,36 @@ export function removeMove(_record: GoRecord, state: string, intersection: Inter
   return record;
 }
 
-export function setText(_record: GoRecord, state: string, text: string): GoRecord {
-  const record = _record
+export function setText(
+  _record: GoRecord,
+  state: string,
+  text: string
+): GoRecord {
+  const record = _record;
   const boardState = record.boardStates[state];
   if (!boardState) {
-    throw new Error('Current board state does not exist.');
+    throw new Error("Current board state does not exist.");
   }
 
   return DotProp.set(record, `boardStates.${state}.text`, text);
 }
 
-export function addMarkup(_record: GoRecord, state: string, markup: Markup): GoRecord {
+export function addMarkup(
+  _record: GoRecord,
+  state: string,
+  markup: Markup
+): GoRecord {
   const record = _record;
   const boardState = record.boardStates[state];
   if (!boardState) {
-    throw new Error('Current board state does not exist.');
+    throw new Error("Current board state does not exist.");
   }
 
   const existingMarkup = boardState.markups.find((oldMarkup) => {
-    return markup.intersection.x === oldMarkup.intersection.x &&
-      markup.intersection.y === oldMarkup.intersection.y;
+    return (
+      markup.intersection.x === oldMarkup.intersection.x &&
+      markup.intersection.y === oldMarkup.intersection.y
+    );
   });
 
   let newMarkups: Markup[];
@@ -172,43 +224,61 @@ export function addMarkup(_record: GoRecord, state: string, markup: Markup): GoR
   return DotProp.set(record, `boardStates.${state}.markups`, newMarkups);
 }
 
-export function removeMarkup(_record: GoRecord, state: string, intersection: Intersection): GoRecord {
+export function removeMarkup(
+  _record: GoRecord,
+  state: string,
+  intersection: Intersection
+): GoRecord {
   const record = _record;
   const boardState = record.boardStates[state];
   if (!boardState) {
-    throw new Error('Current board state does not exist.');
+    throw new Error("Current board state does not exist.");
   }
 
   const newMarkups = boardState.markups.filter((existingMarkup) => {
-    return existingMarkup.intersection.x !== intersection.x || existingMarkup.intersection.y !== intersection.y;
+    return (
+      existingMarkup.intersection.x !== intersection.x ||
+      existingMarkup.intersection.y !== intersection.y
+    );
   });
 
   return DotProp.set(record, `boardStates.${state}.markups`, newMarkups);
 }
 
-export function playPrimary(record: GoRecord, editorState: EditorState): EditorState | undefined {
+export function playPrimary(
+  record: GoRecord,
+  editorState: EditorState
+): { move?: GoMove; editorState: EditorState } | undefined {
   const boardState = record.boardStates[editorState.currentBoardState];
   const isFinalCorrectMove = checkState(record, editorState.currentBoardState);
   if (isFinalCorrectMove !== undefined) {
     return {
-      ...editorState,
-      mode: 'solution',
-      action: 'play',
+      editorState: {
+        ...editorState,
+        mode: "solution",
+        action: "play",
+      },
     };
   }
 
   const primaryMoves = boardState.moves.filter((move) => {
     const reachable = Array.from(findReachableStates(record, move.nextState));
-    return reachable.filter((stateId) => record.boardStates[stateId].primary).length >= 0;
+    return (
+      reachable.filter((stateId) => record.boardStates[stateId].primary)
+        .length >= 0
+    );
   });
 
-  const movesToPick = primaryMoves.length >= 1 ? primaryMoves : boardState.moves;
+  const movesToPick =
+    primaryMoves.length >= 1 ? primaryMoves : boardState.moves;
 
   if (movesToPick.length === 0) {
     return {
-      ...editorState,
-      mode: 'solution',
-      action: 'play',
+      editorState: {
+        ...editorState,
+        mode: "solution",
+        action: "play",
+      },
     };
   }
 
@@ -221,17 +291,23 @@ export function playPrimary(record: GoRecord, editorState: EditorState): EditorS
   };
   const secondCorrect = checkState(record, nextMove.nextState);
   if (secondCorrect === undefined) {
-    return newEditorState;
+    return { move: nextMove, editorState: newEditorState };
   } else {
     return {
-      ...newEditorState,
-      mode: 'solution',
-      action: 'play',
+      move: nextMove,
+      editorState: {
+        ...newEditorState,
+        mode: "solution",
+        action: "play",
+      },
     };
   }
 }
 
-export function checkState(record: GoRecord, state: string): boolean | undefined {
+export function checkState(
+  record: GoRecord,
+  state: string
+): boolean | undefined {
   const boardState = record.boardStates[state];
   if (boardState.moves.length === 0) {
     return !!boardState.correct;
@@ -240,13 +316,16 @@ export function checkState(record: GoRecord, state: string): boolean | undefined
 
 /*
  * Immutable methods that will return a new editorState object with the modifications
- * executred by the accessor. 
+ * executred by the accessor.
  */
 
-export function nextMove(record: GoRecord, editorState: EditorState): EditorState {
+export function nextMove(
+  record: GoRecord,
+  editorState: EditorState
+): EditorState {
   const boardState = record.boardStates[editorState.currentBoardState];
   if (Object.keys(boardState.moves).length === 0) {
-    throw Error('No moves to step through.');
+    throw Error("No moves to step through.");
   }
   const nextMove = boardState.moves[0];
   return {
@@ -256,12 +335,15 @@ export function nextMove(record: GoRecord, editorState: EditorState): EditorStat
   };
 }
 
-export function previousMove(record: GoRecord, editorState: EditorState): EditorState {
+export function previousMove(
+  record: GoRecord,
+  editorState: EditorState
+): EditorState {
   const boardState = record.boardStates[editorState.currentBoardState];
   const newMoveStack = [...editorState.moveStack];
   const reverseMoveId = newMoveStack.pop();
   if (!reverseMoveId) {
-    throw Error('No more previous moves.');
+    throw Error("No more previous moves.");
   }
   const reverseMove = boardState.reverseMoves[reverseMoveId];
 

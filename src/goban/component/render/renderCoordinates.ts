@@ -1,4 +1,4 @@
-import { GobanComponentContext } from "../GobanComponentContext";
+import { GobanComponentContext } from "../types/GobanComponentContext";
 import { getLetterCoordinate } from "../utils/getLetterCoordinate";
 
 export const renderCoordinates = (ctx: GobanComponentContext) => {

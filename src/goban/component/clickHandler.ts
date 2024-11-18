@@ -1,5 +1,5 @@
 import { GoRecord, MarkupType } from '../model/goban';
-import { EditorState } from './EditorState';
+import { EditorState } from './types/EditorState';
 import { addMove, addMarkup, removeMarkup, removeMove } from '../model/mutators';
 import { getCurrentBoardState } from '../model/selectors';
 

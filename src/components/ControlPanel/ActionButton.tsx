@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { AnchorButton, IconName } from '@blueprintjs/core';
-import { EditAction, EditorState } from '../../goban/component/EditorState';
+import { EditAction, EditorState } from '../../goban/component/types/EditorState';
 import { useCallback } from 'react';
 
 interface Props {

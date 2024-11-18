@@ -1,4 +1,4 @@
-import { GobanComponentContext } from "../GobanComponentContext";
+import { GobanComponentContext } from "../types/GobanComponentContext";
 import { roundToHalf } from "../utils/roundToHalf";
 
 export const renderLines = (ctx: GobanComponentContext) => {

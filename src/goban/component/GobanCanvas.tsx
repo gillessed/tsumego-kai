@@ -1,12 +1,14 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { playPrimary } from "../model/mutators";
 import { BoardProps, DerivedRenderStyle } from "./BoardProps";
 import { clickHandler } from "./clickHandler";
-import { GobanComponentContext } from "./GobanComponentContext";
 import { ImageAsset } from "./ImageAsset";
 import { renderCanvasComponents } from "./render/render";
-import { DefaultRenderingProps, RenderingProps } from "./RenderingProps";
+import { AnimationState, StoneAnimation } from "./types/AnimationState";
+import { GobanComponentContext } from "./types/GobanComponentContext";
+import { DefaultRenderingProps, RenderingProps } from "./types/RenderingProps";
 import { useExternallyUpdatedRef } from "./useExternallyUpdatedRef";
+import { FadeInTime, HoverOpacity } from "./Constants";
 
 interface Props extends BoardProps {
   classNames?: string;
@@ -38,15 +40,31 @@ export const GobanCanvas = React.memo(
     const editorState = useExternallyUpdatedRef(editorStateProp);
     const renderingProps = useExternallyUpdatedRef(renderingPropsProp);
 
+    const animations = useRef<AnimationState>({ animations: new Set() });
     const mouseCoordinates = useRef<{ x: number; y: number } | null>(null);
     const boardImage = useRef<ImageAsset>();
     const whiteStoneImage = useRef<ImageAsset>();
     const blackStoneImage = useRef<ImageAsset>();
     const derivedStyle = useRef<DerivedRenderStyle>();
     const canvasRef = useRef<HTMLCanvasElement>();
+    const lockedBoard = useRef<boolean>(false);
 
     const [canvasWidthState, setCanvasWidth] = useState(0);
     const [canvasHeightState, setCanvasHeight] = useState(0);
+
+    const animatePlay = useCallback(
+      (x: number, y: number, callback?: () => void) => {
+        animations.current.animations.add({
+          started: Date.now(),
+          totalTime: FadeInTime,
+          x,
+          y,
+          opacity: [HoverOpacity, 1],
+          callback,
+        });
+      },
+      [animations]
+    );
 
     const setCanvasRef = React.useCallback(
       (element: HTMLCanvasElement) => {
@@ -82,29 +100,41 @@ export const GobanCanvas = React.memo(
         };
 
         element.onmouseup = () => {
-          if (mouseCoordinates.current != null) {
-            const { x, y } = mouseCoordinates.current;
-            const result = clickHandler(
-              record.current,
-              editorState.current,
-              x,
-              y
-            );
-            if (result) {
-              if (editorState.current.mode === "problem" && result.playedMove) {
-                const nextEditorState = playPrimary(
-                  result.record,
-                  result.editorState
-                );
-                if (nextEditorState) {
-                  setRecord?.(result.record);
-                  setEditorState?.(nextEditorState);
-                }
-              } else {
+          if (mouseCoordinates.current == null || lockedBoard.current === true) {
+            return;
+          }
+          const { x, y } = mouseCoordinates.current;
+          const result = clickHandler(
+            record.current,
+            editorState.current,
+            x,
+            y
+          );
+          if (result == null) {
+            return;
+          }
+          setRecord?.(result.record);
+          setEditorState?.(result.editorState);
+          if (editorState.current.mode === "problem" && result.playedMove) {
+            lockedBoard.current = true;
+            animatePlay(x, y, () => {
+              const nextResult = playPrimary(result.record, result.editorState);
+              if (nextResult) {
                 setRecord?.(result.record);
-                setEditorState?.(result.editorState);
+                setEditorState?.(nextResult.editorState);
+                if (nextResult.move != null) {
+                  animatePlay(
+                    nextResult.move.intersection.x,
+                    nextResult.move.intersection.y,
+                    () => {
+                      lockedBoard.current = false;
+                    }
+                  );
+                }
               }
-            }
+            });
+          } else {
+            animatePlay(x, y);
           }
         };
 
@@ -112,7 +142,15 @@ export const GobanCanvas = React.memo(
           mouseCoordinates.current = null;
         };
       },
-      [canvasRef, derivedStyle, editorState, record, setEditorState, setRecord]
+      [
+        canvasRef,
+        derivedStyle,
+        editorState,
+        record,
+        animatePlay,
+        setEditorState,
+        setRecord,
+      ]
     );
 
     useEffect(() => {
@@ -178,6 +216,7 @@ export const GobanCanvas = React.memo(
           requestAnimationFrame(renderCanvas);
           return;
         }
+        const timestamp = Date.now();
         const context: GobanComponentContext = {
           c2d,
           record: record.current,
@@ -187,8 +226,23 @@ export const GobanCanvas = React.memo(
           boardImage: boardImage.current,
           whiteStoneImage: whiteStoneImage.current,
           blackStoneImage: blackStoneImage.current,
+          animationState: animations.current,
+          timestamp,
+          lockedBoard: lockedBoard.current,
         };
         renderCanvasComponents(context);
+        const finishedAnimations: StoneAnimation[] = [];
+        const currentAnimations = new Set(animations.current.animations);
+        for (const animation of currentAnimations) {
+          if (timestamp > animation.started + animation.totalTime) {
+            finishedAnimations.push(animation);
+            currentAnimations.delete(animation);
+          }
+        }
+        animations.current.animations = currentAnimations;
+        for (const animation of finishedAnimations) {
+          animation.callback?.();
+        }
         requestAnimationFrame(renderCanvas);
       }
 

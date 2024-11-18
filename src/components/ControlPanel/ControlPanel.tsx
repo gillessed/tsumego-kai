@@ -3,7 +3,7 @@ import DotProp from 'dot-prop-immutable';
 import * as React from 'react';
 import { useCallback } from 'react';
 import { EditorProps } from '../../goban/component/BoardProps';
-import { readonlyText } from '../../goban/component/EditorState';
+import { readonlyText } from '../../goban/component/types/EditorState';
 import { getCurrentBoardState } from '../../goban/model/selectors';
 import { ActionButtonRow } from './ActionButtonRow';
 import { ClipRow } from './ClipRow';

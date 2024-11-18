@@ -1,4 +1,4 @@
-import { GobanComponentContext } from "../GobanComponentContext";
+import { GobanComponentContext } from "../types/GobanComponentContext";
 import { clipped } from "../utils/clipped";
 import { renderShapeAnnotation } from "./renderShapeAnnotation";
 

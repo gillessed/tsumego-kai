@@ -1,11 +1,12 @@
 import { getCurrentBoardState } from "../../model/selectors";
-import { GobanComponentContext } from "./render";
+import { GobanComponentContext } from "../types/GobanComponentContext";
+import { HoverOpacity } from "../Constants";
 import { renderShapeAnnotation } from "./renderShapeAnnotation";
 import { renderStone } from "./renderStone";
 
 export const renderHover = (ctx: GobanComponentContext) => {
-  const { record, editorState, mouseCoordinates } = ctx;
-  if (!mouseCoordinates) {
+  const { record, editorState, mouseCoordinates, lockedBoard } = ctx;
+  if (!mouseCoordinates || lockedBoard === true) {
     return;
   }
   const coordinates = mouseCoordinates;
@@ -20,7 +21,8 @@ export const renderHover = (ctx: GobanComponentContext) => {
         coordinates.x,
         coordinates.y,
         boardState.playerToPlay,
-        0.5
+        HoverOpacity,
+        false
       );
     }
   } else if (action === "triangle") {
@@ -30,7 +32,7 @@ export const renderHover = (ctx: GobanComponentContext) => {
       coordinates.x,
       coordinates.y,
       color,
-      0.5,
+      HoverOpacity,
       "triangle"
     );
   } else if (action === "square") {
@@ -40,7 +42,7 @@ export const renderHover = (ctx: GobanComponentContext) => {
       coordinates.x,
       coordinates.y,
       color,
-      0.5,
+      HoverOpacity,
       "square"
     );
   } else if (action === "letter") {
@@ -50,7 +52,7 @@ export const renderHover = (ctx: GobanComponentContext) => {
       coordinates.x,
       coordinates.y,
       color,
-      0.5,
+      HoverOpacity,
       "letter",
       "A"
     );
@@ -67,7 +69,7 @@ export const renderHover = (ctx: GobanComponentContext) => {
         coordinates.x,
         coordinates.y,
         color,
-        0.5,
+        HoverOpacity,
         "cross"
       );
     }
@@ -92,7 +94,7 @@ export const renderHover = (ctx: GobanComponentContext) => {
         move.intersection.y === coordinates.y
     );
     if (!existingMove) {
-      renderStone(ctx, coordinates.x, coordinates.y, "white", 0.5);
+      renderStone(ctx, coordinates.x, coordinates.y, "white", HoverOpacity, false);
     }
   } else if (action === "place-black") {
     const existingMove = boardState.moves.find(
@@ -101,7 +103,7 @@ export const renderHover = (ctx: GobanComponentContext) => {
         move.intersection.y === coordinates.y
     );
     if (!existingMove) {
-      renderStone(ctx, coordinates.x, coordinates.y, "black", 0.5);
+      renderStone(ctx, coordinates.x, coordinates.y, "black", HoverOpacity, false);
     }
   }
 };

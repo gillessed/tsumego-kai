@@ -1,7 +1,7 @@
 import { ButtonGroup } from '@blueprintjs/core';
 import { IconNames } from '@blueprintjs/icons';
 import React from 'react';
-import { EditorState } from '../../goban/component/EditorState';
+import { EditorState } from '../../goban/component/types/EditorState';
 import { ActionButton } from './ActionButton';
 import './ActionButtonRow.css';
 

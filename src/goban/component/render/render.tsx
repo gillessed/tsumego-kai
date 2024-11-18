@@ -1,4 +1,4 @@
-import { GobanComponentContext } from "../GobanComponentContext";
+import { GobanComponentContext } from "../types/GobanComponentContext";
 import { renderBoard } from "./renderBoard";
 import { renderCoordinates } from "./renderCoordinates";
 import { renderHover } from "./renderHover";

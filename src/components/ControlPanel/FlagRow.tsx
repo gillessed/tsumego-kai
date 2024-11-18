@@ -1,8 +1,8 @@
 import { Checkbox } from "@blueprintjs/core";
 import DotProp from 'dot-prop-immutable';
 import React, { useCallback } from "react";
-import { EditorState } from "../../goban/component/EditorState";
-import { DefaultRenderingProps, RenderingProps } from "../../goban/component/RenderingProps";
+import { EditorState } from "../../goban/component/types/EditorState";
+import { DefaultRenderingProps, RenderingProps } from "../../goban/component/types/RenderingProps";
 import { BoardState, GoRecord } from "../../goban/model/goban";
 import { getCurrentBoardState } from "../../goban/model/selectors";
 import './FlagRow.css';

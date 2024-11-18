@@ -1,5 +1,5 @@
 import { Color } from "../../model/goban";
-import { GobanComponentContext } from "../GobanComponentContext";
+import { GobanComponentContext } from "../types/GobanComponentContext";
 import { renderCircle } from "./renderCircle";
 import { renderCross } from "./renderCross";
 import { renderLetter } from "./renderLetter";

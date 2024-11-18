@@ -1,7 +1,7 @@
 import { ClipRegion, GoRecord } from "../model/goban";
 import { Dimension } from "../model/utils";
-import { EditorState } from "./EditorState";
-import { RenderingProps } from "./RenderingProps";
+import { EditorState } from "./types/EditorState";
+import { RenderingProps } from "./types/RenderingProps";
 
 export type DerivedRenderStyle = RenderingProps & {
   canvasSize: Dimension;

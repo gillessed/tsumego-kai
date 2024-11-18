@@ -1,4 +1,4 @@
-import { GobanComponentContext } from "../GobanComponentContext";
+import { GobanComponentContext } from "../types/GobanComponentContext";
 import { renderStone } from "./renderStone";
 
 export const renderStones = (ctx: GobanComponentContext) => {
@@ -17,7 +17,7 @@ export const renderStones = (ctx: GobanComponentContext) => {
       const stoneColor =
         record.boardStates[editorState.currentBoardState].stones[coord];
       if (stoneColor === "white" || stoneColor === "black") {
-        renderStone(ctx, x, y, stoneColor, 1);
+        renderStone(ctx, x, y, stoneColor, 1, true);
       }
     }
   }

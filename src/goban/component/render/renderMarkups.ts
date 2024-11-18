@@ -1,7 +1,7 @@
 import { hasMoveAtIntersection } from "../../model/accessors";
 import { Color } from "../../model/goban";
-import { shouldRenderNextMoves } from "../EditorState";
-import { GobanComponentContext } from "./render";
+import { shouldRenderNextMoves } from "../types/EditorState";
+import { GobanComponentContext } from "../types/GobanComponentContext";
 import { clipped } from "../utils/clipped";
 import { renderShapeAnnotation } from "./renderShapeAnnotation";
 

@@ -1,6 +1,6 @@
 import { findReachableStates } from "../../model/selectors";
-import { shouldRenderNextMoves } from "../EditorState";
-import { GobanComponentContext } from "./render";
+import { shouldRenderNextMoves } from "../types/EditorState";
+import { GobanComponentContext } from "../types/GobanComponentContext";
 import { clipped } from "../utils/clipped";
 
 export const renderNextMoves = (ctx: GobanComponentContext) => {

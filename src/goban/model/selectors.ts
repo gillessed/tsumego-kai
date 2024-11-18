@@ -1,5 +1,5 @@
 import { BoardState, ClipRegion, GoRecord } from './goban';
-import { EditorState } from '../component/EditorState';
+import { EditorState } from '../component/types/EditorState';
 
 export const getCurrentBoardState = (record: GoRecord, editorState: EditorState): BoardState => {
   const boardState = record.boardStates[editorState.currentBoardState];

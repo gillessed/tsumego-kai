@@ -1,4 +1,4 @@
-import { GobanComponentContext } from "../GobanComponentContext";
+import { GobanComponentContext } from "../types/GobanComponentContext";
 
 export const renderBoard = (ctx: GobanComponentContext) => {
   const { c2d, boardImage, style } = ctx;

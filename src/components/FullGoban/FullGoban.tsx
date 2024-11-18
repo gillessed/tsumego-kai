@@ -32,8 +32,6 @@ export const FullGoban = ({
     }
     const { width, height } = entries[0].contentRect;
 
-    console.log(entries[0].contentRect);
-
     if (height - 2 * boardPanelMargin === 892) {
       return;
     }

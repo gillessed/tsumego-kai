@@ -1,7 +1,8 @@
-import { GoRecord } from "../model/goban";
-import { DerivedRenderStyle } from "./BoardProps";
+import { GoRecord } from "../../model/goban";
+import { AnimationState } from "./AnimationState";
+import { DerivedRenderStyle } from "../BoardProps";
 import { EditorState } from "./EditorState";
-import { ImageAsset } from "./ImageAsset";
+import { ImageAsset } from "../ImageAsset";
 
 export interface GobanComponentContext {
   readonly c2d: CanvasRenderingContext2D;
@@ -12,4 +13,7 @@ export interface GobanComponentContext {
   readonly record: GoRecord;
   readonly editorState: EditorState;
   readonly mouseCoordinates: { x: number; y: number } | null;
+  readonly animationState: AnimationState;
+  readonly timestamp: number;
+  readonly lockedBoard: boolean;
 }
