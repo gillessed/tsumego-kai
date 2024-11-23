@@ -1,32 +1,26 @@
 import { Button, Intent, Spinner } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
-import React from "react";
+import React, { useState } from "react";
 import { useAddCollection } from "../../hooks/useAddCollection";
-import { useCollections } from "../../hooks/useCollections";
-import { isAsyncLoading } from "../../utils/Async";
-import { LoadingView } from "../Loading/LoadingView";
+import { useCollectionIds } from "../../hooks/useCollectionIds";
+import { AuthProps } from "../RequiredAuth/AuthProps";
 import { CollectionCard } from "./CollectionCard";
 import "./CollectionsView.css";
-import { AuthProps } from "../RequiredAuth/AuthProps";
 
 export const CollectionsView = React.memo(({ user }: AuthProps) => {
-  const collections = useCollections(user.uid);
-  const [addCollection, addingNew] = useAddCollection();
+  const collectionIds = useCollectionIds(user);
+  const addCollection = useAddCollection(user);
+  const [adding, setAdding] = useState(false);
 
   const handleClickAddCollection = React.useCallback(() => {
+    setAdding(true);
     addCollection({
       authorId: user.uid,
       description: "",
-      lastUpdated: `${Date.now()}`,
-      dateCreated: `${Date.now()}`,
       name: "",
       problemIds: [],
     });
   }, [addCollection, user.uid]);
-
-  if (isAsyncLoading(addingNew)) {
-    return <LoadingView type="content" />;
-  }
 
   return (
     <div className="collections-view content-view effect-fade-in">
@@ -39,14 +33,15 @@ export const CollectionsView = React.memo(({ user }: AuthProps) => {
         icon={IconNames.ADD}
         intent={Intent.PRIMARY}
         onClick={handleClickAddCollection}
+        loading={adding}
       />
 
       <div className="collections-card-container">
-        {collections.isLoading && <Spinner />}
-        {collections.isFetched &&
-          collections.data != null &&
-          collections.data.map((collection) => (
-            <CollectionCard collection={collection} key={collection.id} />
+        {collectionIds.isLoading && <Spinner />}
+        {collectionIds.isFetched &&
+          collectionIds.data != null &&
+          collectionIds.data.map((collectionId) => (
+            <CollectionCard collectionId={collectionId} key={collectionId} />
           ))}
       </div>
     </div>

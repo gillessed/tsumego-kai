@@ -42,7 +42,7 @@ export const ProblemView = React.memo(({
   }
 
   return (
-    <div className='loaded-problem-container'>
+    <div className='problem-container'>
       {collection.isFetched && collection.data != null && <ProblemViewTitleRow
         collection={collection.data}
         editing={editing}
@@ -50,7 +50,7 @@ export const ProblemView = React.memo(({
         record={record}
         problem={problem}
       />}
-      {collection.isLoading && <div className={classNames(Classes.SKELETON, 'title-row')} />}
+      {collection.isLoading && <div className={classNames(Classes.SKELETON, 'problem-view-title-row')} />}
       <FullGoban
         record={record}
         editorState={editorState}

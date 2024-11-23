@@ -16,7 +16,8 @@ export type ReferenceType<T> = {
   value: string,
   fields: {
     [Property in keyof T]: string;
-  }
+  },
+  byKey: (key: string) => string;
 };
 
 export function createRefs<T>(rootKey: string, fields: { [key in keyof T]: string }) {
@@ -28,7 +29,8 @@ export function createRefs<T>(rootKey: string, fields: { [key in keyof T]: strin
         const typedKey = key as keyof T;
         fields[typedKey] = refPath(value, key);
       }
-      return { value, fields };
+      const byKey = (key: string) => refPath(value, key);
+      return { value, fields, byKey };
     },
   }
 }

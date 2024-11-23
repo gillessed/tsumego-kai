@@ -27,13 +27,11 @@ export const CollectionView = React.memo(
 
     const handleChangeCollectionName = useSetCollectionName(collection.id);
 
-    const addProblem = useAddProblem();
+    const addProblem = useAddProblem(user);
     const handleAddProblem = React.useCallback(() => {
       addProblem({
         authorId: user.uid,
         collectionId: collection.id,
-        tags: [],
-        rank: 0,
         record: emptyBoard(19),
       });
     }, [addProblem, collection.id, user.uid]);

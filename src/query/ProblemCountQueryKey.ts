@@ -1,0 +1,1 @@
+export const ProblemCountQueryKey = ["problem-count"];

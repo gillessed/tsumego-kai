@@ -1,25 +1,42 @@
-import { push, ref, set } from "firebase/database";
+import { User } from "firebase/auth";
+import { push, ref, update } from "firebase/database";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { AppRoutes } from "../components/AppRoutes";
-import { Collection, CollectionsRef, NewCollection } from "../database/Collections";
 import { useAppContext } from "../context/AppContext";
-import { Async, asyncEmpty, asyncHandler } from "../utils/Async";
+import { CollectionIdsByUserIdsRef } from "../database/CollectionIdsByUserIds";
+import {
+  Collection,
+  CollectionsRef,
+  NewCollection,
+} from "../database/Collections";
 
-export const useAddCollection = (): [(newCollection: NewCollection) => void, Async<void>] => {
+export const useAddCollection = (user: User) => {
   const navigate = useNavigate();
   const { database } = useAppContext();
-  const [loading, setLoading] = React.useState<Async<void>>(asyncEmpty);
-  const handleNewCollection = React.useCallback((newCollection: NewCollection) => asyncHandler(setLoading, async () => {
-    const collectionId = push(ref(database, CollectionsRef.root)).key;
-    if (collectionId == null) {
-      return;
-    }
+  return React.useCallback(
+    (newCollection: NewCollection) => {
+      async function handler() {
+        const collectionId = push(ref(database, CollectionsRef.root)).key;
+        if (collectionId == null) {
+          return;
+        }
 
-    const collection: Collection = { ...newCollection, id: collectionId };
-    const collectionRef = ref(database, CollectionsRef.byId(collectionId).value);
-    await set(collectionRef, collection);
-    navigate(AppRoutes.collection(collectionId));
-  })(), [navigate, database]);
-  return [handleNewCollection, loading];
-}
+        const collection: Collection = { ...newCollection, id: collectionId };
+        const collectionPath = CollectionsRef.byId(collectionId).value;
+
+        const collectionsByUserIdPath = CollectionIdsByUserIdsRef.byId(
+          user.uid
+        ).byKey(collectionId);
+
+        const updates: Record<string, unknown> = {};
+        updates[collectionPath] = collection;
+        updates[collectionsByUserIdPath] = collectionId;
+        await update(ref(database), updates);
+        navigate(AppRoutes.collection(collectionId));
+      }
+      handler();
+    },
+    [navigate, database, user.uid]
+  );
+};

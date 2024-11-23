@@ -24,6 +24,7 @@ import { registerDropdownListener } from "./dropdownListener";
 import { Languages } from "./language/languages";
 import "./main.css";
 import { SolveLoader } from "./components/Solve/SolveLoader";
+import { registerFirebaseCli } from "./cli/firebaseCli";
 
 export const SESSION_COOKIE = "TSUMEGO_KAI_TOKEN";
 export const LANGUAGE_COOKIE = "TSUMEGO_KAI_LANGUAGE";
@@ -49,6 +50,7 @@ const registerFirebase = async (): Promise<AppContextType> => {
 
 const setup = async () => {
   const context = await registerFirebase();
+  registerFirebaseCli(context);
   const queryClient = new QueryClient();
 
   const router = createBrowserRouter(

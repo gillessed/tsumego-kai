@@ -9,7 +9,6 @@ export function useSetCollectionName(collectionId: string) {
     async function handler() {
       const updates: Record<string, string> = {};
       updates[CollectionsRef.byId(collectionId).fields.name] = name;
-      updates[CollectionsRef.byId(collectionId).fields.lastUpdated] = `${Date.now()}`;
       await update(ref(database), updates);
     }
     handler();
