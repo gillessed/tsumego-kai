@@ -2,22 +2,23 @@ import { Button, Intent, Spinner } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
 import React, { useState } from "react";
 import { useAddCollection } from "../../hooks/useAddCollection";
-import { useCollectionIds } from "../../hooks/useCollectionIds";
 import { AuthProps } from "../RequiredAuth/AuthProps";
 import { CollectionCard } from "./CollectionCard";
 import "./CollectionsView.css";
+import { isAsyncLoaded, isAsyncLoading } from "../../utils/Async";
+import { useCollections } from "../../hooks/useCollections";
 
 export const CollectionsView = React.memo(({ user }: AuthProps) => {
-  const collectionIds = useCollectionIds(user);
-  const addCollection = useAddCollection(user);
+  const collections = useCollections(user);
+  const addCollection = useAddCollection();
   const [adding, setAdding] = useState(false);
 
   const handleClickAddCollection = React.useCallback(() => {
     setAdding(true);
     addCollection({
       authorId: user.uid,
-      description: "",
-      name: "",
+      description: "Description",
+      name: "New Collection",
       problemIds: [],
     });
   }, [addCollection, user.uid]);
@@ -37,11 +38,10 @@ export const CollectionsView = React.memo(({ user }: AuthProps) => {
       />
 
       <div className="collections-card-container">
-        {collectionIds.isLoading && <Spinner />}
-        {collectionIds.isFetched &&
-          collectionIds.data != null &&
-          collectionIds.data.map((collectionId) => (
-            <CollectionCard collectionId={collectionId} key={collectionId} />
+        {isAsyncLoading(collections) && <Spinner />}
+        {isAsyncLoaded(collections) &&
+          collections.value.map((collection) => (
+            <CollectionCard collection={collection} key={collection.id} />
           ))}
       </div>
     </div>

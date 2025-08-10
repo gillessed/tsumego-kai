@@ -11,7 +11,7 @@ import { useAppContext } from "../../context/AppContext";
 import { useGetRandomProblemId } from "../../hooks/useGetRandomProblemId";
 
 export const SolveLoader = React.memo(({ user }: AuthProps) => {
-  const { database } = useAppContext();
+  const { db: database } = useAppContext();
   const [problemId, setProblemId] = useState<Async<string>>(asyncEmpty);
 
   const getRandomProblemId = useGetRandomProblemId(user, database);

@@ -10,7 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { Collection } from "../../database/Collections";
 import { Problem } from "../../database/Problems";
 import { GoRecord } from "../../goban/model/goban";
-import { useSaveProblem } from "../../hooks/useSaveProblem";
+import { useUpdateProblem } from "../../hooks/useUpdateProblem";
 import { AppRoutes } from "../AppRoutes";
 import "./ProblemViewTitleRow.css";
 
@@ -24,7 +24,7 @@ interface Props {
 
 export const ProblemViewTitleRow = React.memo(
   ({ collection, problem, editing, isProblemOwner, record }: Props) => {
-    const saveProblem = useSaveProblem();
+    const saveProblem = useUpdateProblem(problem.id);
     const navigate = useNavigate();
     const handleSave = React.useCallback(() => {
       const newProblem: Problem = {

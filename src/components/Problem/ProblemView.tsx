@@ -7,6 +7,7 @@ import { Problem } from '../../database/Problems';
 import { EditorMode, EditorState } from '../../goban/component/types/EditorState';
 import { RenderingProps } from '../../goban/component/types/RenderingProps';
 import { useCollection } from '../../hooks/useCollection';
+import { isAsyncLoaded, isAsyncLoading } from '../../utils/Async';
 import { AppRoutes } from '../AppRoutes';
 import { FullGoban } from '../FullGoban/FullGoban';
 import './ProblemView.css';
@@ -43,14 +44,14 @@ export const ProblemView = React.memo(({
 
   return (
     <div className='problem-container'>
-      {collection.isFetched && collection.data != null && <ProblemViewTitleRow
-        collection={collection.data}
+      {isAsyncLoaded(collection) && collection != null && <ProblemViewTitleRow
+        collection={collection.value}
         editing={editing}
         isProblemOwner={isProblemOwner}
         record={record}
         problem={problem}
       />}
-      {collection.isLoading && <div className={classNames(Classes.SKELETON, 'problem-view-title-row')} />}
+      {isAsyncLoading(collection) && <div className={classNames(Classes.SKELETON, 'problem-view-title-row')} />}
       <FullGoban
         record={record}
         editorState={editorState}

@@ -8,6 +8,7 @@ import { useUser } from '../../hooks/useUser';
 import { AppRoutes } from '../AppRoutes';
 import { Dropdown } from './Dropdown';
 import './NavigationView.css';
+import { isAsyncLoaded } from '../../utils/Async';
 
 export const NavigationView = React.memo(() => {
   const { app } = useAppContext();
@@ -53,7 +54,7 @@ export const NavigationView = React.memo(() => {
   const renderUserDropdown = () => (
     <Dropdown icon='user'>
       <div className='menu-item unselectable'>
-        <Link to={AppRoutes.profile}>
+        <Link to={AppRoutes.profile()}>
           <Icon icon='mugshot' />
           <div className='menu-item-sub'> Profile </div>
         </Link>
@@ -77,8 +78,8 @@ export const NavigationView = React.memo(() => {
     <div className='navbar-container'>
       <nav className='main-navbar'>
         {renderActionsMenu()}
-        {user.isFetched && user.data == null && renderLoginButton()}
-        {user.isFetched && user.data != null && renderUserDropdown()}
+        {isAsyncLoaded(user) && user.value == null && renderLoginButton()}
+        {isAsyncLoaded(user) && user.value != null && renderUserDropdown()}
       </nav>
     </div>
   );

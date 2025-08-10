@@ -6,11 +6,11 @@ import {
 } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
 import { User } from "firebase/auth";
-import React from "react";
+import React, { useCallback } from "react";
 import { Collection } from "../../database/Collections";
 import { emptyBoard } from "../../goban/model/goban";
 import { useAddProblem } from "../../hooks/useAddProblem";
-import { useSetCollectionName } from "../../hooks/useSetCollectionName";
+import { useUpdateCollection } from "../../hooks/useUpdateCollection";
 import { AppRoutes } from "../AppRoutes";
 import "./CollectionView.css";
 import { ProblemCardLoader } from "./ProblemCardLoader";
@@ -25,9 +25,14 @@ export const CollectionView = React.memo(
     const { problemIds, name: loadedName } = collection;
     const [name, setName] = React.useState(loadedName);
 
-    const handleChangeCollectionName = useSetCollectionName(collection.id);
+    const updateCollection = useUpdateCollection(collection.id);
 
-    const addProblem = useAddProblem(user);
+    const setCollectionName = useCallback((name: string) => {
+      updateCollection({name})
+    }, [updateCollection]);
+
+    const addProblem = useAddProblem();
+
     const handleAddProblem = React.useCallback(() => {
       addProblem({
         authorId: user.uid,
@@ -55,7 +60,7 @@ export const CollectionView = React.memo(
             <EditableText
               value={name}
               onChange={setName}
-              onConfirm={handleChangeCollectionName}
+              onConfirm={setCollectionName}
             />
           </h1>
         </div>

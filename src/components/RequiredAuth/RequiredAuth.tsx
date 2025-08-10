@@ -1,6 +1,7 @@
 import React from "react";
 import { Navigate } from "react-router-dom";
 import { useUser } from "../../hooks/useUser";
+import { isAsyncLoaded, isAsyncLoading } from "../../utils/Async";
 import { AppRoutes } from "../AppRoutes";
 import { LoadingView } from "../Loading/LoadingView";
 import { AuthProps } from "./AuthProps";
@@ -11,11 +12,13 @@ export interface LoadUserProps {
 
 export const RequiredAuth = React.memo(({ Authed }: LoadUserProps) => {
   const user = useUser();
-  if (user.isFetching && !user.isRefetching) {
+  if (isAsyncLoading(user)) {
     return <LoadingView type="app" />;
-  } else if (user.isFetched && user.data != null) {
-    return <Authed user={user.data} />;
-  } else {
-    return <Navigate to={AppRoutes.login()} />;
+  } else if (isAsyncLoaded(user)) {
+    if (user.value != null) {
+      return <Authed user={user.value} />;
+    } else {
+      return <Navigate to={AppRoutes.login()} />;
+    }
   }
 });

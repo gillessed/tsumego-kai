@@ -4,8 +4,8 @@ export type AsyncLoaded<T> = { type: "__loaded__"; value: T };
 export type AsyncError = { type: "__error__"; error: string };
 export type Async<T> = AsyncEmpty | AsyncLoading | AsyncLoaded<T> | AsyncError;
 
-export const asyncEmpty: AsyncEmpty = { type: "__empty__" };
-export const asyncLoading: AsyncLoading = { type: "__loading__" };
+export const asyncEmpty: () => AsyncEmpty = () => ({ type: "__empty__" });
+export const asyncLoading: () => AsyncLoading = () => ({ type: "__loading__" });
 export const asyncError: (error: string) => AsyncError = (error: string) => ({
   type: "__error__",
   error,
@@ -32,7 +32,7 @@ export const asyncHandler = <T>(
   return () => {
     const asyncHandler = async () => {
       try {
-        setState(asyncLoading);
+        setState(asyncLoading());
         const result = await load();
         if (updateStateOnCompletion) {
           setState(asyncLoaded(result));

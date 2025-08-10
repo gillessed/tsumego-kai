@@ -7,7 +7,7 @@ export const AppContainer = () => {
   const user = useUser();
 
   function renderOutlet() {
-    if (user.isLoading) {
+    if (user == null) {
       return <LoadingView type='app'/>;
     } else {
       return <Outlet />;

@@ -1,12 +1,12 @@
 import { FirebaseApp } from "firebase/app";
 import { Auth } from "firebase/auth";
-import { Database } from "firebase/database";
+import { Firestore } from "firebase/firestore";
 import React from "react";
 
 export interface AppContextType {
   app: FirebaseApp;
   auth: Auth;
-  database: Database;
+  db: Firestore;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

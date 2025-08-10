@@ -2,6 +2,7 @@ import { Classes } from "@blueprintjs/core";
 import classNames from "classnames";
 import React from "react";
 import { useProblem } from "../../hooks/useProblem";
+import { isAsyncError, isAsyncLoaded, isAsyncLoading } from "../../utils/Async";
 import { ProblemCard, ProblemCardProps } from "./ProblemCard";
 import "./ProblemCard.css";
 
@@ -15,20 +16,22 @@ export const ProblemCardLoader = React.memo(
 
     const skeletonClasses = classNames(Classes.SKELETON, "goban-skeleton");
 
-    if (problem.isLoading) {
+    if (isAsyncLoading(problem)) {
       return (
         <div className="problem-card card">
           <div className={skeletonClasses} />
         </div>
       );
-    } else if (problem.isFetched && problem.data != null) {
-      return <ProblemCard collection={collection} problem={problem.data} />;
-    } else {
+    } else if (isAsyncLoaded(problem)) {
+      return <ProblemCard collection={collection} problem={problem.value} />;
+    } else if (isAsyncError(problem)) {
       return (
         <div className="problem-card card">
-          Cannot find problem with id {problemId}
+          {problem.error}
         </div>
       );
+    } else {
+      return <div>WTF</div>;
     }
   }
 );

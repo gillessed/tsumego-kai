@@ -10,16 +10,15 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@blueprintjs/core": "^5.14.1",
-    "@blueprintjs/icons": "^5.14.0",
+    "@blueprintjs/core": "^6.1.0",
+    "@blueprintjs/icons": "^6.0.0",
     "dot-prop-immutable": "^2.1.1",
-    "firebase": "^11.0.1",
+    "firebase": "^12.0.0",
     "firebaseui": "^6.1.0",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "react-query": "^3.39.3",
-    "react-router-dom": "^6.28.0",
-    "uuid": "^11.0.3"
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "react-router-dom": "^7.7.1",
+    "uuid": "^11.1.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.13.0",

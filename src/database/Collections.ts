@@ -1,4 +1,4 @@
-import { createRefs } from "./createRefs";
+import { collection, doc, DocumentData, Firestore } from "firebase/firestore";
 
 export interface Collection {
   id: string;
@@ -19,10 +19,14 @@ export const emptyCollection = (userId: string): NewCollection => {
   };
 };
 
-export const CollectionsRef = createRefs<Collection>("collections", {
-  authorId: "",
-  id: "",
-  description: "",
-  name: "",
-  problemIds: "",
-});
+export function loadSnapshotCollection(data: DocumentData | undefined) {
+  const collectionData = data as Collection;
+  if (collectionData.problemIds == null) {
+    collectionData.problemIds = [];
+  }
+  return collectionData;
+}
+
+export const collectionCollection = (db: Firestore) => collection(db, "collections");
+
+export const collectionDoc = (db: Firestore, id: string) => doc(collectionCollection(db), id);

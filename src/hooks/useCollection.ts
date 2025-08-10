@@ -1,20 +1,29 @@
-import { onValue, ref } from "firebase/database";
-import { Collection, CollectionsRef } from "../database/Collections";
+import { onSnapshot } from "firebase/firestore";
+import { useEffect, useState } from "react";
 import { useAppContext } from "../context/AppContext";
-import { CollectionQueryKey } from "../query/CollectionQueryKey";
-import { useSubscription } from "./useSubscription";
+import { Collection, collectionDoc, loadSnapshotCollection, } from "../database/Collections";
+import { Async, asyncError, asyncLoaded, asyncLoading } from "../utils/Async";
 
-export function useCollection(collectionId: string) {
-  const { database } = useAppContext();
-  const collectionRef = ref(database, CollectionsRef.byId(collectionId).value);
+export function useCollection(id: string) {
+  const [collection, setCollection] = useState<Async<Collection>>(asyncLoading());
 
-  return useSubscription(CollectionQueryKey(collectionId), (callback: (collections: Collection) => void) => {
-    return onValue(collectionRef, (snapshot) => {
-      const collection = snapshot.val();
-      if (collection.problemIds == null) {
-        collection.problemIds = [];
+  const { db } = useAppContext();
+  
+  useEffect(() => {
+    const doc = collectionDoc(db, id);
+    const unsubscribe = onSnapshot(doc, (snapshot) => {
+      const collectionData = snapshot.data();
+      if (collectionData == null) {
+        setCollection(asyncError(`Collection ${id} could not be found.`));
+      } else {
+        setCollection(asyncLoaded(loadSnapshotCollection(snapshot.data())));
       }
-      callback(collection);
     });
-  });
+    return () => {
+      setCollection(asyncLoading());
+      unsubscribe();
+    }
+  }, [db, setCollection, id]);
+
+  return collection;
 }

@@ -1,12 +1,16 @@
-import { User } from "firebase/auth";
+import { onAuthStateChanged, User } from "firebase/auth";
+import { useEffect, useState } from "react";
 import { useAppContext } from "../context/AppContext";
-import { UserQueryKey } from "../query/UserQueryKey";
-import { useSubscription } from "./useSubscription";
+import { Async, asyncLoaded, asyncLoading } from "../utils/Async";
 
 export function useUser() {
   const { auth } = useAppContext();
-  return useSubscription(
-    UserQueryKey,
-    (callback: (data: User | null) => void) => auth.onAuthStateChanged((data) => callback(data)),
-  );
+  const [user, setUser] = useState<Async<User | undefined>>(asyncLoading());
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setUser(asyncLoaded(user ?? undefined));
+    });
+    return unsubscribe;
+  }, [auth]);
+  return user;
 }

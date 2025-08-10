@@ -1,42 +1,27 @@
-import { User } from "firebase/auth";
-import { push, ref, update } from "firebase/database";
-import React from "react";
+import { setDoc } from "firebase/firestore";
+import { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import { v4 } from "uuid";
 import { AppRoutes } from "../components/AppRoutes";
 import { useAppContext } from "../context/AppContext";
-import { CollectionIdsByUserIdsRef } from "../database/CollectionIdsByUserIds";
 import {
   Collection,
-  CollectionsRef,
+  collectionDoc,
   NewCollection,
 } from "../database/Collections";
 
-export const useAddCollection = (user: User) => {
+export const useAddCollection = () => {
   const navigate = useNavigate();
-  const { database } = useAppContext();
-  return React.useCallback(
-    (newCollection: NewCollection) => {
-      async function handler() {
-        const collectionId = push(ref(database, CollectionsRef.root)).key;
-        if (collectionId == null) {
-          return;
-        }
+  const { db } = useAppContext();
 
-        const collection: Collection = { ...newCollection, id: collectionId };
-        const collectionPath = CollectionsRef.byId(collectionId).value;
-
-        const collectionsByUserIdPath = CollectionIdsByUserIdsRef.byId(
-          user.uid
-        ).byKey(collectionId);
-
-        const updates: Record<string, unknown> = {};
-        updates[collectionPath] = collection;
-        updates[collectionsByUserIdPath] = collectionId;
-        await update(ref(database), updates);
-        navigate(AppRoutes.collection(collectionId));
-      }
-      handler();
+  return useCallback(
+    async (newCollection: NewCollection) => {
+      const id = v4();
+      const collection: Collection = { ...newCollection, id: id };
+      const doc = collectionDoc(db, id);
+      await setDoc(doc, collection);
+      navigate(AppRoutes.collection(id));
     },
-    [navigate, database, user.uid]
+    [navigate, db]
   );
 };

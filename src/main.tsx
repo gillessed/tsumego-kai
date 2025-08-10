@@ -1,8 +1,7 @@
 import { getAuth } from "@firebase/auth";
 import { initializeApp } from "firebase/app";
-import { getDatabase } from "firebase/database";
+import { getFirestore } from "firebase/firestore";
 import { createRoot } from "react-dom/client";
-import { QueryClient, QueryClientProvider } from "react-query";
 import {
   createBrowserRouter,
   createRoutesFromElements,
@@ -19,12 +18,11 @@ import { ProblemViewLoader } from "./components/Problem/ProblemViewLoader";
 import { Profile } from "./components/Profile/Profile";
 import { AuthProps } from "./components/RequiredAuth/AuthProps";
 import { RequiredAuth } from "./components/RequiredAuth/RequiredAuth";
+import { SolveLoader } from "./components/Solve/SolveLoader";
 import { AppContextProvider, AppContextType } from "./context/AppContext";
 import { registerDropdownListener } from "./dropdownListener";
 import { Languages } from "./language/languages";
 import "./main.css";
-import { SolveLoader } from "./components/Solve/SolveLoader";
-import { registerFirebaseCli } from "./cli/firebaseCli";
 
 export const SESSION_COOKIE = "TSUMEGO_KAI_TOKEN";
 export const LANGUAGE_COOKIE = "TSUMEGO_KAI_LANGUAGE";
@@ -44,14 +42,12 @@ const registerFirebase = async (): Promise<AppContextType> => {
 
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
-  const database = getDatabase(app);
-  return { app, auth, database };
+  const db = getFirestore(app);
+  return { app, auth, db };
 };
 
 const setup = async () => {
   const context = await registerFirebase();
-  registerFirebaseCli(context);
-  const queryClient = new QueryClient();
 
   const router = createBrowserRouter(
     createRoutesFromElements(
@@ -96,24 +92,13 @@ const setup = async () => {
           element={<RequiredAuth Authed={SolveLoader} />}
         />
       </Route>
-    ),
-    {
-      future: {
-        v7_fetcherPersist: true,
-        v7_normalizeFormMethod: true,
-        v7_partialHydration: true,
-        v7_relativeSplatPath: true,
-        v7_skipActionErrorRevalidation: true,
-      },
-    }
+    )
   );
 
   createRoot(document.getElementById("root")!).render(
-    <QueryClientProvider client={queryClient}>
-      <AppContextProvider value={context}>
-        <RouterProvider router={router} future={{ v7_startTransition: true }} />
-      </AppContextProvider>
-    </QueryClientProvider>
+    <AppContextProvider value={context}>
+      <RouterProvider router={router} />
+    </AppContextProvider>
   );
 
   return Promise.resolve();

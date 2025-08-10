@@ -1,19 +1,26 @@
-import { onValue, ref } from "firebase/database";
+import { onSnapshot } from "firebase/firestore";
+import { useEffect, useState } from "react";
 import { useAppContext } from "../context/AppContext";
-import { Problem, ProblemsRef } from "../database/Problems";
-import { ProblemQueryKey } from "../query/ProblemQueryKey";
-import { useSubscription } from "./useSubscription";
+import { Problem, ProblemDoc } from "../database/Problems";
+import { Async, asyncError, asyncLoaded, asyncLoading } from "../utils/Async";
 
-export function useProblem(problemId: string) {
-  const { database } = useAppContext();
-  const problemRef = ref(database, ProblemsRef.byId(problemId).value);
+export function useProblem(id: string) {
+  const { db } = useAppContext();
 
+  const [problem, setProblem] = useState<Async<Problem>>(asyncLoading());
 
-  return useSubscription(ProblemQueryKey(problemId), (callback: (collections: Problem) => void) => {
-    return onValue(problemRef, (snapshot) => {
-      const problem = snapshot.val();
-      for (const boardStateId of Object.keys(problem.record.boardStates)) {
-        const state = problem.record.boardStates[boardStateId];
+  useEffect(() => {
+    const doc = ProblemDoc(db, id);
+    const unsubscribe = onSnapshot(doc, (snapshot) => {
+      const problemData = snapshot.data() as Problem;
+
+      if (problemData == null) {
+        setProblem(asyncError(`Problem ${id} could not be found.`));
+        return;
+      }
+
+      for (const boardStateId of Object.keys(problemData.record.boardStates)) {
+        const state = problemData.record.boardStates[boardStateId];
         if (state.markups == null) {
           state.markups = [];
         }
@@ -24,7 +31,14 @@ export function useProblem(problemId: string) {
           state.reverseMoves = {};
         }
       }
-      callback(problem);
+
+      setProblem(asyncLoaded(problemData));
     });
-  });
+    return () => {
+      setProblem(asyncLoading());
+      unsubscribe();
+    };
+  }, [db, setProblem, id]);
+
+  return problem;
 }

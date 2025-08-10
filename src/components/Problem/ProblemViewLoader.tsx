@@ -5,6 +5,7 @@ import { useProblem } from "../../hooks/useProblem";
 import { LoadingProblemView } from "./LoadingProblemView";
 import { ProblemView } from "./ProblemView";
 import "./ProblemViewLoader.css";
+import { isAsyncError, isAsyncLoaded, isAsyncLoading } from "../../utils/Async";
 
 export interface ProblemViewLoaderProps {
   user: User;
@@ -16,24 +17,20 @@ export const ProblemViewLoader = React.memo(
     const { id: problemId } = useParams();
     const problem = useProblem(problemId ?? "");
 
-    if (problem.isLoading) {
+    if (isAsyncLoading(problem)) {
       return (
         <div className="problem-loader-container">
           <LoadingProblemView />
         </div>
       );
-    } else if (problem.isFetched && problem.data != null) {
+    } else if (isAsyncLoaded(problem)) {
       return (
         <div className="problem-loader-container">
-          <ProblemView editing={editing} problem={problem.data} user={user} />
+          <ProblemView editing={editing} problem={problem.value} user={user} />
         </div>
       );
-    } else {
-      return (
-        <div className="problem-loader-container">
-          Could not find problem with id {problemId}
-        </div>
-      );
+    } else if (isAsyncError(problem)) {
+      return <div className="problem-loader-container">{problem.error}</div>;
     }
   }
 );
